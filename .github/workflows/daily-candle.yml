@@ -1,8 +1,6 @@
-name: CN daily candle
+name: daily candle
 
-on:
-  push:
-    branches: [master]
+on: workflow_dispatch
 
 jobs:
   build:

@@ -1,6 +1,7 @@
 name: CN daily candle
 
 on:
+  workflow_dispatch:
   schedule:
     # * 每天17点，开始获取K线行情数据
     - cron: '0 17 */1 */1 *'
