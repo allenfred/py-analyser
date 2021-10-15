@@ -1,0 +1,48 @@
+# 导入tushare
+import tushare as ts
+from models.trade_calendar import TradeCalendarDao
+import time
+import pandas as pd
+from config.common import TS_TOKEN
+
+pro = ts.pro_api(TS_TOKEN)
+calendarDao = TradeCalendarDao()
+
+
+if __name__ == "__main__":
+
+    start = time.time()
+    is_not_last_req = True
+    df = pd.DataFrame(data={})
+    offset = 0
+    totalGotCount = 0
+
+    while is_not_last_req:
+        # 拉取数据
+        df = pro.us_tradecal(**{
+            "start_date": "",
+            "end_date": "",
+            "is_open": "",
+            "exchange": "",
+            "limit": 6000,
+            "offset": offset
+        }, fields=[
+            "cal_date",
+            "is_open",
+            "pretrade_date"
+        ])
+
+        if len(df) < 6000:
+            is_not_last_req = False
+        else:
+            offset += len(df)
+
+        df['exchange'] = 'US'
+        totalGotCount += len(df)
+        calendarDao.batch_add(df)
+
+        print('已获取 US calendar ', totalGotCount, ' 条数据，用时 ',
+              round(time.time() - start, 2), ' s')
+
+    end = time.time()
+    print('用时', round(end - start, 2), 's')
