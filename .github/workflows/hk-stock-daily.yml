@@ -1,4 +1,4 @@
-name: Python package
+name: HK daily candle
 
 on:
   schedule:

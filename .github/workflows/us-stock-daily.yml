@@ -1,4 +1,4 @@
-name: Python package
+name: US daily candle
 
 on:
   schedule:
