@@ -5,7 +5,7 @@ CREATE TABLE `trade_calendar` (
   `is_open` tinyint NOT NULL COMMENT '是否交易 0休市 1交易',
   `pretrade_date` date COMMENT '上一个交易日',
   `candle_ready` tinyint NOT NULL DEFAULT 0 COMMENT '日K是否获取完成 0否 1是',
-  `basic_ready` tinyint NOT NULL DEFAULT 0 COMMENT '每日指标是获取完成 0否 1是',
+  `basic_ready` tinyint NOT NULL DEFAULT 0 COMMENT '每日指标是获取完成 0否 1是'
 );
 
 CREATE TABLE `stocks` (

@@ -17,7 +17,6 @@ trade_calendar = Table('trade_calendar', metadata_obj,
                         Column('pretrade_date', Date),
                         Column('candle_ready', SmallInteger),
                         Column('basic_ready', SmallInteger),
-                        Column('talib_ready', SmallInteger),
                         )
 
 
@@ -34,7 +33,6 @@ class TradeCalendar(Base):
     pretrade_date = Column(Date)  # 上一个交易日
     candle_ready = Column(SmallInteger)  # 日K是否获取完成 0否 1是
     basic_ready = Column(SmallInteger)  # 每日指标是获取完成 0否 1是
-    talib_ready = Column(SmallInteger)  # talib指标是计算完成 0否 1是
 
 
 class TradeCalendarDao:
@@ -47,9 +45,8 @@ class TradeCalendarDao:
             cal_date=calendar.get('cal_date', None),
             is_open=calendar.get('is_open', None),
             pretrade_date=calendar.get('pretrade_date', None),
-            candle_ready=calendar.get('candle_ready', None),
-            basic_ready=calendar.get('basic_ready', None),
-            talib_ready=calendar.get('talib_ready', None),
+            candle_ready=calendar.get('candle_ready', 0),
+            basic_ready=calendar.get('basic_ready', 0),
         )
 
         row = self.session.query(TradeCalendar).filter(TradeCalendar.exchange == calendar['exchange']).filter(
@@ -66,8 +63,6 @@ class TradeCalendarDao:
                 row.candle_ready = obj.candle_ready
             if obj.basic_ready is not None:
                 row.basic_ready = obj.basic_ready
-            if obj.talib_ready is not None:
-                row.talib_ready = obj.talib_ready
 
         self.session.commit()
         self.session.close()
@@ -82,9 +77,8 @@ class TradeCalendarDao:
                 cal_date=calendar.get('cal_date', None),
                 is_open=calendar.get('is_open', None),
                 pretrade_date=calendar.get('pretrade_date', None),
-                candle_ready=calendar.get('candle_ready', None),
-                basic_ready=calendar.get('basic_ready', None),
-                talib_ready=calendar.get('talib_ready', None),
+                candle_ready=calendar.get('candle_ready', 0),
+                basic_ready=calendar.get('basic_ready', 0),
             )
 
             row = self.session.query(TradeCalendar).filter(TradeCalendar.exchange == calendar['exchange']).filter(
@@ -101,10 +95,9 @@ class TradeCalendarDao:
                     row.candle_ready = obj.candle_ready
                 if obj.basic_ready is not None:
                     row.basic_ready = obj.basic_ready
-                if obj.talib_ready is not None:
-                    row.talib_ready = obj.talib_ready
 
-        self.session.commit()
+            self.session.commit()
+
         self.session.close()
 
         return df

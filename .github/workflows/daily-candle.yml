@@ -16,12 +16,12 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: get stock daily candle
+    - name: get CN daily candle
       run: |
         python jobs/daily/cn_stock_daily.py
-    - name: get stock daily candle
+    - name: get HK daily candle
       run: |
         python jobs/daily/hk_stock_daily.py
-    - name: get stock daily candle
+    - name: get US daily candle
       run: |
         python jobs/daily/us_stock_daily.py
