@@ -1,4 +1,9 @@
-# 导入tushare
+import os
+import sys
+
+path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(path)
+
 import tushare as ts
 from models.trade_calendar import TradeCalendarDao
 import time
@@ -46,11 +51,11 @@ if __name__ == "__main__":
 
     print('拉取SZSE calendar ', len(szse_df), ' 条数据')
 
-    calendarDao.batch_add(sse_df)
+    calendarDao.bulk_insert(sse_df)
     print('更新 SSE calendar 完成', len(sse_df), ' 条数据')
 
-    calendarDao.batch_add(szse_df)
+    calendarDao.bulk_insert(szse_df)
     print('更新 SZSE calendar 完成', len(szse_df), ' 条数据')
 
     end = time.time()
-    print('拉取数据用时', round(end-start, 2), 's')
+    print('拉取数据用时', round(end - start, 2), 's')

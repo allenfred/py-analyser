@@ -3,6 +3,8 @@ from sqlalchemy import Table, MetaData, Column, Integer, String, Date, SmallInte
 from sqlalchemy.ext.declarative import declarative_base
 from .db import engine, DBSession
 from datetime import date
+import pandas as pd
+
 
 # 创建对象的基类:
 Base = declarative_base()
@@ -10,14 +12,27 @@ conn = engine.connect()
 metadata_obj = MetaData()
 
 trade_calendar = Table('trade_calendar', metadata_obj,
-                        Column('id', Integer, primary_key=True),
-                        Column('exchange', String),
-                        Column('cal_date', Date),
-                        Column('is_open', SmallInteger),
-                        Column('pretrade_date', Date),
-                        Column('candle_ready', SmallInteger),
-                        Column('basic_ready', SmallInteger),
-                        )
+                       Column('id', Integer, primary_key=True),
+                       Column('exchange', String),
+                       Column('cal_date', Date),
+                       Column('is_open', SmallInteger),
+                       Column('pretrade_date', Date),
+                       Column('candle_ready', SmallInteger),
+                       Column('basic_ready', SmallInteger),
+                       )
+
+
+def get_obj(calendar):
+    obj = TradeCalendar(
+        exchange=calendar.get('exchange', None),
+        cal_date=calendar.get('cal_date', None),
+        is_open=calendar.get('is_open', None),
+        pretrade_date=calendar.get('pretrade_date', None),
+        candle_ready=calendar.get('candle_ready', 0),
+        basic_ready=calendar.get('basic_ready', 0),
+    )
+
+    return obj
 
 
 # 定义 TradeCalendar 对象:
@@ -40,14 +55,7 @@ class TradeCalendarDao:
         self.session = DBSession()
 
     def add_one(self, calendar):
-        obj = TradeCalendar(
-            exchange=calendar.get('exchange', None),
-            cal_date=calendar.get('cal_date', None),
-            is_open=calendar.get('is_open', None),
-            pretrade_date=calendar.get('pretrade_date', None),
-            candle_ready=calendar.get('candle_ready', 0),
-            basic_ready=calendar.get('basic_ready', 0),
-        )
+        obj = get_obj(calendar)
 
         row = self.session.query(TradeCalendar).filter(TradeCalendar.exchange == calendar['exchange']).filter(
             TradeCalendar.cal_date == calendar['cal_date']).first()
@@ -69,17 +77,10 @@ class TradeCalendarDao:
 
         return obj
 
-    def batch_add(self, df):
+    def bulk_upsert(self, df):
 
         for index, calendar in df.iterrows():
-            obj = TradeCalendar(
-                exchange=calendar.get('exchange', None),
-                cal_date=calendar.get('cal_date', None),
-                is_open=calendar.get('is_open', None),
-                pretrade_date=calendar.get('pretrade_date', None),
-                candle_ready=calendar.get('candle_ready', 0),
-                basic_ready=calendar.get('basic_ready', 0),
-            )
+            obj = get_obj(calendar)
 
             row = self.session.query(TradeCalendar).filter(TradeCalendar.exchange == calendar['exchange']).filter(
                 TradeCalendar.cal_date == calendar['cal_date']).first()
@@ -96,11 +97,21 @@ class TradeCalendarDao:
                 if obj.basic_ready is not None:
                     row.basic_ready = obj.basic_ready
 
-            self.session.commit()
-
+        self.session.commit()
         self.session.close()
 
         return df
+
+    def bulk_insert(self, df):
+        items = []
+        for index, item in df.iterrows():
+            item = item.to_dict()
+            item = {k: v if not pd.isna(v) else None for k, v in item.items()}
+            items.insert(index, item)
+
+        self.session.bulk_insert_mappings(TradeCalendar, items)
+        self.session.commit()
+        self.session.close()
 
     def find_one_candle_not_ready(self, exchange):
         if exchange == 'CN':

@@ -1,50 +1,16 @@
 # 导入:
-from sqlalchemy import Column, Integer, String, Date, SmallInteger, Float, select
+from sqlalchemy import Table, MetaData, Column, Integer, String, Date, SmallInteger, Float, select, insert
 from sqlalchemy.ext.declarative import declarative_base
-from .db import DBSession
+from sqlalchemy.dialects.mysql.dml import Insert
+from .db import engine, DBSession
 import pandas as pd
 
 # 创建对象的基类:
 Base = declarative_base()
+conn = engine.connect()
+metadata_obj = MetaData()
 
 
-def get_obj(stock):
-    stock = stock.to_dict()
-    stock = {k: v if not pd.isna(v) else None for k, v in stock.items()}
-
-    return Stock(
-        ts_code=stock.get('ts_code', None),
-        symbol=stock.get('symbol', None),
-        name=stock.get('name', None),
-        area=stock.get('area', None),
-        industry=stock.get('industry', None),
-        fullname=stock.get('fullname', None),
-        enname=stock.get('enname', None),
-        cnspell=stock.get('cnspell', None),
-        market=stock.get('market', None),
-        exchange=stock.get('exchange', None),
-        list_status=stock.get('list_status', None),
-        list_date=stock.get('list_date', None),
-        delist_date=stock.get('delist_date', None),
-        is_hs=stock.get('is_hs', None),
-        turnover_rate=stock.get('turnover_rate', None),
-        turnover_rate_f=stock.get('turnover_rate_f', None),
-        volume_ratio=stock.get('volume_ratio', None),
-        pe=stock.get('pe', None),
-        pe_ttm=stock.get('pe_ttm', None),
-        pb=stock.get('pb', None),
-        ps=stock.get('ps', None),
-        ps_ttm=stock.get('ps_ttm', None),
-        dv_ratio=stock.get('dv_ratio', None),
-        dv_ttm=stock.get('dv_ttm', None),
-        total_share=stock.get('total_share', None),
-        float_share=stock.get('float_share', None),
-        free_share=stock.get('free_share', None),
-        total_mv=stock.get('total_mv', None),
-        circ_mv=stock.get('circ_mv', None),
-    )
-
-# 定义 Stock 对象:
 class Stock(Base):
     # 表的名字:
     __tablename__ = 'stocks'
@@ -83,6 +49,77 @@ class Stock(Base):
     circ_mv = Column(Float)  # 流通市值
 
 
+stocks = Table('trade_calendar', metadata_obj,
+               Column('id', Integer, primary_key=True),
+               Column('ts_code', String),
+               Column('symbol', String),
+               Column('name', String),
+               Column('area', String),
+               Column('industry', String),
+               Column('fullname', String),
+               Column('enname', String),
+               Column('cnspell', String),
+               Column('market', String),
+               Column('exchange', String),
+               Column('list_status', String),
+               Column('list_date', Date),
+               Column('delist_date', Date),
+               Column('is_hs', String),
+               Column('turnover_rate', Float),
+               Column('turnover_rate_f', Float),
+               Column('volume_ratio', Float),
+               Column('pe', Float),
+               Column('pe_ttm', Float),
+               Column('pb', Float),
+               Column('ps', Float),
+               Column('ps_ttm', Float),
+               Column('dv_ratio', Float),
+               Column('dv_ttm', Float),
+               Column('total_share', Float),
+               Column('float_share', Float),
+               Column('free_share', Float),
+               Column('total_mv', Float),
+               Column('circ_mv', Float),
+               )
+
+
+def get_obj(item):
+    item = item.to_dict()
+    item = {k: v if not pd.isna(v) else None for k, v in item.items()}
+
+    return Stock(
+        ts_code=item.get('ts_code', None),
+        symbol=item.get('symbol', None),
+        name=item.get('name', None),
+        area=item.get('area', None),
+        industry=item.get('industry', None),
+        fullname=item.get('fullname', None),
+        enname=item.get('enname', None),
+        cnspell=item.get('cnspell', None),
+        market=item.get('market', None),
+        exchange=item.get('exchange', None),
+        list_status=item.get('list_status', None),
+        list_date=item.get('list_date', None),
+        delist_date=item.get('delist_date', None),
+        is_hs=item.get('is_hs', None),
+        turnover_rate=item.get('turnover_rate', None),
+        turnover_rate_f=item.get('turnover_rate_f', None),
+        volume_ratio=item.get('volume_ratio', None),
+        pe=item.get('pe', None),
+        pe_ttm=item.get('pe_ttm', None),
+        pb=item.get('pb', None),
+        ps=item.get('ps', None),
+        ps_ttm=item.get('ps_ttm', None),
+        dv_ratio=item.get('dv_ratio', None),
+        dv_ttm=item.get('dv_ttm', None),
+        total_share=item.get('total_share', None),
+        float_share=item.get('float_share', None),
+        free_share=item.get('free_share', None),
+        total_mv=item.get('total_mv', None),
+        circ_mv=item.get('circ_mv', None),
+    )
+
+
 class StockDao:
     def __init__(self):
         self.session = DBSession()
@@ -93,10 +130,10 @@ class StockDao:
 
         return result
 
-    def add_one(self, stock):
-        obj = get_obj(stock)
+    def add_one(self, item):
+        obj = get_obj(item)
 
-        rows = self.session.query(Stock.id).filter(Stock.ts_code == stock['ts_code']).all()
+        rows = self.session.query(Stock.id).filter(Stock.ts_code == item['ts_code']).all()
 
         if len(rows) == 0:
             self.session.add(obj)
@@ -106,75 +143,83 @@ class StockDao:
 
         return obj
 
-    def batch_add(self, df):
+    def bulk_insert(self, df):
+        items = []
+        for index, item in df.iterrows():
+            item = item.to_dict()
+            item = {k: v if not pd.isna(v) else None for k, v in item.items()}
+            items.insert(index, item)
 
-        for index, stock in df.iterrows():
-            obj = get_obj(stock)
+        self.session.bulk_insert_mappings(Stock, items)
+        self.session.commit()
+        self.session.close()
 
-            row = self.session.query(Stock).filter(Stock.ts_code == stock.get('ts_code')).first()
+    def bulk_upsert(self, df):
+        obj = get_obj(item)
 
-            if row is None:
-                self.session.add(obj)
-            else:
-                if obj.symbol is not None:
-                    row.symbol = obj.symbol
-                if obj.name is not None:
-                    row.name = obj.name
-                if obj.area is not None:
-                    row.name = obj.area
-                if obj.industry is not None:
-                    row.industry = obj.industry
-                if obj.fullname is not None:
-                    row.fullname = obj.fullname
-                if obj.enname is not None:
-                    row.enname = obj.enname
-                if obj.cnspell is not None:
-                    row.cnspell = obj.cnspell
-                if obj.market is not None:
-                    row.market = obj.market
-                if obj.exchange is not None:
-                    row.exchange = obj.exchange
-                if obj.list_status is not None:
-                    row.list_status = obj.list_status
-                if obj.list_date is not None:
-                    row.list_date = obj.list_date
-                if obj.delist_date is not None:
-                    row.delist_date = obj.delist_date
-                if obj.is_hs is not None:
-                    row.is_hs = obj.is_hs
-                if obj.turnover_rate is not None:
-                    row.turnover_rate = obj.turnover_rate
-                if obj.turnover_rate_f is not None:
-                    row.turnover_rate_f = obj.turnover_rate_f
-                if obj.volume_ratio is not None:
-                    row.volume_ratio = obj.volume_ratio
-                if obj.pe is not None:
-                    row.pe = obj.pe
-                if obj.pe_ttm is not None:
-                    row.pe_ttm = obj.pe_ttm
-                if obj.pb is not None:
-                    row.pb = obj.pb
-                if obj.ps is not None:
-                    row.ps = obj.ps
-                if obj.ps_ttm is not None:
-                    row.ps_ttm = obj.ps_ttm
-                if obj.dv_ratio is not None:
-                    row.dv_ratio = obj.dv_ratio
-                if obj.dv_ttm is not None:
-                    row.dv_ttm = obj.dv_ttm
-                if obj.total_share is not None:
-                    row.total_share = obj.total_share
-                if obj.float_share is not None:
-                    row.float_share = obj.float_share
-                if obj.free_share is not None:
-                    row.free_share = obj.free_share
-                if obj.total_mv is not None:
-                    row.total_mv = obj.total_mv
-                if obj.circ_mv is not None:
-                    row.circ_mv = obj.circ_mv
+        row = self.session.query(Stock).filter(Stock.ts_code == stock.get('ts_code')).first()
 
-            self.session.commit()
+        if row is None:
+            self.session.add(obj)
+        else:
+            if obj.symbol is not None:
+                row.symbol = obj.symbol
+            if obj.name is not None:
+                row.name = obj.name
+            if obj.area is not None:
+                row.name = obj.area
+            if obj.industry is not None:
+                row.industry = obj.industry
+            if obj.fullname is not None:
+                row.fullname = obj.fullname
+            if obj.enname is not None:
+                row.enname = obj.enname
+            if obj.cnspell is not None:
+                row.cnspell = obj.cnspell
+            if obj.market is not None:
+                row.market = obj.market
+            if obj.exchange is not None:
+                row.exchange = obj.exchange
+            if obj.list_status is not None:
+                row.list_status = obj.list_status
+            if obj.list_date is not None:
+                row.list_date = obj.list_date
+            if obj.delist_date is not None:
+                row.delist_date = obj.delist_date
+            if obj.is_hs is not None:
+                row.is_hs = obj.is_hs
+            if obj.turnover_rate is not None:
+                row.turnover_rate = obj.turnover_rate
+            if obj.turnover_rate_f is not None:
+                row.turnover_rate_f = obj.turnover_rate_f
+            if obj.volume_ratio is not None:
+                row.volume_ratio = obj.volume_ratio
+            if obj.pe is not None:
+                row.pe = obj.pe
+            if obj.pe_ttm is not None:
+                row.pe_ttm = obj.pe_ttm
+            if obj.pb is not None:
+                row.pb = obj.pb
+            if obj.ps is not None:
+                row.ps = obj.ps
+            if obj.ps_ttm is not None:
+                row.ps_ttm = obj.ps_ttm
+            if obj.dv_ratio is not None:
+                row.dv_ratio = obj.dv_ratio
+            if obj.dv_ttm is not None:
+                row.dv_ttm = obj.dv_ttm
+            if obj.total_share is not None:
+                row.total_share = obj.total_share
+            if obj.float_share is not None:
+                row.float_share = obj.float_share
+            if obj.free_share is not None:
+                row.free_share = obj.free_share
+            if obj.total_mv is not None:
+                row.total_mv = obj.total_mv
+            if obj.circ_mv is not None:
+                row.circ_mv = obj.circ_mv
 
+        self.session.commit()
         self.session.close()
 
         return df

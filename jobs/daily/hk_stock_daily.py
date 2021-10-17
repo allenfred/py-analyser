@@ -1,3 +1,9 @@
+import os
+import sys
+
+path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(path)
+
 import tushare as ts
 import pandas as pd
 from models.daily_candles import DailyCandleDao
@@ -50,7 +56,7 @@ if __name__ == "__main__":
 
         if len(df) > 0:
             print('拉取 HK candles ', len(df), ' 条数据')
-            dailyCandleDao.batch_add(df)
+            dailyCandleDao.bulk_upsert(df)
             print('更新 daily_candles ', len(df), ' 条数据')
 
     end = time.time()

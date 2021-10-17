@@ -5,17 +5,18 @@ on: workflow_dispatch
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: macos-11
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: '3.8.8'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        brew install ta-lib
     - name: get CN daily candle
       run: |
         python jobs/daily/cn_stock_daily.py

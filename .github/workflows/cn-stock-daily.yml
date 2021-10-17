@@ -1,15 +1,16 @@
 name: CN daily candle
 
 on:
-  workflow_dispatch:
   schedule:
     # * 每天17点，开始获取K线行情数据
     - cron: '0 17 */1 */1 *'
+  workflow_dispatch:
+
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: macos-11
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -20,6 +21,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: get stock daily candle
+        brew install ta-lib
+    - name: get CN daily candle
       run: |
         python jobs/daily/cn_stock_daily.py

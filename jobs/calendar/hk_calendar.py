@@ -1,4 +1,9 @@
-# 导入tushare
+import os
+import sys
+
+path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(path)
+
 import tushare as ts
 import pandas as pd
 from models.trade_calendar import TradeCalendarDao
@@ -40,7 +45,7 @@ if __name__ == "__main__":
 
         df['exchange'] = 'HK'
         totalGotCount += len(df)
-        calendarDao.batch_add(df)
+        calendarDao.bulk_insert(df)
 
         print('已获取 HK calendar ', totalGotCount, ' 条数据，用时 ',
               round(time.time() - start, 2), ' s')

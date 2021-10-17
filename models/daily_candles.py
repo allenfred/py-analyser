@@ -198,7 +198,18 @@ class DailyCandleDao:
 
         return obj
 
-    def batch_add(self, df):
+    def bulk_insert(self, df):
+        items = []
+        for index, item in df.iterrows():
+            item = item.to_dict()
+            item = {k: v if not pd.isna(v) else None for k, v in item.items()}
+            items.insert(index, item)
+
+        self.session.bulk_insert_mappings(DailyCandle, items)
+        self.session.commit()
+        self.session.close()
+
+    def bulk_upsert(self, df):
 
         for index, candle in df.iterrows():
             obj = get_obj(candle)

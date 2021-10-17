@@ -1,10 +1,6 @@
-name: HK daily candle
+name: HK history daily candle
 
-on:
-  schedule:
-    # * 每天18点，开始获取K线行情数据
-    - cron: '0 18 */1 */1 *'
-  workflow_dispatch:
+on: workflow_dispatch
 
 jobs:
   build:
@@ -21,6 +17,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         brew install ta-lib
-    - name: get HK daily candle
+    - name: get HK history daily candle
       run: |
-        python jobs/daily/hk_stock_daily.py
+        python jobs/history/hk_stock_daily.py

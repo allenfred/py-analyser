@@ -1,4 +1,9 @@
-# 导入tushare
+import os
+import sys
+
+path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(path)
+
 import tushare as ts
 import pandas as pd
 from models.stocks import StockDao
@@ -43,7 +48,7 @@ if __name__ == "__main__":
         df['exchange'] = 'US'
 
         print('拉取 US 股票列表 ', len(df), ' 条数据')
-        stockDao.batch_add(df)
+        stockDao.bulk_insert(df)
         print('更新 US stocks 完成', len(df), ' 条数据')
 
     end = time.time()

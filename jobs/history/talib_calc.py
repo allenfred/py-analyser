@@ -1,3 +1,9 @@
+import os
+import sys
+
+path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(path)
+
 import pandas as pd
 from models.daily_candles import DailyCandleDao
 from models.stocks import StockDao
