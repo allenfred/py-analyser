@@ -74,7 +74,7 @@ if __name__ == "__main__":
             else:
                 offset += len(df)
 
-            dailyCandleDao.batch_add(df)
+            dailyCandleDao.bulk_upsert(df)
             calendarDao.set_candle_ready('US', item.cal_date)
 
             print('已更新 US daily_candles ', item.cal_date, ': ', totalGotCount, ' 条数据，用时 ',
