@@ -41,38 +41,43 @@ if __name__ == "__main__":
 
         while not is_last_req:
 
-            df = pro.hk_daily(**{
-                "ts_code": "",
-                "trade_date": trade_dte,
-                "start_date": "",
-                "end_date": "",
-                "limit": limit,
-                "offset": offset
-            }, fields=[
-                "ts_code",
-                "trade_date",
-                "open",
-                "high",
-                "low",
-                "close",
-                "pre_close",
-                "change",
-                "pct_chg",
-                "vol",
-                "amount"
-            ])
+            try:
+                df = pro.hk_daily(**{
+                    "ts_code": "",
+                    "trade_date": trade_dte,
+                    "start_date": "",
+                    "end_date": "",
+                    "limit": limit,
+                    "offset": offset
+                }, fields=[
+                    "ts_code",
+                    "trade_date",
+                    "open",
+                    "high",
+                    "low",
+                    "close",
+                    "pre_close",
+                    "change",
+                    "pct_chg",
+                    "vol",
+                    "amount"
+                ])
 
-            totalGotCount += len(df)
-            if len(df) < limit:
-                is_last_req = True
-            else:
-                offset += len(df)
+                totalGotCount += len(df)
+                if len(df) < limit:
+                    is_last_req = True
+                else:
+                    offset += len(df)
 
-            dailyCandleDao.bulk_insert(df)
-            calendarDao.set_candle_ready('HK', item.cal_date)
+                dailyCandleDao.bulk_insert(df)
 
-            print('已更新 HK daily_candles ', item.cal_date, ': ', totalGotCount, ' 条数据，用时 ',
-                  round(time.time() - circle_start, 2), ' s')
+            except Exception as e:
+                print('Error:', e)
+
+        print('已更新 HK daily_candles ', item.cal_date, ': ', totalGotCount, ' 条数据，用时 ',
+              round(time.time() - circle_start, 2), ' s')
+        calendarDao.set_candle_ready('HK', item.cal_date)
+
 
     end = time.time()
     print('用时', round(end - start, 2), 's')

@@ -205,125 +205,134 @@ class DailyCandleDao:
             item = {k: v if not pd.isna(v) else None for k, v in item.items()}
             items.insert(index, item)
 
-        self.session.bulk_insert_mappings(DailyCandle, items)
-        self.session.commit()
-        self.session.close()
+        try:
+
+            self.session.bulk_insert_mappings(DailyCandle, items)
+            self.session.commit()
+        except Exception as e:
+            print('Error:', e)
+        finally:
+            self.session.close()
 
     def bulk_upsert(self, df):
 
         for index, candle in df.iterrows():
             obj = get_obj(candle)
 
-            row = self.session.query(DailyCandle).filter(DailyCandle.ts_code == candle['ts_code']).filter(
-                DailyCandle.trade_date == candle['trade_date']).first()
+            try:
+                row = self.session.query(DailyCandle).filter(DailyCandle.ts_code == candle['ts_code']).filter(
+                    DailyCandle.trade_date == candle['trade_date']).first()
 
-            if row is None:
-                self.session.add(obj)
-            else:
-                if obj.open is not None:
-                    row.open = obj.open
-                if obj.high is not None:
-                    row.high = obj.high
-                if obj.low is not None:
-                    row.low = obj.low
-                if obj.close is not None:
-                    row.close = obj.close
-                if obj.pre_close is not None:
-                    row.pre_close = obj.pre_close
-                if obj.change is not None:
-                    row.change = obj.change
-                if obj.pct_chg is not None:
-                    row.pct_chg = obj.pct_chg
-                if obj.vol is not None:
-                    row.vol = obj.vol
-                if obj.amount is not None:
-                    row.amount = obj.amount
-                if obj.turnover_rate is not None:
-                    row.turnover_rate = obj.turnover_rate
-                if obj.turnover_rate_f is not None:
-                    row.turnover_rate_f = obj.turnover_rate_f
-                if obj.volume_ratio is not None:
-                    row.volume_ratio = obj.volume_ratio
-                if obj.pe is not None:
-                    row.pe = obj.pe
-                if obj.pe_ttm is not None:
-                    row.pe_ttm = obj.pe_ttm
-                if obj.pb is not None:
-                    row.pb = obj.pb
-                if obj.ps is not None:
-                    row.ps = obj.ps
-                if obj.ps_ttm is not None:
-                    row.ps_ttm = obj.ps_ttm
-                if obj.dv_ratio is not None:
-                    row.dv_ratio = obj.dv_ratio
-                if obj.dv_ttm is not None:
-                    row.dv_ttm = obj.dv_ttm
-                if obj.total_share is not None:
-                    row.total_share = obj.total_share
-                if obj.float_share is not None:
-                    row.float_share = obj.float_share
-                if obj.free_share is not None:
-                    row.free_share = obj.free_share
-                if obj.total_mv is not None:
-                    row.total_mv = obj.total_mv
-                if obj.circ_mv is not None:
-                    row.circ_mv = obj.circ_mv
-                if obj.ma5 is not None:
-                    row.ma5 = obj.ma5
-                if obj.ma10 is not None:
-                    row.ma10 = obj.ma10
-                if obj.ma20 is not None:
-                    row.ma20 = obj.ma20
-                if obj.ma30 is not None:
-                    row.ma30 = obj.ma30
-                if obj.ma34 is not None:
-                    row.ma34 = obj.ma34
-                if obj.ma55 is not None:
-                    row.ma55 = obj.ma55
-                if obj.ma60 is not None:
-                    row.ma60 = obj.ma60
-                if obj.ma120 is not None:
-                    row.ma120 = obj.ma120
-                if obj.ma144 is not None:
-                    row.ma144 = obj.ma44
-                if obj.ma169 is not None:
-                    row.ma169 = obj.ma169
-                if obj.ema5 is not None:
-                    row.ema5 = obj.ema5
-                if obj.ema10 is not None:
-                    row.ema10 = obj.ema10
-                if obj.ema20 is not None:
-                    row.ema20 = obj.ema20
-                if obj.ema30 is not None:
-                    row.ema30 = obj.ema30
-                if obj.ema34 is not None:
-                    row.ema34 = obj.ema34
-                if obj.ema55 is not None:
-                    row.ema55 = obj.ema55
-                if obj.ema60 is not None:
-                    row.ema60 = obj.ema60
-                if obj.ema120 is not None:
-                    row.ema120 = obj.ema120
-                if obj.ema144 is not None:
-                    row.ema144 = obj.ema144
-                if obj.ema169 is not None:
-                    row.ema169 = obj.ema169
-                if obj.diff is not None:
-                    row.diff = obj.diff
-                if obj.dea is not None:
-                    row.dea = obj.dea
-                if obj.macd is not None:
-                    row.macd = obj.macd
-                if obj.bias6 is not None:
-                    row.bias6 = obj.bias6
-                if obj.bias12 is not None:
-                    row.bias12 = obj.bias12
-                if obj.bias24 is not None:
-                    row.bias24 = obj.bias24
-                if obj.bias60 is not None:
-                    row.bias60 = obj.bias60
+                if row is None:
+                    self.session.add(obj)
+                else:
+                    if obj.open is not None:
+                        row.open = obj.open
+                    if obj.high is not None:
+                        row.high = obj.high
+                    if obj.low is not None:
+                        row.low = obj.low
+                    if obj.close is not None:
+                        row.close = obj.close
+                    if obj.pre_close is not None:
+                        row.pre_close = obj.pre_close
+                    if obj.change is not None:
+                        row.change = obj.change
+                    if obj.pct_chg is not None:
+                        row.pct_chg = obj.pct_chg
+                    if obj.vol is not None:
+                        row.vol = obj.vol
+                    if obj.amount is not None:
+                        row.amount = obj.amount
+                    if obj.turnover_rate is not None:
+                        row.turnover_rate = obj.turnover_rate
+                    if obj.turnover_rate_f is not None:
+                        row.turnover_rate_f = obj.turnover_rate_f
+                    if obj.volume_ratio is not None:
+                        row.volume_ratio = obj.volume_ratio
+                    if obj.pe is not None:
+                        row.pe = obj.pe
+                    if obj.pe_ttm is not None:
+                        row.pe_ttm = obj.pe_ttm
+                    if obj.pb is not None:
+                        row.pb = obj.pb
+                    if obj.ps is not None:
+                        row.ps = obj.ps
+                    if obj.ps_ttm is not None:
+                        row.ps_ttm = obj.ps_ttm
+                    if obj.dv_ratio is not None:
+                        row.dv_ratio = obj.dv_ratio
+                    if obj.dv_ttm is not None:
+                        row.dv_ttm = obj.dv_ttm
+                    if obj.total_share is not None:
+                        row.total_share = obj.total_share
+                    if obj.float_share is not None:
+                        row.float_share = obj.float_share
+                    if obj.free_share is not None:
+                        row.free_share = obj.free_share
+                    if obj.total_mv is not None:
+                        row.total_mv = obj.total_mv
+                    if obj.circ_mv is not None:
+                        row.circ_mv = obj.circ_mv
+                    if obj.ma5 is not None:
+                        row.ma5 = obj.ma5
+                    if obj.ma10 is not None:
+                        row.ma10 = obj.ma10
+                    if obj.ma20 is not None:
+                        row.ma20 = obj.ma20
+                    if obj.ma30 is not None:
+                        row.ma30 = obj.ma30
+                    if obj.ma34 is not None:
+                        row.ma34 = obj.ma34
+                    if obj.ma55 is not None:
+                        row.ma55 = obj.ma55
+                    if obj.ma60 is not None:
+                        row.ma60 = obj.ma60
+                    if obj.ma120 is not None:
+                        row.ma120 = obj.ma120
+                    if obj.ma144 is not None:
+                        row.ma144 = obj.ma44
+                    if obj.ma169 is not None:
+                        row.ma169 = obj.ma169
+                    if obj.ema5 is not None:
+                        row.ema5 = obj.ema5
+                    if obj.ema10 is not None:
+                        row.ema10 = obj.ema10
+                    if obj.ema20 is not None:
+                        row.ema20 = obj.ema20
+                    if obj.ema30 is not None:
+                        row.ema30 = obj.ema30
+                    if obj.ema34 is not None:
+                        row.ema34 = obj.ema34
+                    if obj.ema55 is not None:
+                        row.ema55 = obj.ema55
+                    if obj.ema60 is not None:
+                        row.ema60 = obj.ema60
+                    if obj.ema120 is not None:
+                        row.ema120 = obj.ema120
+                    if obj.ema144 is not None:
+                        row.ema144 = obj.ema144
+                    if obj.ema169 is not None:
+                        row.ema169 = obj.ema169
+                    if obj.diff is not None:
+                        row.diff = obj.diff
+                    if obj.dea is not None:
+                        row.dea = obj.dea
+                    if obj.macd is not None:
+                        row.macd = obj.macd
+                    if obj.bias6 is not None:
+                        row.bias6 = obj.bias6
+                    if obj.bias12 is not None:
+                        row.bias12 = obj.bias12
+                    if obj.bias24 is not None:
+                        row.bias24 = obj.bias24
+                    if obj.bias60 is not None:
+                        row.bias60 = obj.bias60
 
-        self.session.commit()
+            except Exception as e:
+                print('Error:', e)
+
+            self.session.commit()
         self.session.close()
 
         return df
