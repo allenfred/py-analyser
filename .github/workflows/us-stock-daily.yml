@@ -21,4 +21,7 @@ jobs:
     - name: get US daily candle
       run: |
         source .venv/bin/activate
+        sudo -s
+        echo "include /usr/local/lib" >> /etc/ld.so.conf
+        ldconfig
         python jobs/daily/us_stock_daily.py
