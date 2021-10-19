@@ -13,7 +13,8 @@ jobs:
         pip3 install virtualenv
         python3 -m venv .venv
         source .venv/bin/activate
-        pip3 install -r requirements.txt
+        pip install -r requirements.txt
+        pip list
     - name: test talib
       run: |
         python3 test.py
