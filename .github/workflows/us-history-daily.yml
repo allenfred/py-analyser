@@ -17,4 +17,7 @@ jobs:
     - name: get US history daily candle
       run: |
         source .venv/bin/activate
+        sudo -s
+        echo "include /usr/local/lib" >> /etc/ld.so.conf
+        ldconfig
         python jobs/history/us_stock_daily.py

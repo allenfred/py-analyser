@@ -25,4 +25,7 @@ jobs:
     - name: get CN daily candle
       run: |
         source .venv/bin/activate
+        sudo -s
+        echo "include /usr/local/lib" >> /etc/ld.so.conf
+        ldconfig
         python jobs/daily/cn_stock_daily.py

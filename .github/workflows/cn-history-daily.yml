@@ -17,4 +17,7 @@ jobs:
     - name: get CN history daily candle
       run: |
         source .venv/bin/activate
-        python3 jobs/history/cn_stock_daily.py
+        sudo -s
+        echo "include /usr/local/lib" >> /etc/ld.so.conf
+        ldconfig
+        python jobs/history/cn_stock_daily.py

@@ -21,4 +21,7 @@ jobs:
     - name: get HK daily candle
       run: |
         source .venv/bin/activate
+        sudo -s
+        echo "include /usr/local/lib" >> /etc/ld.so.conf
+        ldconfig
         python jobs/daily/hk_stock_daily.py
