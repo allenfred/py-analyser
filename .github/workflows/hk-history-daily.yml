@@ -8,15 +8,13 @@ jobs:
     runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        brew install ta-lib
+        pip3 install virtualenv
+        python3 -m venv .venv
+        source .venv/bin/activate
+        pip3 install -r requirements.txt
     - name: get HK history daily candle
       run: |
+        source .venv/bin/activate
         python jobs/history/hk_stock_daily.py
