@@ -1,9 +1,6 @@
 import os
 import sys
-print(sys.path)
-print(os.path.dirname(__file__))
 path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print(path)
 
 import pandas as pd
 from models.daily_candles import DailyCandleDao
