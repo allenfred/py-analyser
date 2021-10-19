@@ -5,7 +5,7 @@ on: workflow_dispatch
 jobs:
   build:
 
-    runs-on: macos-11
+    runs-on: hongkong-quant
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -16,7 +16,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        brew install ta-lib
+        git clone git@github.com:mrjbq7/ta-lib.git
+        cd ta-lib
+        python setup.py install
     - name: get CN history daily candle
       run: |
         python jobs/history/cn_stock_daily.py
