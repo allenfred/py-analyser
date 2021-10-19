@@ -10,10 +10,10 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt
+        pip3 install -r requirements.txt
         git clone git@github.com:mrjbq7/ta-lib.git
         cd ta-lib
-        python setup.py install
+        python3 setup.py install
     - name: get CN history daily candle
       run: |
-        python jobs/history/cn_stock_daily.py
+        python3 jobs/history/cn_stock_daily.py
