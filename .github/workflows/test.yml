@@ -14,10 +14,6 @@ jobs:
         python3 -m venv .venv
         source .venv/bin/activate
         pip3 install -r requirements.txt
-    - name: setup ta-lib
-      run: |
-        cd ta-lib
-        python setup.py install
     - name: test
       run: |
         source .venv/bin/activate
