@@ -1,4 +1,4 @@
-name: CN history daily candle
+name: test talib
 
 on: workflow_dispatch
 
