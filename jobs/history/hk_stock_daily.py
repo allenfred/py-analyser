@@ -68,6 +68,7 @@ if __name__ == "__main__":
                     is_last_req = True
                 else:
                     offset += len(df)
+                df['exchange'] = 'HK'
 
                 dailyCandleDao.bulk_insert(df)
 
@@ -77,7 +78,6 @@ if __name__ == "__main__":
         print('已更新 HK daily_candles ', item.cal_date, ': ', totalGotCount, ' 条数据，用时 ',
               round(time.time() - circle_start, 2), ' s')
         calendarDao.set_candle_ready('HK', item.cal_date)
-
 
     end = time.time()
     print('用时', round(end - start, 2), 's')

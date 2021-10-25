@@ -20,19 +20,19 @@ if __name__ == "__main__":
     start = time.time()
     is_not_last_req = True
     df = pd.DataFrame(data={})
+    limit = 5000
     offset = 0
     totalGotCount = 0
 
     while is_not_last_req:
 
-        # 拉取日线数据
         df = pro.daily(**{
             "ts_code": "",
             "trade_date": today,
             "start_date": "",
             "end_date": "",
             "offset": offset,
-            "limit": 5000
+            "limit": limit
         }, fields=[
             "ts_code",
             "trade_date",
@@ -52,11 +52,14 @@ if __name__ == "__main__":
             is_not_last_req = False
         else:
             offset += len(df)
+        df['exchange'] = 'CN'
 
         print('已获取 CN daily_candles ', totalGotCount, ' 条数据，用时 ',
               round(time.time() - start, 2), ' s')
 
         dailyCandleDao.bulk_upsert(df)
+
+    calendarDao.set_candle_ready('CN', datetime.strftime(today, "%Y-%m-%d"))
 
     end = time.time()
     print('用时', round(end - start, 2), 's')

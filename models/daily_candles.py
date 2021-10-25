@@ -17,6 +17,7 @@ class DailyCandle(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     ts_code = Column(String)  # TS代码
     trade_date = Column(Date)  # 交易日期
+    exchange = Column(String)  # 交易所代码
     open = Column(Float)  # 开盘价
     high = Column(Float)  # 最高价
     low = Column(Float)  # 最低价
@@ -42,53 +43,6 @@ class DailyCandle(Base):
     free_share = Column(Float)  # 自由流通股本
     total_mv = Column(Float)  # 总市值
     circ_mv = Column(Float)  # 流通市值
-    ma5 = Column(Float)
-    ma10 = Column(Float)
-    ma20 = Column(Float)
-    ma30 = Column(Float)
-    ma34 = Column(Float)
-    ma55 = Column(Float)
-    ma60 = Column(Float)
-    ma120 = Column(Float)
-    ma144 = Column(Float)
-    ma169 = Column(Float)
-    ema5 = Column(Float)
-    ema10 = Column(Float)
-    ema20 = Column(Float)
-    ema30 = Column(Float)
-    ema34 = Column(Float)
-    ema55 = Column(Float)
-    ema60 = Column(Float)
-    ema120 = Column(Float)
-    ema144 = Column(Float)
-    ema169 = Column(Float)
-    ma5_slope = Column(Float)
-    ma10_slope = Column(Float)
-    ma20_slope = Column(Float)
-    ma30_slope = Column(Float)
-    ma34_slope = Column(Float)
-    ma55_slope = Column(Float)
-    ma60_slope = Column(Float)
-    ma120_slope = Column(Float)
-    ma144_slope = Column(Float)
-    ma169_slope = Column(Float)
-    ema5_slope = Column(Float)
-    ema10_slope = Column(Float)
-    ema20_slope = Column(Float)
-    ema30_slope = Column(Float)
-    ema34_slope = Column(Float)
-    ema55_slope = Column(Float)
-    ema60_slope = Column(Float)
-    ema120_slope = Column(Float)
-    ema144_slope = Column(Float)
-    ema169_slope = Column(Float)
-    diff = Column(Float)
-    dea = Column(Float)
-    macd = Column(Float)
-    bias6 = Column(Float)
-    bias12 = Column(Float)
-    bias24 = Column(Float)
-    bias60 = Column(Float)
 
 
 def get_obj(candle):
@@ -98,6 +52,7 @@ def get_obj(candle):
     return DailyCandle(
         ts_code=candle.get('ts_code', None),
         trade_date=candle.get('trade_date', None),
+        exchange=candle.get('exchange', None),
         open=candle.get('open', None),
         high=candle.get('high', None),
         low=candle.get('low', None),
@@ -122,55 +77,7 @@ def get_obj(candle):
         float_share=candle.get('float_share', None),
         free_share=candle.get('free_share', None),
         total_mv=candle.get('total_mv', None),
-        circ_mv=candle.get('circ_mv', None),
-        # 技术指标
-        ma5=candle.get('ma5', None),
-        ma10=candle.get('ma10', None),
-        ma20=candle.get('ma20', None),
-        ma30=candle.get('ma30', None),
-        ma34=candle.get('ma34', None),
-        ma55=candle.get('ma55', None),
-        ma60=candle.get('ma60', None),
-        ma120=candle.get('ma120', None),
-        ma144=candle.get('ma144', None),
-        ma169=candle.get('ma169', None),
-        ema5=candle.get('ema5', None),
-        ema10=candle.get('ema10', None),
-        ema20=candle.get('ema20', None),
-        ema30=candle.get('ema30', None),
-        ema34=candle.get('ema34', None),
-        ema55=candle.get('ema55', None),
-        ema60=candle.get('ema60', None),
-        ema120=candle.get('ema120', None),
-        ema144=candle.get('ema144', None),
-        ema169=candle.get('ema169', None),
-        ma5_slope=candle.get('ma5_slope', None),
-        ma10_slope=candle.get('ma10_slope', None),
-        ma20_slope=candle.get('ma20_slope', None),
-        ma30_slope=candle.get('ma30_slope', None),
-        ma34_slope=candle.get('ma34_slope', None),
-        ma55_slope=candle.get('ma55_slope', None),
-        ma60_slope=candle.get('ma60_slope', None),
-        ma120_slope=candle.get('ma120_slope', None),
-        ma144_slope=candle.get('ma144_slope', None),
-        ma169_slope=candle.get('ma169_slope', None),
-        ema5_slope=candle.get('ema5_slope', None),
-        ema10_slope=candle.get('ema10_slope', None),
-        ema20_slope=candle.get('ema20_slope', None),
-        ema30_slope=candle.get('ema30_slope', None),
-        ema34_slope=candle.get('ema34_slope', None),
-        ema55_slope=candle.get('ema55_slope', None),
-        ema60_slope=candle.get('ema60_slope', None),
-        ema120_slope=candle.get('ema120_slope', None),
-        ema144_slope=candle.get('ema144_slope', None),
-        ema169_slope=candle.get('ema169_slope', None),
-        diff=candle.get('diff', None),
-        dea=candle.get('dea', None),
-        macd=candle.get('macd', None),
-        bias6=candle.get('bias6', None),
-        bias12=candle.get('bias12', None),
-        bias24=candle.get('bias24', None),
-        bias60=candle.get('bias60', None),
+        circ_mv=candle.get('circ_mv', None)
     )
 
 
@@ -203,16 +110,18 @@ class DailyCandleDao:
         for index, item in df.iterrows():
             item = item.to_dict()
             item = {k: v if not pd.isna(v) else None for k, v in item.items()}
-            items.insert(index, item)
+
+            if item['ts_code'] is not None and item['trade_date'] is not None:
+                items.insert(index, item)
 
         try:
-
             self.session.bulk_insert_mappings(DailyCandle, items)
             self.session.commit()
         except Exception as e:
             print('Error:', e)
         finally:
             self.session.close()
+
 
     def bulk_upsert(self, df):
 
@@ -226,6 +135,8 @@ class DailyCandleDao:
                 if row is None:
                     self.session.add(obj)
                 else:
+                    if obj.exchange is not None:
+                        row.exchange = obj.exchange
                     if obj.open is not None:
                         row.open = obj.open
                     if obj.high is not None:
@@ -274,60 +185,6 @@ class DailyCandleDao:
                         row.total_mv = obj.total_mv
                     if obj.circ_mv is not None:
                         row.circ_mv = obj.circ_mv
-                    if obj.ma5 is not None:
-                        row.ma5 = obj.ma5
-                    if obj.ma10 is not None:
-                        row.ma10 = obj.ma10
-                    if obj.ma20 is not None:
-                        row.ma20 = obj.ma20
-                    if obj.ma30 is not None:
-                        row.ma30 = obj.ma30
-                    if obj.ma34 is not None:
-                        row.ma34 = obj.ma34
-                    if obj.ma55 is not None:
-                        row.ma55 = obj.ma55
-                    if obj.ma60 is not None:
-                        row.ma60 = obj.ma60
-                    if obj.ma120 is not None:
-                        row.ma120 = obj.ma120
-                    if obj.ma144 is not None:
-                        row.ma144 = obj.ma44
-                    if obj.ma169 is not None:
-                        row.ma169 = obj.ma169
-                    if obj.ema5 is not None:
-                        row.ema5 = obj.ema5
-                    if obj.ema10 is not None:
-                        row.ema10 = obj.ema10
-                    if obj.ema20 is not None:
-                        row.ema20 = obj.ema20
-                    if obj.ema30 is not None:
-                        row.ema30 = obj.ema30
-                    if obj.ema34 is not None:
-                        row.ema34 = obj.ema34
-                    if obj.ema55 is not None:
-                        row.ema55 = obj.ema55
-                    if obj.ema60 is not None:
-                        row.ema60 = obj.ema60
-                    if obj.ema120 is not None:
-                        row.ema120 = obj.ema120
-                    if obj.ema144 is not None:
-                        row.ema144 = obj.ema144
-                    if obj.ema169 is not None:
-                        row.ema169 = obj.ema169
-                    if obj.diff is not None:
-                        row.diff = obj.diff
-                    if obj.dea is not None:
-                        row.dea = obj.dea
-                    if obj.macd is not None:
-                        row.macd = obj.macd
-                    if obj.bias6 is not None:
-                        row.bias6 = obj.bias6
-                    if obj.bias12 is not None:
-                        row.bias12 = obj.bias12
-                    if obj.bias24 is not None:
-                        row.bias24 = obj.bias24
-                    if obj.bias60 is not None:
-                        row.bias60 = obj.bias60
 
             except Exception as e:
                 print('Error:', e)

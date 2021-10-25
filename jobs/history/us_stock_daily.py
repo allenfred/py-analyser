@@ -73,7 +73,9 @@ if __name__ == "__main__":
                     is_last_req = True
                 else:
                     offset += len(df)
-                dailyCandleDao.bulk_upsert(df)
+                df['exchange'] = 'US'
+
+                dailyCandleDao.bulk_insert(df)
 
             except Exception as e:
                 print('Error:', e)

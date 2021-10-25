@@ -67,6 +67,7 @@ if __name__ == "__main__":
                     is_last_req = True
                 else:
                     offset += len(df)
+                df['exchange'] = 'CN'
 
                 dailyCandleDao.bulk_insert(df)
 

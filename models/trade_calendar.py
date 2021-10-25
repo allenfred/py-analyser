@@ -6,9 +6,7 @@ from datetime import date
 import pandas as pd
 
 
-# 创建对象的基类:
 Base = declarative_base()
-conn = engine.connect()
 metadata_obj = MetaData()
 
 trade_calendar = Table('trade_calendar', metadata_obj,
@@ -114,34 +112,40 @@ class TradeCalendarDao:
         self.session.close()
 
     def find_one_candle_not_ready(self, exchange):
-        if exchange == 'CN':
-            exchange = 'SSE'
 
-        today = date.today().strftime("%Y-%m-%d")
+        with engine.connect() as conn:
+            if exchange == 'CN':
+                exchange = 'SSE'
 
-        stmts = select(trade_calendar).where(
-            trade_calendar.c.exchange == exchange,
-            trade_calendar.c.candle_ready != 1,
-            trade_calendar.c.is_open == 1,
-            trade_calendar.c.cal_date >= '2000-01-01',
-            trade_calendar.c.cal_date < today).order_by(desc(trade_calendar.c.cal_date)).limit(1)
+            today = date.today().strftime("%Y-%m-%d")
 
-        rows = conn.execute(stmts).fetchall()
+            stmts = select(trade_calendar).where(
+                trade_calendar.c.exchange == exchange,
+                trade_calendar.c.candle_ready != 1,
+                trade_calendar.c.is_open == 1,
+                trade_calendar.c.cal_date >= '2000-01-01',
+                trade_calendar.c.cal_date <= today).order_by(desc(trade_calendar.c.cal_date)).limit(1)
 
-        return rows[0]
+            rows = conn.execute(stmts).fetchall()
+
+            if len(rows) > 0:
+                return rows[0]
+            else:
+                return None
+
 
     def set_candle_ready(self, exchange, dte):
-
         stmts = ''
 
-        if exchange == 'CN':
-            stmts = trade_calendar.update(). \
-                values(candle_ready=1). \
-                where(trade_calendar.c.cal_date == dte). \
-                where(or_(trade_calendar.c.exchange == 'SSE', trade_calendar.c.exchange == 'SZSE'))
-        else:
-            stmts = trade_calendar.update(). \
-                values(candle_ready=1). \
-                where(trade_calendar.c.cal_date == dte, trade_calendar.c.exchange == exchange)
+        with engine.connect() as conn:
+            if exchange == 'CN':
+                stmts = trade_calendar.update(). \
+                    values(candle_ready=1). \
+                    where(trade_calendar.c.cal_date == dte). \
+                    where(or_(trade_calendar.c.exchange == 'SSE', trade_calendar.c.exchange == 'SZSE'))
+            else:
+                stmts = trade_calendar.update(). \
+                    values(candle_ready=1). \
+                    where(trade_calendar.c.cal_date == dte, trade_calendar.c.exchange == exchange)
 
-        conn.execute(stmts)
+            conn.execute(stmts)

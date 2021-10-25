@@ -1,75 +1,41 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
-import math
+import os
+import sys
 
+path = os.path.dirname(os.path.abspath(__file__))
+
+import math
 import pandas as pd
 import numpy as np
-import os
-
-math.atan()
-# 仅对近一个月（即20个交易日）的数据进行分析，因为九转最多也就13个交易日，分析近一个月是为了回测数据
-# data文件夹里的数据请用data_163脚本自动生成
-
-# 选股
-def dress():
-    list_code = []
-    for j in os.listdir('data'):
-        print(j, '开始')
-        data = pd.read_csv("data/%s" % j)
-        data = data.iloc[:20]
-        data_close = data.close.values
-        for i in range(len(data_close) - 4):
-            for k in range(9):
-                if i + k + 4 < len(data_close):
-                    if data_close[i + k] < data_close[i + k + 4]:
-                        if k == 8 and i == 0:
-                            print(j, data.trade_date.values[i], '进入观察期')
-                            list_code.append(j[:-4])
-                        continue
-                    else:
-                        break
-
-        print(j, '完成')
-    print(set(list_code))
 
 
-# 回测，主要看出现九转买入信号候，第二天以开盘价买入，然后在接下来的5个交易日内高点卖出，看是否亏损和收益多大
-def back_testing():
-    list_code = {}
-    for j in os.listdir('data'):
-        print(j, '开始')
-        data = pd.read_csv("data/%s" % j)
-        data = data.iloc[:20]
-        data_close = data.close.values
-        data_high = data.high.values
-        data_open = data.open.values
-        for i in range(len(data_close) - 4):
-            for k in range(9):
-                if i + k + 4 < len(data_close):
-                    if data_close[i + k] < data_close[i + k + 4]:
-                        if k == 8 and i >= 6:
-                            buy = data_open[i - 1]
-                            sell = max(data_high[i - 6:i - 2])  # 出现买入信号候第二天以开盘价买入，看一周之内是否有合适卖出机会
-                            list_code[j[:-4]] = str(round((sell - buy) * 100 / buy, 2)) + '%'
-                        continue
-                    else:
-                        break
+# close: ndarray
+def td(close):
+    high_td_series = []
+    low_td_series = []
 
-        print(j, '完成')
-    print(list_code)
-    print('最大收益:', str(max([float(i[:-1]) for i in list(list_code.values())])) + '%')
-    print('最小收益:', str(min([float(i[:-1]) for i in list(list_code.values())])) + '%')
-    print('平均收益:',
-          str(round(sum([float(i[:-1]) for i in list(list_code.values())]) / len(list(list_code.values())), 2)) + '%')
-    print('正收益：', len([float(i[:-1]) for i in list(list_code.values()) if i[0] != '-']))
-    print('负收益：', len([float(i[:-1]) for i in list(list_code.values()) if i[0] == '-']))
+    for index, value in enumerate(close):
+        if index < 4:
+            high_td_series.insert(index, 0)
+            low_td_series.insert(index, 0)
+        else:
+            # 低9 如果当前收盘价低于四天前收盘价
+            if value < close[index - 4]:
+                if not low_td_series[index - 1] == 9:
+                    low_td_series.insert(index, low_td_series[index - 1] + 1)
+                else:
+                    low_td_series.insert(index, 1)
+            else:
+                low_td_series.insert(index, 0)
 
+            # 高9 如果当前收盘价高于四天前收盘价
+            if value > close[index - 4]:
+                if not high_td_series[index - 1] == 9:
+                    high_td_series.insert(index, high_td_series[index - 1] + 1)
+                else:
+                    high_td_series.insert(index, 1)
+            else:
+                high_td_series.insert(index, 0)
 
-# back_testing()
-# dress()
-
-"""
-懒人获取办法：  
-一：下载云看盘软件(PC端，支持win，linux，MacOS)，在左侧工具栏里找到对应的方法，点击即可查看最新的选股结果，官网地址：https://www.yunkanpan.com  
-二：下载微财讯App(手机端，支持安卓和IOS)，在首页更多里，工具栏选项。官网地址：https://www.weicaixun.com
-"""
+    return high_td_series, low_td_series

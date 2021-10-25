@@ -12,6 +12,7 @@ from datetime import datetime, date
 import numpy as np
 from api.daily_candle import get_cn_candles
 from lib.bias import bias
+# from lib.magic_nine_turn import td_8_9
 
 stockDao = StockDao()
 dailyCandleDao = DailyCandleDao()
@@ -19,11 +20,17 @@ dailyCandleDao = DailyCandleDao()
 if __name__ == "__main__":
     ts_code = '600733.SH'
 
-    # candles = get_cn_candles(ts_code)
-    # dailyCandleDao.batch_add(candles)
-    #
-    # bias()
+    s = text("select trade_date, close from daily_candles where ts_code = :ts_code order by trade_date asc limit 0,10")
+    statement = dailyCandleDao.session.execute(s.params(ts_code=ts_code))
+    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'close'])
+    df = df.sort_values(by='trade_date', ascending=True)
+    # close = df.close
+    # close = df.close.to_numpy()
+    for index, item in df.iterrows():
+        if index == 0 or index == 1:
+            if index == 1:
+                print(df.iloc[index - 1])
+            print(item.close)
 
-    print('hello world!!!')
-    # start = date.today().isoformat()
+
     # print(start)

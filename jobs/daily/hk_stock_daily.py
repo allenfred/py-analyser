@@ -20,19 +20,17 @@ if __name__ == "__main__":
     start = time.time()
     is_not_last_req = True
     df = pd.DataFrame(data={})
+    limit = 3000
     offset = 0
-    reqPageNum = 1
+    totalGotCount = 0
 
     while is_not_last_req:
-        print("请求获取第 ", reqPageNum, ' 页数据')
-
-        # 拉取数据
         df = pro.hk_daily(**{
             "ts_code": "",
             "trade_date": today,
             "start_date": "",
             "end_date": "",
-            "limit": "",
+            "limit": limit,
             "offset": offset
         }, fields=[
             "ts_code",
@@ -48,16 +46,19 @@ if __name__ == "__main__":
             "amount"
         ])
 
-        if len(df) < 3000:
+        totalGotCount += len(df)
+        if len(df) < limit:
             is_not_last_req = False
         else:
             offset += len(df)
-            reqPageNum += 1
+        df['exchange'] = 'HK'
 
         if len(df) > 0:
             print('拉取 HK candles ', len(df), ' 条数据')
             dailyCandleDao.bulk_upsert(df)
-            print('更新 daily_candles ', len(df), ' 条数据')
+            print('更新 HK daily_candles ', len(df), ' 条数据')
+
+    calendarDao.set_candle_ready('HK', datetime.strftime(today, "%Y-%m-%d"))
 
     end = time.time()
     print('用时', round(end - start, 2), 's')
