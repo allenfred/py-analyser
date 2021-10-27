@@ -1,4 +1,4 @@
-name: HK history daily candle
+name: History daily candle HK
 
 on: workflow_dispatch
 

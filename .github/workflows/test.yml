@@ -1,4 +1,4 @@
-name: test talib
+name: Test workflow
 
 on: workflow_dispatch
 
