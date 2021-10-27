@@ -39,7 +39,8 @@ CREATE TABLE `stocks` (
   `float_share` float COMMENT '流通股本',
   `free_share` float COMMENT '自由流通股本',
   `total_mv` float COMMENT '总市值',
-  `circ_mv` float COMMENT '流通市值'
+  `circ_mv` float COMMENT '流通市值',
+  `scan_date` date COMMENT '扫描完成日期'
 );
 
 CREATE TABLE `daily_candles` (

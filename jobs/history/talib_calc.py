@@ -5,6 +5,7 @@ path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 sys.path.append(path)
 
 import pandas as pd
+from models.db import DBSession
 from models.daily_candles import DailyCandleDao
 from models.daily_indicators import DailyIndicatorDao
 from models.daily_long_signals import DailyLongSignalDao
@@ -28,81 +29,104 @@ dailyLongSignalDao = DailyLongSignalDao()
 dailyShortSignalDao = DailyShortSignalDao()
 
 if __name__ == "__main__":
-    ts_code = '600859.SH'
+    all_scan_set = False
+    last_update_date = None
+    candle_stmts = dailyCandleDao.session.execute(text("select trade_date from daily_candles order by trade_date desc limit 1"))
+    candle_result = candle_stmts.fetchone()
 
-    s = text("select trade_date, open, close, high, low, `change`, pct_chg from daily_candles where ts_code = :ts_code "
-             + "order by trade_date desc limit 0,100")
-    statement = dailyCandleDao.session.execute(s.params(ts_code=ts_code))
-    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low',  'change', 'pct_chg'])
-    df = df.sort_values(by='trade_date', ascending=True)
-    close = df.close.to_numpy()
+    if candle_result:
+        last_update_date = candle_result[0]
 
-    df['ts_code'] = ts_code
+    stock_stmts = ''
+    stock_result = None
+    while not all_scan_set and last_update_date:
+        ts_code = ''
+        stock_stmts = stockDao.session.execute(text("select ts_code from stocks where scan_date is null or scan_date"
+                                           " < :scan_date  limit 1").params(scan_date=last_update_date))
+        stock_result = stock_stmts.fetchone()
 
-    df['ma5'] = SMA(close, 5)
-    df['ma10'] = SMA(close, 10)
-    df['ma20'] = SMA(close, 20)
-    df['ma30'] = SMA(close, 30)
-    df['ma34'] = SMA(close, 34)
-    df['ma55'] = SMA(close, 55)
-    df['ma60'] = SMA(close, 60)
-    df['ma120'] = SMA(close, 120)
-    df['ma144'] = SMA(close, 144)
-    df['ma169'] = SMA(close, 169)
+        if stock_result:
+            ts_code = stock_result[0]
+            print('开始扫描: ', ts_code)
+        else:
+            all_scan_set = True
 
-    df['ema5'] = EMA(close, 5)
-    df['ema10'] = EMA(close, 10)
-    df['ema20'] = EMA(close, 20)
-    df['ema30'] = EMA(close, 30)
-    df['ema34'] = EMA(close, 34)
-    df['ema55'] = EMA(close, 55)
-    df['ema60'] = EMA(close, 60)
-    df['ema120'] = EMA(close, 120)
-    df['ema144'] = EMA(close, 144)
-    df['ema169'] = EMA(close, 169)
+        s = text("select trade_date, open, close, high, low, `change`, pct_chg from daily_candles where ts_code = :ts_code "
+                 + "order by trade_date desc limit 0,500")
+        statement = dailyCandleDao.session.execute(s.params(ts_code=ts_code))
+        df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'change', 'pct_chg'])
+        df = df.sort_values(by='trade_date', ascending=True)
+        close = df.close.to_numpy()
 
-    df['ma5_slope'] = slope(close, 'SMA', 5)
-    df['ma10_slope'] = slope(close, 'SMA', 10)
-    df['ma20_slope'] = slope(close, 'SMA', 20)
-    df['ma30_slope'] = slope(close, 'SMA', 30)
-    df['ma34_slope'] = slope(close, 'SMA', 34)
-    df['ma55_slope'] = slope(close, 'SMA', 55)
-    df['ma60_slope'] = slope(close, 'SMA', 60)
-    df['ma120_slope'] = slope(close, 'SMA', 120)
-    df['ma144_slope'] = slope(close, 'SMA', 144)
-    df['ma169_slope'] = slope(close, 'SMA', 169)
+        df['ts_code'] = ts_code
 
-    df['ema5_slope'] = slope(close, 'EMA', 5)
-    df['ema10_slope'] = slope(close, 'EMA', 10)
-    df['ema20_slope'] = slope(close, 'EMA', 20)
-    df['ema30_slope'] = slope(close, 'EMA', 30)
-    df['ema34_slope'] = slope(close, 'EMA', 34)
-    df['ema55_slope'] = slope(close, 'EMA', 55)
-    df['ema60_slope'] = slope(close, 'EMA', 60)
-    df['ema120_slope'] = slope(close, 'EMA', 120)
-    df['ema144_slope'] = slope(close, 'EMA', 144)
-    df['ema169_slope'] = slope(close, 'EMA', 169)
+        df['ma5'] = SMA(close, 5)
+        df['ma10'] = SMA(close, 10)
+        df['ma20'] = SMA(close, 20)
+        df['ma30'] = SMA(close, 30)
+        df['ma34'] = SMA(close, 34)
+        df['ma55'] = SMA(close, 55)
+        df['ma60'] = SMA(close, 60)
+        df['ma120'] = SMA(close, 120)
+        df['ma144'] = SMA(close, 144)
+        df['ma169'] = SMA(close, 169)
 
-    DIFF, DEA, MACD_BAR = MACD(close)
+        df['ema5'] = EMA(close, 5)
+        df['ema10'] = EMA(close, 10)
+        df['ema20'] = EMA(close, 20)
+        df['ema30'] = EMA(close, 30)
+        df['ema34'] = EMA(close, 34)
+        df['ema55'] = EMA(close, 55)
+        df['ema60'] = EMA(close, 60)
+        df['ema120'] = EMA(close, 120)
+        df['ema144'] = EMA(close, 144)
+        df['ema169'] = EMA(close, 169)
 
-    df['diff'] = DIFF
-    df['dea'] = DEA
-    df['macd'] = MACD_BAR
+        df['ma5_slope'] = slope(close, 'SMA', 5)
+        df['ma10_slope'] = slope(close, 'SMA', 10)
+        df['ma20_slope'] = slope(close, 'SMA', 20)
+        df['ma30_slope'] = slope(close, 'SMA', 30)
+        df['ma34_slope'] = slope(close, 'SMA', 34)
+        df['ma55_slope'] = slope(close, 'SMA', 55)
+        df['ma60_slope'] = slope(close, 'SMA', 60)
+        df['ma120_slope'] = slope(close, 'SMA', 120)
+        df['ma144_slope'] = slope(close, 'SMA', 144)
+        df['ma169_slope'] = slope(close, 'SMA', 169)
 
-    bias6, bias12, bias24, bias60 = bias(close)
-    df['bias6'] = bias6
-    df['bias12'] = bias12
-    df['bias24'] = bias24
-    df['bias60'] = bias60
+        df['ema5_slope'] = slope(close, 'EMA', 5)
+        df['ema10_slope'] = slope(close, 'EMA', 10)
+        df['ema20_slope'] = slope(close, 'EMA', 20)
+        df['ema30_slope'] = slope(close, 'EMA', 30)
+        df['ema34_slope'] = slope(close, 'EMA', 34)
+        df['ema55_slope'] = slope(close, 'EMA', 55)
+        df['ema60_slope'] = slope(close, 'EMA', 60)
+        df['ema120_slope'] = slope(close, 'EMA', 120)
+        df['ema144_slope'] = slope(close, 'EMA', 144)
+        df['ema169_slope'] = slope(close, 'EMA', 169)
 
-    high_td, low_td = td(close)
-    df['high_td'] = high_td
-    df['low_td'] = low_td
+        DIFF, DEA, MACD_BAR = MACD(close)
 
-    # print(df['close'])
-    # print(df['low_td'].to_numpy())
-    # print(df['low_td'])
+        df['diff'] = DIFF
+        df['dea'] = DEA
+        df['macd'] = MACD_BAR
 
-    long_signals(df)
+        bias6, bias12, bias24, bias60 = bias(close)
+        df['bias6'] = bias6
+        df['bias12'] = bias12
+        df['bias24'] = bias24
+        df['bias60'] = bias60
 
-    # dailyLongSignalDao.bulk_insert(df)
+        high_td, low_td = td(close)
+        df['high_td'] = high_td
+        df['low_td'] = low_td
+
+        long_signals(df)
+
+        try:
+            dailyIndicatorDao.bulk_insert(df)
+            dailyLongSignalDao.bulk_insert(df)
+
+            stockDao.update({'ts_code': ts_code, 'scan_date': last_update_date})
+            print('扫描成功: ', ts_code, ', 扫描最新K线时间: ', last_update_date)
+        except Exception as e:
+            print('更新扫描结果 Catch Error:', e)

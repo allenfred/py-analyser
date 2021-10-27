@@ -80,10 +80,11 @@ if __name__ == "__main__":
             except Exception as e:
                 print('Error:', e)
 
-        calendarDao.set_candle_ready('US', item.cal_date)
+        if item:
+            calendarDao.set_candle_ready('US', item.cal_date)
 
-        print('已更新 US daily_candles ', item.cal_date, ': ', totalGotCount, ' 条数据，用时 ',
-              round(time.time() - circle_start, 2), ' s')
+            print('已更新 US daily_candles ', item.cal_date, ': ', totalGotCount, ' 条数据，用时 ',
+                  round(time.time() - circle_start, 2), ' s')
 
     end = time.time()
     print('用时', round(end - start, 2), 's')
