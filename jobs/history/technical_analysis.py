@@ -41,8 +41,8 @@ if __name__ == "__main__":
     stock_result = None
     while not all_scan_set and last_update_date:
         ts_code = ''
-        stock_stmts = stockDao.session.execute(text("select ts_code from stocks where scan_date is null or scan_date"
-                                           " < :scan_date  limit 1").params(scan_date=last_update_date))
+        stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
+                                           " < :scan_date) and exchange != 'BSE'  limit 1").params(scan_date=last_update_date))
         stock_result = stock_stmts.fetchone()
 
         if stock_result:
