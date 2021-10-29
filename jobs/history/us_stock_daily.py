@@ -74,6 +74,7 @@ if __name__ == "__main__":
                 else:
                     offset += len(df)
                 df['exchange'] = 'US'
+                df['pct_chg'] = df['pct_change']
 
                 dailyCandleDao.bulk_insert(df)
 

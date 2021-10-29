@@ -28,12 +28,12 @@ stockLongSignalDao = StockLongSignalDao()
 stockShortSignalDao = StockShortSignalDao()
 
 if __name__ == "__main__":
-    ts_code = '000963.SZ'
+    ts_code = '002466.SZ'
 
-    s = text("select trade_date, open, close, high, low, `change`, pct_chg from daily_candles where ts_code = :ts_code "
+    s = text("select trade_date, open, close, high, low, `change` from daily_candles where ts_code = :ts_code "
              + "order by trade_date desc limit 0,200")
     statement = dailyCandleDao.session.execute(s.params(ts_code=ts_code))
-    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'change', 'pct_chg'])
+    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'change'])
     df = df.sort_values(by='trade_date', ascending=True)
 
     close = df.close.to_numpy()
@@ -104,11 +104,11 @@ if __name__ == "__main__":
 
     try:
         # dailyIndicatorDao.bulk_insert(df)
-        # dailyLongSignalDao.bulk_insert(df)
         df_len = len(df)
         small_df = df.iloc[df_len - 10: df_len]
         item = df.iloc[df_len-1].to_dict()
+        dailyLongSignalDao.bulk_upsert(small_df)
         stockLongSignalDao.upsert(item)
-        # print('扫描成功: ', ts_code, ', 扫描最新K线时间: ', last_update_date)
+        print('扫描成功: ', ts_code, ', 扫描最新K线时间: ', last_update_date)
     except Exception as e:
         print('更新扫描结果 Catch Error:', e)

@@ -422,7 +422,7 @@ def is_ma_up_group(df, row, index):
     # 跳空阳线
     # K线站上ma5/ma10/ma20
     # 昨日K线未站上ma5/ma10/ma20
-    if (row.change >= 5 or row.pct_chg >= 5) and \
+    if row.change >= 5  and \
             row.low > df.iloc[index - 1].high and \
             row.close > row.ma5 and row.close > row.ma10 and row.close > row.ma20 and \
             (df.iloc[index - 1].low < df.iloc[index - 1].ma5 or df.iloc[index - 1].low < df.iloc[index - 1].ma10 or
@@ -438,7 +438,7 @@ def is_ema_up_group(df, row, index):
     # 跳空阳线
     # K线站上ema5/ema10/ema20
     # 昨日K线未站上ema5/ema10/ema20
-    if (row.change >= 5 or row.pct_chg >= 5) and \
+    if row.change >= 5 and \
             row.close > row.ema5 and row.close > row.ema10 and row.close > row.ema20 and \
             row.low > df.iloc[index - 1].high and df.iloc[index - 1].low < df.iloc[index - 1].ema20 and \
             (df.iloc[index - 1].low < df.iloc[index - 1].ema5 or df.iloc[index - 1].low < df.iloc[index - 1].ema10 or
@@ -454,7 +454,7 @@ def is_ma_over_gate(df, row, index):
     # K线站上ma5/ma10/ma20
     # 昨日K线未站上ma5/ma10/ma20
     # 昨日出现均线粘合
-    if (row.change >= 5 or row.pct_chg >= 5) and \
+    if row.change >= 5 and \
             row.close > row.ma5 and row.close > row.ma10 and row.close > row.ma20 and \
             (df.iloc[index - 1].low < df.iloc[index - 1].ma5 or df.iloc[index - 1].low < df.iloc[index - 1].ma10 or
              df.iloc[index - 1].low < df.iloc[index - 1].ma20) and \
@@ -470,7 +470,7 @@ def is_ema_over_gate(df, row, index):
     # K线站上ema5/ema10/ema20
     # 昨日K线未站上ema5/ema10/ema20
     # 昨日出现均线粘合
-    if (row.change >= 5 or row.pct_chg >= 5) and \
+    if row.change >= 5 and \
             row.close > row.ema5 and row.close > row.ema10 and row.close > row.ema20 and \
             (df.iloc[index - 1].low < df.iloc[index - 1].ema5 or df.iloc[index - 1].low < df.iloc[index - 1].ema10 or
              df.iloc[index - 1].low < df.iloc[index - 1].ema20) and \
@@ -514,7 +514,7 @@ def is_ema_hold_moon(df, row, index):
 def is_ma_out_sea(row):
     # 大阳线 贯穿ma5/ma10/ma20
     # ma20 上行
-    if (row.change >= 5 or row.pct_chg >= 5) and \
+    if row.change >= 5  and \
             row.open < row.ma5 and row.open < row.ma10 and row.open < row.ma20 and \
             row.close > row.ma5 and row.close > row.ma10 and row.close > row.ma20 and \
             row.ma20_slope > 0:
@@ -526,7 +526,7 @@ def is_ma_out_sea(row):
 def is_ema_out_sea(row):
     # 大阳线 贯穿ema5/ema10/ema20
     # ema20/ema60 上行
-    if (row.change >= 5 or row.pct_chg >= 5) and \
+    if row.change >= 5 and \
             row.open < row.ema5 and row.open < row.ema10 and row.open < row.ema20 and \
             row.close > row.ema5 and row.close > row.ema10 and row.close > row.ema20 and \
             row.ema20_slope > 0:
