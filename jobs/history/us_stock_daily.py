@@ -68,6 +68,9 @@ if __name__ == "__main__":
                     "turnover_ratio"
                 ])
 
+                print('获取 US daily_candles ', item.cal_date, ': ', len(df), ' 条数据，用时 ',
+                      round(time.time() - circle_start, 2), ' s')
+
                 totalGotCount += len(df)
                 if len(df) < limit:
                     is_last_req = True

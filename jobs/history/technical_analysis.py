@@ -34,9 +34,12 @@ stockLongSignalDao = StockLongSignalDao()
 stockShortSignalDao = StockShortSignalDao()
 
 if __name__ == "__main__":
+    job_start = time.time()
+
     all_scan_set = False
     last_update_date = None
-    candle_stmts = dailyCandleDao.session.execute(text("select trade_date from daily_candles order by trade_date desc limit 1"))
+    candle_stmts = dailyCandleDao.session.execute(
+        text("select trade_date from daily_candles order by trade_date desc limit 1"))
     candle_result = candle_stmts.fetchone()
 
     if candle_result:
@@ -44,10 +47,18 @@ if __name__ == "__main__":
 
     stock_stmts = ''
     stock_result = None
+
     while not all_scan_set and last_update_date:
+        used_time = round(time.time() - job_start, 0)
+        if used_time > 3600 * 4:
+            break
+
+        circle_start = time.time()
+
         ts_code = ''
         stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
-                                           " < :scan_date) and exchange != 'BSE'  limit 1").params(scan_date=last_update_date))
+                                                    " < :scan_date) and exchange != 'BSE'  limit 1").params(
+            scan_date=last_update_date))
         stock_result = stock_stmts.fetchone()
 
         if stock_result:
@@ -58,7 +69,7 @@ if __name__ == "__main__":
 
         s = text("select trade_date, open, close, high, low, `change` from daily_candles where ts_code = :ts_code "
                  + "and trade_date > '2010-01-01' and open is not null and close is not null and high is not null and"
-                   +" low is not null and `change` is not null order by trade_date desc limit 0,500")
+                 + " low is not null and `change` is not null order by trade_date desc limit 0,500")
         statement = dailyCandleDao.session.execute(s.params(ts_code=ts_code))
         df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'change'])
         df = df.sort_values(by='trade_date', ascending=True)
@@ -133,14 +144,17 @@ if __name__ == "__main__":
                 small_df = df.iloc[df_len - 10: df_len]
                 item = df.iloc[df_len - 1].to_dict()
 
-                dailyLongSignalDao.bulk_insert(small_df)
+                dailyLongSignalDao.reset_insert(small_df)
                 stockLongSignalDao.upsert(item)
 
                 stockDao.update({'ts_code': ts_code, 'scan_date': last_update_date})
-                print('扫描成功: ', ts_code, ', 扫描最新K线时间: ', last_update_date)
+                print('扫描成功: ', ts_code, ', 扫描最新K线时间: ', last_update_date, '，用时 ',
+                      round(time.time() - circle_start, 1), ' s')
             except Exception as e:
-                print('更新扫描结果 Catch Error:', e)
                 stockDao.update({'ts_code': ts_code, 'scan_date': last_update_date})
+                print('更新扫描结果 Catch Error:', e, '，用时 ',
+                      round(time.time() - circle_start, 1), ' s')
         else:
             stockDao.update({'ts_code': ts_code, 'scan_date': last_update_date})
-            print('股票代码: ', ts_code, ' 没有行情数据')
+            print('股票代码: ', ts_code, ' 没有行情数据', '，用时 ',
+                  round(time.time() - circle_start, 1), ' s')

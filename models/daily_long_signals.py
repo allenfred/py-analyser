@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, SmallInteger, select
+from sqlalchemy import Column, Integer, String, Date, SmallInteger, select, text
 from sqlalchemy.ext.declarative import declarative_base
 from .db import DBSession
 import pandas as pd
@@ -155,10 +155,8 @@ class DailyLongSignalDao:
             self.session.close()
 
     def bulk_upsert(self, df):
-
         for index, signal in df.iterrows():
             obj = get_obj(signal)
-
             try:
                 row = self.session.query(DailyLongSignal).filter(DailyLongSignal.ts_code == signal['ts_code']).filter(
                     DailyLongSignal.trade_date == signal['trade_date']).first()
@@ -263,3 +261,21 @@ class DailyLongSignalDao:
         self.session.close()
 
         return df
+
+    def reset_insert(self, df):
+        ts_code = df['ts_code'][0]
+        self.session.execute("delete from daily_long_signals where ts_code = :ts_code", {"ts_code": ts_code})
+        items = []
+
+        for index, item in df.iterrows():
+            item = item.to_dict()
+            item = {k: v if not pd.isna(v) else None for k, v in item.items()}
+            items.insert(index, item)
+
+        try:
+            self.session.bulk_insert_mappings(DailyLongSignal, items)
+            self.session.commit()
+        except Exception as e:
+            print('Error:', e)
+
+        self.session.close()
