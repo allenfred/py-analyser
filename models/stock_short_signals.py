@@ -54,8 +54,8 @@ class StockShortSignal(Base):
     ma_spider_2 = Column(SmallInteger)
     ema_spider = Column(SmallInteger)
     ema_spider_2 = Column(SmallInteger)
-    td_8 = Column(SmallInteger)
-    td_9 = Column(SmallInteger)
+    td8 = Column(SmallInteger)
+    td9 = Column(SmallInteger)
 
 
 def get_obj(signal):
@@ -107,8 +107,8 @@ def get_obj(signal):
         ma_spider_2=signal.get('ma_spider_2', None),
         ema_spider=signal.get('ema_spider', None),
         ema_spider_2=signal.get('ema_spider_2', None),
-        td_8=signal.get('td_8', None),
-        td_9=signal.get('td_9', None)
+        td8=signal.get('td8', None),
+        td9=signal.get('td9', None)
     )
 
 
@@ -210,10 +210,10 @@ class StockShortSignalDao:
                     row.ema_spider = obj.ema_spider
                 if obj.ema_spider_2 is not None:
                     row.ema_spider_2 = obj.ema_spider_2
-                if obj.td_8 is not None:
-                    row.td_8 = obj.td_8
-                if obj.td_9 is not None:
-                    row.td_9 = obj.td_9
+                if obj.td8 is not None:
+                    row.td8 = obj.td8
+                if obj.td9 is not None:
+                    row.td9 = obj.td9
 
         except Exception as e:
             print('Error:', e)

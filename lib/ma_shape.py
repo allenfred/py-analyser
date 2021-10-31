@@ -53,8 +53,8 @@ def long_signals(df):
     ema_spider = []
     ema_spider_2 = []
 
-    td_8 = []
-    td_9 = []
+    td8 = []
+    td9 = []
 
     for index, row in df.iterrows():
         # MA30上行
@@ -301,15 +301,15 @@ def long_signals(df):
 
         # TD_8
         if row.low_td == 8:
-            td_8.insert(len(df) - index - 1, 1)
+            td8.insert(len(df) - index - 1, 1)
         else:
-            td_8.insert(len(df) - index - 1, 0)
+            td8.insert(len(df) - index - 1, 0)
 
         # TD_9
         if row.low_td == 9:
-            td_9.insert(len(df) - index - 1, 1)
+            td9.insert(len(df) - index - 1, 1)
         else:
-            td_9.insert(len(df) - index - 1, 0)
+            td9.insert(len(df) - index - 1, 0)
 
     df['ma30_up'] = ma30_up
     df['ema30_up'] = ema30_up
@@ -354,8 +354,8 @@ def long_signals(df):
     df['ma_spider_2'] = ma_spider_2
     df['ema_spider'] = ema_spider
     df['ema_spider_2'] = ema_spider_2
-    df['td_8'] = td_8
-    df['td_9'] = td_9
+    df['td8'] = td8
+    df['td9'] = td9
 
     set_ma_silver_valley(df)
     set_ema_silver_valley(df)
@@ -363,7 +363,7 @@ def long_signals(df):
     set_ema_gold_valley(df)
 
     # print(short_ma_arrange_1)
-    # print(math.max(df['td_8']))
+    # print(math.max(df['td8']))
     # print(df['ma_silver_valley'][50:100].max())
     # print('silver valley')
     # print(df['ma_silver_valley'].to_numpy())
@@ -374,8 +374,8 @@ def long_signals(df):
 def is_ma_spider(df, row, index):
     # 昨日ma5/ma10/ma20交叉于一点
     # 今日ma5/ma10/ma20多头发散
-    if df.iloc[len(df) - index - 1 - 1].ma5 == df.iloc[len(df) - index - 1 - 1].ma10 == df.iloc[len(df) - index - 1 - 1].ma20 and \
-            row.ma5 > row.ma10 > row.ma20:
+    if df.iloc[len(df) - index - 1 - 1].ma5 == df.iloc[len(df) - index - 1 - 1].ma10 == \
+            df.iloc[len(df) - index - 1 - 1].ma20 and row.ma5 > row.ma10 > row.ma20:
         return True
     else:
         return False
@@ -384,7 +384,8 @@ def is_ma_spider(df, row, index):
 def is_ma_spider2(df, row, index):
     # 昨日ma5/ma10/ma20/ma30交叉于一点
     # 今日ma5/ma10/ma20/ma30多头发散
-    if df.iloc[len(df) - index - 1 - 1].ma5 == df.iloc[len(df) - index - 1 - 1].ma10 == df.iloc[len(df) - index - 1 - 1].ma20 == df.iloc[len(df) - index - 1 - 1].ma30 and \
+    if df.iloc[len(df) - index - 1 - 1].ma5 == df.iloc[len(df) - index - 1 - 1].ma10 == \
+            df.iloc[len(df) - index - 1 - 1].ma20 == df.iloc[len(df) - index - 1 - 1].ma30 and \
             row.ma5 > row.ma10 > row.ma20 > row.ma30:
         return True
     else:
@@ -404,7 +405,8 @@ def is_ema_spider(df, row, index):
 def is_ema_spider2(df, row, index):
     # 昨日ema5/ema10/ema20/ema30交叉于一点
     # 今日ema5/ema10/ema20/ema30多头发散
-    if df.iloc[len(df) - index - 1 - 1].ema5 == df.iloc[len(df) - index - 1 - 1].ema10 == df.iloc[len(df) - index - 1 - 1].ema20 == df.iloc[len(df) - index - 1 - 1].ema30 and \
+    if df.iloc[len(df) - index - 1 - 1].ema5 == df.iloc[len(df) - index - 1 - 1].ema10 == \
+            df.iloc[len(df) - index - 1 - 1].ema20 == df.iloc[len(df) - index - 1 - 1].ema30 and \
             row.ema5 > row.ema10 > row.ema20 > row.ema30:
         return True
     else:
@@ -419,9 +421,11 @@ def is_ma_up_group(df, row, index):
     if row.change >= 5  and \
             row.low > df.iloc[len(df) - index - 1 - 1].high and \
             row.close > row.ma5 and row.close > row.ma10 and row.close > row.ma20 and \
-            (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma5 or df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma10 or
+            (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma5 or
+             df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma10 or
              df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma20) and \
-            (df.iloc[len(df) - index - 1 - 1].open < df.iloc[len(df) - index - 1 - 1].ma20 or df.iloc[len(df) - index - 1 - 1].close < df.iloc[len(df) - index - 1 - 1].ma20):
+            (df.iloc[len(df) - index - 1 - 1].open < df.iloc[len(df) - index - 1 - 1].ma20 or
+             df.iloc[len(df) - index - 1 - 1].close < df.iloc[len(df) - index - 1 - 1].ma20):
         return True
     else:
         return False
@@ -434,10 +438,13 @@ def is_ema_up_group(df, row, index):
     # 昨日K线未站上ema5/ema10/ema20
     if row.change >= 5 and \
             row.close > row.ema5 and row.close > row.ema10 and row.close > row.ema20 and \
-            row.low > df.iloc[len(df) - index - 1 - 1].high and df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema20 and \
-            (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema5 or df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema10 or
+            row.low > df.iloc[len(df) - index - 1 - 1].high and \
+            df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema20 and \
+            (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema5 or
+             df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema10 or
              df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema20) and \
-            (df.iloc[len(df) - index - 1 - 1].open < df.iloc[len(df) - index - 1 - 1].ema20 or df.iloc[len(df) - index - 1 - 1].close < df.iloc[len(df) - index - 1 - 1].ema20):
+            (df.iloc[len(df) - index - 1 - 1].open < df.iloc[len(df) - index - 1 - 1].ema20 or
+             df.iloc[len(df) - index - 1 - 1].close < df.iloc[len(df) - index - 1 - 1].ema20):
         return True
     else:
         return False
@@ -450,9 +457,11 @@ def is_ma_over_gate(df, row, index):
     # 昨日出现均线粘合
     if row.change >= 5 and \
             row.close > row.ma5 and row.close > row.ma10 and row.close > row.ma20 and \
-            (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma5 or df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma10 or
+            (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma5 or
+             df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma10 or
              df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma20) and \
-            df.iloc[len(df) - index - 1 - 1].ma20_slope > 0 and df.iloc[len(df) - index - 1 - 1].ma5 > df.iloc[len(df) - index - 1 - 1].ma20 and \
+            df.iloc[len(df) - index - 1 - 1].ma20_slope > 0 and \
+            df.iloc[len(df) - index - 1 - 1].ma5 > df.iloc[len(df) - index - 1 - 1].ma20 and \
             df.iloc[len(df) - index - 1 - 1].ma10 > df.iloc[len(df) - index - 1 - 1].ma20:
         return True
     else:
@@ -466,9 +475,11 @@ def is_ema_over_gate(df, row, index):
     # 昨日出现均线粘合
     if row.change >= 5 and \
             row.close > row.ema5 and row.close > row.ema10 and row.close > row.ema20 and \
-            (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema5 or df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema10 or
+            (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema5 or
+             df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema10 or
              df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema20) and \
-            df.iloc[len(df) - index - 1 - 1].ema20_slope > 0 and df.iloc[len(df) - index - 1 - 1].ema5 > df.iloc[len(df) - index - 1 - 1].ema20 and \
+            df.iloc[len(df) - index - 1 - 1].ema20_slope > 0 and \
+            df.iloc[len(df) - index - 1 - 1].ema5 > df.iloc[len(df) - index - 1 - 1].ema20 and \
             df.iloc[len(df) - index - 1 - 1].ema10 > df.iloc[len(df) - index - 1 - 1].ema20:
         return True
     else:
@@ -481,10 +492,13 @@ def is_ma_hold_moon(df, row, index):
     # ma20/ma60 上行
     if (row.low < row.ma5 or row.low < row.ma10 or row.low < row.ma20) and row.ma5 > row.ma20 and \
             row.ma10 > row.ma20 and \
-            (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma5 or df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma10 or
+            (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma5 or
+             df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma10 or
              df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma20) and \
-            df.iloc[len(df) - index - 1 - 1].ma20_slope > 0 and df.iloc[len(df) - index - 1 - 1].ma5 > df.iloc[len(df) - index - 1 - 1].ma20 and \
-            df.iloc[len(df) - index - 1 - 1].ma10 > df.iloc[len(df) - index - 1 - 1].ma20 and row.ma20_slope > 0 and row.ma60_slope > 0:
+            df.iloc[len(df) - index - 1 - 1].ma20_slope > 0 and \
+            df.iloc[len(df) - index - 1 - 1].ma5 > df.iloc[len(df) - index - 1 - 1].ma20 and \
+            df.iloc[len(df) - index - 1 - 1].ma10 > df.iloc[len(df) - index - 1 - 1].ma20 and \
+            row.ma20_slope > 0 and row.ma60_slope > 0:
         return True
     else:
         return False
@@ -496,10 +510,13 @@ def is_ema_hold_moon(df, row, index):
     # ema20/ema60 上行
     if (row.low < row.ema5 or row.low < row.ema10 or row.low < row.ema20) and row.ema5 > row.ema20 and \
             row.ema10 > row.ema20 and \
-            (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema5 or df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema10 or
+            (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema5 or
+             df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema10 or
              df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema20) and \
-            df.iloc[len(df) - index - 1 - 1].ema20_slope > 0 and df.iloc[len(df) - index - 1 - 1].ema5 > df.iloc[len(df) - index - 1 - 1].ema20 and \
-            df.iloc[len(df) - index - 1 - 1].ema10 > df.iloc[len(df) - index - 1 - 1].ema20 and row.ema20_slope > 0 and row.ema60_slope > 0:
+            df.iloc[len(df) - index - 1 - 1].ema20_slope > 0 and \
+            df.iloc[len(df) - index - 1 - 1].ema5 > df.iloc[len(df) - index - 1 - 1].ema20 and \
+            df.iloc[len(df) - index - 1 - 1].ema10 > df.iloc[len(df) - index - 1 - 1].ema20 and \
+            row.ema20_slope > 0 and row.ema60_slope > 0:
         return True
     else:
         return False
@@ -648,7 +665,8 @@ def set_ma_gold_valley(df):
             if df['ma_gold_cross_3'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
                 gold_cross_cnt += 1
 
-            if df['ma_silver_valley'][len(df) - index - 1 - 30: len(df) - index - 1].max() == 1 and gold_cross_cnt >= 2 and \
+            if df['ma_silver_valley'][len(df) - index - 1 - 30: len(df) - index - 1].max() == 1 and \
+                    gold_cross_cnt >= 2 and \
                     df.iloc[len(df) - index - 1 - 30].ma20 < row.ma20 and row.ma20_slope > 0:
                 ma_gold_valley.insert(len(df) - index - 1, 1)
             else:
@@ -672,7 +690,8 @@ def set_ema_gold_valley(df):
             if df['ema_gold_cross_3'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
                 gold_cross_cnt += 1
 
-            if df['ema_silver_valley'][len(df) - index - 1 - 30: len(df) - index - 1].max() == 1 and gold_cross_cnt >= 2 and \
+            if df['ema_silver_valley'][len(df) - index - 1 - 30: len(df) - index - 1].max() == 1 and \
+                    gold_cross_cnt >= 2 and \
                     df.iloc[len(df) - index - 1 - 30].ema20 < row.ema20 and row.ema20_slope > 0:
                 ema_gold_valley.insert(len(df) - index - 1, 1)
             else:

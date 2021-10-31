@@ -175,8 +175,8 @@ CREATE TABLE `daily_long_signals` (
   `ma_spider_2` tinyint(2) COMMENT 'MA金蜘蛛(5/10/20/30)',
   `ema_spider` tinyint(2) COMMENT 'EMA金蜘蛛(5/10/20)',
   `ema_spider_2` tinyint(2) COMMENT 'EMA金蜘蛛(5/10/20/30)',
-  `td_8` tinyint(2),
-  `td_9` tinyint(2)
+  `td8` tinyint(2),
+  `td9` tinyint(2)
 );
 
 CREATE TABLE `daily_short_signals` (
@@ -225,8 +225,8 @@ CREATE TABLE `daily_short_signals` (
   `ma_spider_2` tinyint(2) COMMENT 'MA毒蜘蛛(5/10/20/30)',
   `ema_spider` tinyint(2) COMMENT 'EMA毒蜘蛛(5/10/20)',
   `ema_spider_2` tinyint(2) COMMENT 'EMA毒蜘蛛(5/10/20/30)',
-  `td_8` tinyint(2),
-  `td_9` tinyint(2)
+  `td8` tinyint(2),
+  `td9` tinyint(2)
 );
 
 CREATE TABLE `stock_long_signals` (
@@ -274,8 +274,8 @@ CREATE TABLE `stock_long_signals` (
   `ma_spider_2` tinyint(2) COMMENT 'MA金蜘蛛(5/10/20/30)',
   `ema_spider` tinyint(2) COMMENT 'EMA金蜘蛛(5/10/20)',
   `ema_spider_2` tinyint(2) COMMENT 'EMA金蜘蛛(5/10/20/30)',
-  `td_8` tinyint(2),
-  `td_9` tinyint(2)
+  `td8` tinyint(2),
+  `td9` tinyint(2)
 );
 
 CREATE TABLE `stock_short_signals` (
@@ -323,8 +323,8 @@ CREATE TABLE `stock_short_signals` (
   `ma_spider_2` tinyint(2) COMMENT 'MA毒蜘蛛(5/10/20/30)',
   `ema_spider` tinyint(2) COMMENT 'EMA毒蜘蛛(5/10/20)',
   `ema_spider_2` tinyint(2) COMMENT 'EMA毒蜘蛛(5/10/20/30)',
-  `td_8` tinyint(2),
-  `td_9` tinyint(2)
+  `td8` tinyint(2),
+  `td9` tinyint(2)
 );
 
 
