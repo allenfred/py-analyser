@@ -34,12 +34,12 @@ stockLongSignalDao = StockLongSignalDao()
 stockShortSignalDao = StockShortSignalDao()
 
 if __name__ == "__main__":
-    ts_code = '301000.SZ'
+    ts_code = '600030.SH'
 
-    s = text("select trade_date, open, close, high, low, `change` from daily_candles where ts_code = :ts_code "
+    s = text("select trade_date, open, close, high, low, `pct_chg` from daily_candles where ts_code = :ts_code "
              + "order by trade_date desc limit 0,200")
     statement = dailyCandleDao.session.execute(s.params(ts_code=ts_code))
-    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'change'])
+    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
     df = df.sort_values(by='trade_date', ascending=True)
 
     close = df.close.to_numpy()

@@ -210,7 +210,7 @@ class StockLongSignalDao:
                     row.ema_spider_2 = obj.ema_spider_2
                 if obj.td8 is not None:
                     row.td8 = obj.td8
-                if obj.td_9 is not None:
+                if obj.td9 is not None:
                     row.td9 = obj.td9
 
         except Exception as e:

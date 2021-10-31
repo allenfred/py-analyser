@@ -5,47 +5,32 @@ from config.common import TS_TOKEN
 pro = ts.pro_api(TS_TOKEN)
 
 
-def get_cn_candles(ts_code):
-    is_not_last_req = True
-    sum_df = pd.DataFrame(data={})
-    limit = 5000
-    offset = 0
+def get_cn_candles(options):
+    if options.get("ts_code") is None:
+        return
 
-    while is_not_last_req:
+    df = pro.daily(**{
+        "ts_code": options.get("ts_code", ""),
+        "trade_date": options.get("trade_date", ""),
+        "start_date": options.get("start_date", ""),
+        "end_date": options.get("end_date", ""),
+        "offset": options.get("offset", 0),
+        "limit":  options.get("limit", 5000)
+    }, fields=[
+        "ts_code",
+        "trade_date",
+        "open",
+        "high",
+        "low",
+        "close",
+        "pre_close",
+        "change",
+        "pct_chg",
+        "vol",
+        "amount"
+    ])
 
-        # 拉取日线数据
-        df = pro.daily(**{
-            "ts_code": ts_code,
-            "trade_date": "",
-            "start_date": "",
-            "end_date": "",
-            "offset": offset,
-            "limit": limit
-        }, fields=[
-            "ts_code",
-            "trade_date",
-            "open",
-            "high",
-            "low",
-            "close",
-            "pre_close",
-            "change",
-            "pct_chg",
-            "vol",
-            "amount"
-        ])
-
-        if len(df) < limit:
-            is_not_last_req = False
-        else:
-            offset += len(df)
-
-        if len(sum_df) > 0:
-            sum_df.append(df)
-        else:
-            sum_df = df
-
-    return sum_df
+    return df
 
 
 def get_hk_candles(ts_code):

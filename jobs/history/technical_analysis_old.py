@@ -37,9 +37,18 @@ if __name__ == "__main__":
     job_start = time.time()
 
     all_scan_set = False
-    today = datetime.now().strftime("%Y-%m-%d")
+    last_update_date = None
+    candle_stmts = dailyCandleDao.session.execute(
+        text("select trade_date from daily_candles order by trade_date desc limit 1"))
+    candle_result = candle_stmts.fetchone()
 
-    while not all_scan_set:
+    if candle_result:
+        last_update_date = candle_result[0]
+
+    stock_stmts = ''
+    stock_result = None
+
+    while not all_scan_set and last_update_date:
         used_time = round(time.time() - job_start, 0)
         if used_time > 3600 * 4:
             break
@@ -49,7 +58,7 @@ if __name__ == "__main__":
         ts_code = ''
         stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
                                                     " < :scan_date) and exchange != 'BSE'  limit 1").params(
-            scan_date=today))
+            scan_date=last_update_date))
         stock_result = stock_stmts.fetchone()
 
         if stock_result:
@@ -139,14 +148,14 @@ if __name__ == "__main__":
                 dailyLongSignalDao.reset_insert(small_df)
                 stockLongSignalDao.upsert(item)
 
-                stockDao.update({'ts_code': ts_code, 'scan_date': today})
-                print('扫描成功: ', ts_code, ', 扫描最新K线时间: ', today, '，用时 ',
+                stockDao.update({'ts_code': ts_code, 'scan_date': last_update_date})
+                print('扫描成功: ', ts_code, ', 扫描最新K线时间: ', last_update_date, '，用时 ',
                       round(time.time() - circle_start, 1), ' s')
             except Exception as e:
-                stockDao.update({'ts_code': ts_code, 'scan_date': today})
+                stockDao.update({'ts_code': ts_code, 'scan_date': last_update_date})
                 print('更新扫描结果 Catch Error:', e, '，用时 ',
                       round(time.time() - circle_start, 1), ' s')
         else:
-            stockDao.update({'ts_code': ts_code, 'scan_date': today})
+            stockDao.update({'ts_code': ts_code, 'scan_date': last_update_date})
             print('股票代码: ', ts_code, ' 没有行情数据', '，用时 ',
                   round(time.time() - circle_start, 1), ' s')

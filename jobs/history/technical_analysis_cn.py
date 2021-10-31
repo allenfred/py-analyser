@@ -48,7 +48,8 @@ if __name__ == "__main__":
 
         ts_code = ''
         stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
-                                                    " < :scan_date) and exchange != 'BSE'  limit 1").params(
+                                                    " < :scan_date) and "
+                                                    "(exchange = 'SSE' or exchange = 'SZSE')  limit 1").params(
             scan_date=today))
         stock_result = stock_stmts.fetchone()
 
@@ -60,7 +61,7 @@ if __name__ == "__main__":
 
         s = text("select trade_date, open, close, high, low, pct_chg from daily_candles where ts_code = :ts_code "
                  + "and trade_date > '2015-01-01' and open is not null and close is not null and high is not null and"
-                 + " low is not null and `change` is not null and pct_chg is not null "
+                 + " low is not null "
                  + "order by trade_date desc limit 0,500")
         statement = dailyCandleDao.session.execute(s.params(ts_code=ts_code))
         df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])

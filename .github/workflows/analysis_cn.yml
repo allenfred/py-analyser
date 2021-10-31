@@ -1,4 +1,4 @@
-name: Technical Analysis
+name: Technical Analysis CN
 
 on:
 #  schedule:
@@ -24,4 +24,4 @@ jobs:
         sudo -s
         echo "include /usr/local/lib" >> /etc/ld.so.conf
         ldconfig
-        python jobs/history/technical_analysis.py
+        python jobs/history/technical_analysis_cn.py

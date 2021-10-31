@@ -395,7 +395,8 @@ def is_ma_spider2(df, row, index):
 def is_ema_spider(df, row, index):
     # 昨日ema5/ema10/ema20交叉于一点
     # 今日ema5/ema10/ema20多头发散
-    if df.iloc[len(df) - index - 1 - 1].ema5 == df.iloc[len(df) - index - 1 - 1].ema10 == df.iloc[len(df) - index - 1 - 1].ema20 and \
+    if df.iloc[len(df) - index - 1 - 1].ema5 == df.iloc[len(df) - index - 1 - 1].ema10 \
+            == df.iloc[len(df) - index - 1 - 1].ema20 and \
             row.ema5 > row.ema10 > row.ema20:
         return True
     else:
@@ -418,7 +419,7 @@ def is_ma_up_group(df, row, index):
     # 跳空阳线
     # K线站上ma5/ma10/ma20
     # 昨日K线未站上ma5/ma10/ma20
-    if row.change >= 5  and \
+    if row.pct_chg >= 4 and \
             row.low > df.iloc[len(df) - index - 1 - 1].high and \
             row.close > row.ma5 and row.close > row.ma10 and row.close > row.ma20 and \
             (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma5 or
@@ -436,7 +437,7 @@ def is_ema_up_group(df, row, index):
     # 跳空阳线
     # K线站上ema5/ema10/ema20
     # 昨日K线未站上ema5/ema10/ema20
-    if row.change >= 5 and \
+    if row.pct_chg >= 4 and \
             row.close > row.ema5 and row.close > row.ema10 and row.close > row.ema20 and \
             row.low > df.iloc[len(df) - index - 1 - 1].high and \
             df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema20 and \
@@ -455,7 +456,7 @@ def is_ma_over_gate(df, row, index):
     # K线站上ma5/ma10/ma20
     # 昨日K线未站上ma5/ma10/ma20
     # 昨日出现均线粘合
-    if row.change >= 5 and \
+    if row.pct_chg >= 4 and \
             row.close > row.ma5 and row.close > row.ma10 and row.close > row.ma20 and \
             (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma5 or
              df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ma10 or
@@ -473,7 +474,7 @@ def is_ema_over_gate(df, row, index):
     # K线站上ema5/ema10/ema20
     # 昨日K线未站上ema5/ema10/ema20
     # 昨日出现均线粘合
-    if row.change >= 5 and \
+    if row.pct_chg >= 4 and \
             row.close > row.ema5 and row.close > row.ema10 and row.close > row.ema20 and \
             (df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema5 or
              df.iloc[len(df) - index - 1 - 1].low < df.iloc[len(df) - index - 1 - 1].ema10 or
@@ -525,10 +526,10 @@ def is_ema_hold_moon(df, row, index):
 def is_ma_out_sea(row):
     # 大阳线 贯穿ma5/ma10/ma20
     # ma20 上行
-    if row.change >= 5 and \
+    if row.pct_chg >= 4 and \
             row.open < row.ma5 and row.open < row.ma10 and row.open < row.ma20 and \
             row.close > row.ma5 and row.close > row.ma10 and row.close > row.ma20 and \
-            row.ma20_slope > 0:
+            row.ma60_slope > 0:
         return True
     else:
         return False
@@ -537,10 +538,10 @@ def is_ma_out_sea(row):
 def is_ema_out_sea(row):
     # 大阳线 贯穿ema5/ema10/ema20
     # ema20/ema60 上行
-    if row.change >= 5 and \
+    if row.pct_chg >= 4 and \
             row.open < row.ema5 and row.open < row.ema10 and row.open < row.ema20 and \
             row.close > row.ema5 and row.close > row.ema10 and row.close > row.ema20 and \
-            row.ema20_slope > 0:
+            row.ema60_slope > 0:
         return True
     else:
         return False
