@@ -20,24 +20,24 @@ class StockLongSignal(Base):
     ema120_up = Column(SmallInteger)
     ma_arrange = Column(SmallInteger)
     ema_arrange = Column(SmallInteger)
-    short_ma_arrange_1 = Column(SmallInteger)
-    short_ma_arrange_2 = Column(SmallInteger)
-    short_ema_arrange_1 = Column(SmallInteger)
-    short_ema_arrange_2 = Column(SmallInteger)
-    middle_ma_arrange_1 = Column(SmallInteger)
-    middle_ma_arrange_2 = Column(SmallInteger)
-    middle_ema_arrange_1 = Column(SmallInteger)
-    middle_ema_arrange_2 = Column(SmallInteger)
-    long_ma_arrange_1 = Column(SmallInteger)
-    long_ma_arrange_2 = Column(SmallInteger)
-    long_ema_arrange_1 = Column(SmallInteger)
-    long_ema_arrange_2 = Column(SmallInteger)
-    ma_gold_cross_1 = Column(SmallInteger)
-    ma_gold_cross_2 = Column(SmallInteger)
-    ma_gold_cross_3 = Column(SmallInteger)
-    ema_gold_cross_1 = Column(SmallInteger)
-    ema_gold_cross_2 = Column(SmallInteger)
-    ema_gold_cross_3 = Column(SmallInteger)
+    short_ma_arrange1 = Column(SmallInteger)
+    short_ma_arrange2 = Column(SmallInteger)
+    short_ema_arrange1 = Column(SmallInteger)
+    short_ema_arrange2 = Column(SmallInteger)
+    middle_ma_arrange1 = Column(SmallInteger)
+    middle_ma_arrange2 = Column(SmallInteger)
+    middle_ema_arrange1 = Column(SmallInteger)
+    middle_ema_arrange2 = Column(SmallInteger)
+    long_ma_arrange1 = Column(SmallInteger)
+    long_ma_arrange2 = Column(SmallInteger)
+    long_ema_arrange1 = Column(SmallInteger)
+    long_ema_arrange2 = Column(SmallInteger)
+    ma_gold_cross1 = Column(SmallInteger)
+    ma_gold_cross2 = Column(SmallInteger)
+    ma_gold_cross3 = Column(SmallInteger)
+    ema_gold_cross1 = Column(SmallInteger)
+    ema_gold_cross2 = Column(SmallInteger)
+    ema_gold_cross3 = Column(SmallInteger)
     ma_silver_valley = Column(SmallInteger)
     ema_silver_valley = Column(SmallInteger)
     ma_gold_valley = Column(SmallInteger)
@@ -51,9 +51,9 @@ class StockLongSignal(Base):
     ma_up_group = Column(SmallInteger)
     ema_up_group = Column(SmallInteger)
     ma_spider = Column(SmallInteger)
-    ma_spider_2 = Column(SmallInteger)
+    ma_spider2 = Column(SmallInteger)
     ema_spider = Column(SmallInteger)
-    ema_spider_2 = Column(SmallInteger)
+    ema_spider2 = Column(SmallInteger)
     td8 = Column(SmallInteger)
     td9 = Column(SmallInteger)
 
@@ -72,24 +72,24 @@ def get_obj(signal):
         ema120_up=signal.get('ema120_up', None),
         ma_arrange=signal.get('ma_arrange', None),
         ema_arrange=signal.get('ema_arrange', None),
-        short_ma_arrange_1=signal.get('short_ma_arrange_1', None),
-        short_ma_arrange_2=signal.get('short_ma_arrange_2', None),
-        short_ema_arrange_1=signal.get('short_ema_arrange_1', None),
-        short_ema_arrange_2=signal.get('short_ema_arrange_2', None),
-        middle_ma_arrange_1=signal.get('middle_ma_arrange_1', None),
-        middle_ma_arrange_2=signal.get('middle_ma_arrange_2', None),
-        middle_ema_arrange_1=signal.get('middle_ema_arrange_1', None),
-        middle_ema_arrange_2=signal.get('middle_ema_arrange_2', None),
-        long_ma_arrange_1=signal.get('long_ma_arrange_1', None),
-        long_ma_arrange_2=signal.get('long_ma_arrange_2', None),
-        long_ema_arrange_1=signal.get('long_ema_arrange_1', None),
-        long_ema_arrange_2=signal.get('long_ema_arrange_2', None),
-        ma_gold_cross_1=signal.get('ma_gold_cross_1', None),
-        ma_gold_cross_2=signal.get('ma_gold_cross_2', None),
-        ma_gold_cross_3=signal.get('ma_gold_cross_3', None),
-        ema_gold_cross_1=signal.get('ema_gold_cross_1', None),
-        ema_gold_cross_2=signal.get('ema_gold_cross_2', None),
-        ema_gold_cross_3=signal.get('ema_gold_cross_3', None),
+        short_ma_arrange1=signal.get('short_ma_arrange1', None),
+        short_ma_arrange2=signal.get('short_ma_arrange2', None),
+        short_ema_arrange1=signal.get('short_ema_arrange1', None),
+        short_ema_arrange2=signal.get('short_ema_arrange2', None),
+        middle_ma_arrange1=signal.get('middle_ma_arrange1', None),
+        middle_ma_arrange2=signal.get('middle_ma_arrange2', None),
+        middle_ema_arrange1=signal.get('middle_ema_arrange1', None),
+        middle_ema_arrange2=signal.get('middle_ema_arrange2', None),
+        long_ma_arrange1=signal.get('long_ma_arrange1', None),
+        long_ma_arrange2=signal.get('long_ma_arrange2', None),
+        long_ema_arrange1=signal.get('long_ema_arrange1', None),
+        long_ema_arrange2=signal.get('long_ema_arrange2', None),
+        ma_gold_cross1=signal.get('ma_gold_cross1', None),
+        ma_gold_cross2=signal.get('ma_gold_cross2', None),
+        ma_gold_cross3=signal.get('ma_gold_cross3', None),
+        ema_gold_cross1=signal.get('ema_gold_cross1', None),
+        ema_gold_cross2=signal.get('ema_gold_cross2', None),
+        ema_gold_cross3=signal.get('ema_gold_cross3', None),
         ma_silver_valley=signal.get('ma_silver_valley', None),
         ema_silver_valley=signal.get('ema_silver_valley', None),
         ma_gold_valley=signal.get('ma_gold_valley', None),
@@ -103,9 +103,9 @@ def get_obj(signal):
         ma_up_group=signal.get('ma_up_group', None),
         ema_up_group=signal.get('ema_up_group', None),
         ma_spider=signal.get('ma_spider', None),
-        ma_spider_2=signal.get('ma_spider_2', None),
+        ma_spider2=signal.get('ma_spider2', None),
         ema_spider=signal.get('ema_spider', None),
-        ema_spider_2=signal.get('ema_spider_2', None),
+        ema_spider2=signal.get('ema_spider2', None),
         td8=signal.get('td8', None),
         td9=signal.get('td9', None)
     )
@@ -140,42 +140,42 @@ class StockLongSignalDao:
                     row.ma_arrange = obj.ma_arrange
                 if obj.ema_arrange is not None:
                     row.ema_arrange = obj.ema_arrange
-                if obj.short_ma_arrange_1 is not None:
-                    row.short_ma_arrange_1 = obj.short_ma_arrange_1
-                if obj.short_ma_arrange_2 is not None:
-                    row.short_ma_arrange_2 = obj.short_ma_arrange_2
-                if obj.short_ema_arrange_1 is not None:
-                    row.short_ema_arrange_1 = obj.short_ema_arrange_1
-                if obj.short_ema_arrange_2 is not None:
-                    row.short_ema_arrange_2 = obj.short_ema_arrange_2
-                if obj.middle_ma_arrange_1 is not None:
-                    row.middle_ma_arrange_1 = obj.middle_ma_arrange_1
-                if obj.middle_ma_arrange_2 is not None:
-                    row.middle_ma_arrange_2 = obj.middle_ma_arrange_2
-                if obj.middle_ema_arrange_1 is not None:
-                    row.middle_ema_arrange_1 = obj.middle_ema_arrange_1
-                if obj.middle_ema_arrange_2 is not None:
-                    row.middle_ema_arrange_2 = obj.middle_ema_arrange_2
-                if obj.long_ma_arrange_1 is not None:
-                    row.long_ma_arrange_1 = obj.long_ma_arrange_1
-                if obj.long_ma_arrange_2 is not None:
-                    row.long_ma_arrange_2 = obj.long_ma_arrange_2
-                if obj.long_ema_arrange_1 is not None:
-                    row.long_ema_arrange_1 = obj.long_ema_arrange_1
-                if obj.long_ema_arrange_2 is not None:
-                    row.long_ema_arrange_2 = obj.long_ema_arrange_2
-                if obj.ma_gold_cross_1 is not None:
-                    row.ma_gold_cross_1 = obj.ma_gold_cross_1
-                if obj.ma_gold_cross_2 is not None:
-                    row.ma_gold_cross_2 = obj.ma_gold_cross_2
-                if obj.ma_gold_cross_3 is not None:
-                    row.ma_gold_cross_3 = obj.ma_gold_cross_3
-                if obj.ema_gold_cross_1 is not None:
-                    row.ema_gold_cross_1 = obj.ema_gold_cross_1
-                if obj.ema_gold_cross_2 is not None:
-                    row.ema_gold_cross_2 = obj.ema_gold_cross_2
-                if obj.ema_gold_cross_3 is not None:
-                    row.ema_gold_cross_3 = obj.ema_gold_cross_3
+                if obj.short_ma_arrange1 is not None:
+                    row.short_ma_arrange1 = obj.short_ma_arrange1
+                if obj.short_ma_arrange2 is not None:
+                    row.short_ma_arrange2 = obj.short_ma_arrange2
+                if obj.short_ema_arrange1 is not None:
+                    row.short_ema_arrange1 = obj.short_ema_arrange1
+                if obj.short_ema_arrange2 is not None:
+                    row.short_ema_arrange2 = obj.short_ema_arrange2
+                if obj.middle_ma_arrange1 is not None:
+                    row.middle_ma_arrange1 = obj.middle_ma_arrange1
+                if obj.middle_ma_arrange2 is not None:
+                    row.middle_ma_arrange2 = obj.middle_ma_arrange2
+                if obj.middle_ema_arrange1 is not None:
+                    row.middle_ema_arrange1 = obj.middle_ema_arrange1
+                if obj.middle_ema_arrange2 is not None:
+                    row.middle_ema_arrange2 = obj.middle_ema_arrange2
+                if obj.long_ma_arrange1 is not None:
+                    row.long_ma_arrange1 = obj.long_ma_arrange1
+                if obj.long_ma_arrange2 is not None:
+                    row.long_ma_arrange2 = obj.long_ma_arrange2
+                if obj.long_ema_arrange1 is not None:
+                    row.long_ema_arrange1 = obj.long_ema_arrange1
+                if obj.long_ema_arrange2 is not None:
+                    row.long_ema_arrange2 = obj.long_ema_arrange2
+                if obj.ma_gold_cross1 is not None:
+                    row.ma_gold_cross1 = obj.ma_gold_cross1
+                if obj.ma_gold_cross2 is not None:
+                    row.ma_gold_cross2 = obj.ma_gold_cross2
+                if obj.ma_gold_cross3 is not None:
+                    row.ma_gold_cross3 = obj.ma_gold_cross3
+                if obj.ema_gold_cross1 is not None:
+                    row.ema_gold_cross1 = obj.ema_gold_cross1
+                if obj.ema_gold_cross2 is not None:
+                    row.ema_gold_cross2 = obj.ema_gold_cross2
+                if obj.ema_gold_cross3 is not None:
+                    row.ema_gold_cross3 = obj.ema_gold_cross3
                 if obj.ma_silver_valley is not None:
                     row.ma_silver_valley = obj.ma_silver_valley
                 if obj.ema_silver_valley is not None:
@@ -202,12 +202,12 @@ class StockLongSignalDao:
                     row.ema_up_group = obj.ema_up_group
                 if obj.ma_spider is not None:
                     row.ma_spider = obj.ma_spider
-                if obj.ma_spider_2 is not None:
-                    row.ma_spider_2 = obj.ma_spider_2
+                if obj.ma_spider2 is not None:
+                    row.ma_spider2 = obj.ma_spider2
                 if obj.ema_spider is not None:
                     row.ema_spider = obj.ema_spider
-                if obj.ema_spider_2 is not None:
-                    row.ema_spider_2 = obj.ema_spider_2
+                if obj.ema_spider2 is not None:
+                    row.ema_spider2 = obj.ema_spider2
                 if obj.td8 is not None:
                     row.td8 = obj.td8
                 if obj.td9 is not None:
