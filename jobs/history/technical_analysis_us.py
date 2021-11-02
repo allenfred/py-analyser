@@ -6,7 +6,7 @@ sys.path.append(path)
 
 import pandas as pd
 from models.db import DBSession
-from models.daily_candles import DailyCandleDao
+from models.us_daily_candles import USDailyCandleDao
 from models.daily_indicators import DailyIndicatorDao
 from models.daily_long_signals import DailyLongSignalDao
 from models.daily_short_signals import DailyShortSignalDao
@@ -22,10 +22,10 @@ from lib.ma_shape import long_signals
 import time
 from datetime import datetime, date
 import numpy as np
-from api.daily_candle import get_cn_candles
+from api.daily_candle import get_us_candles
 
 stockDao = StockDao()
-dailyCandleDao = DailyCandleDao()
+dailyCandleDao = USDailyCandleDao()
 dailyIndicatorDao = DailyIndicatorDao()
 dailyLongSignalDao = DailyLongSignalDao()
 dailyShortSignalDao = DailyShortSignalDao()
@@ -37,28 +37,19 @@ if __name__ == "__main__":
     job_start = time.time()
 
     all_scan_set = False
-    last_update_date = None
-    candle_stmts = dailyCandleDao.session.execute(
-        text("select trade_date from daily_candles order by trade_date desc limit 1"))
-    candle_result = candle_stmts.fetchone()
+    today = datetime.now().strftime("%Y-%m-%d")
 
-    if candle_result:
-        last_update_date = candle_result[0]
-
-    stock_stmts = ''
-    stock_result = None
-
-    while not all_scan_set and last_update_date:
+    while not all_scan_set:
         used_time = round(time.time() - job_start, 0)
-        if used_time > 3600 * 4:
+        if used_time > 3600 * 5:
             break
 
         circle_start = time.time()
 
         ts_code = ''
         stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
-                                                    " < :scan_date) and exchange != 'BSE'  limit 1").params(
-            scan_date=last_update_date))
+                                                    " < :scan_date) and "
+                                                    "exchange = 'US'  limit 1").params(scan_date=today))
         stock_result = stock_stmts.fetchone()
 
         if stock_result:
@@ -66,16 +57,20 @@ if __name__ == "__main__":
             print('开始扫描: ', ts_code)
         else:
             all_scan_set = True
+        #
+        # s = text("select trade_date, open, close, high, low, pct_chg from daily_candles where ts_code = :ts_code "
+        #          + "and trade_date > '2015-01-01' and open is not null and close is not null and high is not null and"
+        #          + " low is not null "
+        #          + "order by trade_date desc limit 0,500")
+        # statement = dailyCandleDao.session.execute(s.params(ts_code=ts_code))
+        # df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
 
-        s = text("select trade_date, open, close, high, low, pct_chg from daily_candles where ts_code = :ts_code "
-                 + "and trade_date > '2015-01-01' and open is not null and close is not null and high is not null and"
-                 + " low is not null and `change` is not null and pct_chg is not null "
-                 + "order by trade_date desc limit 0,500")
-        statement = dailyCandleDao.session.execute(s.params(ts_code=ts_code))
-        df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
+        df = get_us_candles({"ts_code": ts_code, "limit": 2000})
         df = df.sort_values(by='trade_date', ascending=True)
         close = df.close.to_numpy()
-        df['ts_code'] = ts_code
+        # df['ts_code'] = ts_code
+        df['pct_chg'] = df['pct_change']
+        df['turnover_rate'] = df['turnover_ratio']
 
         if len(df):
             try:
@@ -129,11 +124,11 @@ if __name__ == "__main__":
                 df['dea'] = DEA
                 df['macd'] = MACD_BAR
 
-                bias6, bias12, bias24, bias60 = bias(close)
+                bias6, bias12, bias24, bias72 = bias(close)
                 df['bias6'] = bias6
                 df['bias12'] = bias12
                 df['bias24'] = bias24
-                df['bias60'] = bias60
+                df['bias72'] = bias72
 
                 high_td, low_td = td(close)
                 df['high_td'] = high_td
@@ -145,17 +140,19 @@ if __name__ == "__main__":
                 small_df = df.iloc[df_len - 10: df_len]
                 item = df.iloc[df_len - 1].to_dict()
 
-                dailyLongSignalDao.reset_insert(small_df)
+                dailyCandleDao.reinsert(df)
+                dailyLongSignalDao.reinsert(small_df)
                 stockLongSignalDao.upsert(item)
 
-                stockDao.update({'ts_code': ts_code, 'scan_date': last_update_date})
-                print('扫描成功: ', ts_code, ', 扫描最新K线时间: ', last_update_date, '，用时 ',
+                stockDao.update({'ts_code': ts_code, 'scan_date': today})
+                print('扫描成功: ', ts_code, ', 扫描最新K线时间: ', today, '，用时 ',
                       round(time.time() - circle_start, 1), ' s')
             except Exception as e:
-                stockDao.update({'ts_code': ts_code, 'scan_date': last_update_date})
+                stockDao.update({'ts_code': ts_code, 'scan_date': today})
                 print('更新扫描结果 Catch Error:', e, '，用时 ',
                       round(time.time() - circle_start, 1), ' s')
         else:
-            stockDao.update({'ts_code': ts_code, 'scan_date': last_update_date})
+            stockDao.update({'ts_code': ts_code, 'scan_date': today})
             print('股票代码: ', ts_code, ' 没有行情数据', '，用时 ',
                   round(time.time() - circle_start, 1), ' s')
+

@@ -15,7 +15,7 @@ def get_cn_candles(options):
         "start_date": options.get("start_date", ""),
         "end_date": options.get("end_date", ""),
         "offset": options.get("offset", 0),
-        "limit":  options.get("limit", 5000)
+        "limit": options.get("limit", 5000)
     }, fields=[
         "ts_code",
         "trade_date",
@@ -33,92 +33,68 @@ def get_cn_candles(options):
     return df
 
 
-def get_hk_candles(ts_code):
+def get_hk_candles(options):
+    if options.get("ts_code") is None:
+        return
 
-    is_not_last_req = True
-    sum_df = pd.DataFrame(data={})
     limit = 3000
     offset = 0
 
-    while is_not_last_req:
+    df = pro.hk_daily(**{
+        "ts_code": options.get("ts_code", ""),
+        "trade_date": options.get("trade_date", ""),
+        "start_date": options.get("start_date", ""),
+        "end_date": options.get("end_date", ""),
+        "offset": options.get("offset", offset),
+        "limit": options.get("limit", limit)
+    }, fields=[
+        "ts_code",
+        "trade_date",
+        "open",
+        "high",
+        "low",
+        "close",
+        "pre_close",
+        "change",
+        "pct_chg",
+        "vol",
+        "amount"
+    ])
 
-        df = pro.hk_daily(**{
-            "ts_code": ts_code,
-            "trade_date": "",
-            "start_date": "",
-            "end_date": "",
-            "limit": limit,
-            "offset": offset
-        }, fields=[
-            "ts_code",
-            "trade_date",
-            "open",
-            "high",
-            "low",
-            "close",
-            "pre_close",
-            "change",
-            "pct_chg",
-            "vol",
-            "amount"
-        ])
-
-        if len(df) < limit:
-            is_not_last_req = False
-        else:
-            offset += len(df)
-
-        if len(sum_df) > 0:
-            sum_df.append(df)
-        else:
-            sum_df = df
-
-    return sum_df
+    return df
 
 
-def get_us_candles(ts_code):
+def get_us_candles(options):
+    if options.get("ts_code") is None:
+        return
 
-    is_not_last_req = True
-    sum_df = pd.DataFrame(data={})
     limit = 6000
     offset = 0
 
-    while is_not_last_req:
+    df = pro.us_daily(**{
+        "ts_code": options.get("ts_code", ""),
+        "trade_date": options.get("trade_date", ""),
+        "start_date": options.get("start_date", ""),
+        "end_date": options.get("end_date", ""),
+        "offset": options.get("offset", offset),
+        "limit": options.get("limit", limit)
+    }, fields=[
+        "ts_code",
+        "trade_date",
+        "close",
+        "open",
+        "high",
+        "low",
+        "pre_close",
+        "pct_change",
+        "vol",
+        "amount",
+        "vwap",
+        "total_mv",
+        "pe",
+        "pb",
+        "change",
+        "turnover_ratio"
+    ])
 
-        df = pro.us_daily(**{
-            "ts_code": ts_code,
-            "trade_date": "",
-            "start_date": "",
-            "end_date": "",
-            "offset": offset,
-            "limit": limit
-        }, fields=[
-            "ts_code",
-            "trade_date",
-            "close",
-            "open",
-            "high",
-            "low",
-            "pre_close",
-            "pct_change",
-            "vol",
-            "amount",
-            "vwap",
-            "total_mv",
-            "pe",
-            "pb",
-            "change",
-            "turnover_ratio"
-        ])
-
-        if len(df) < limit:
-            is_not_last_req = False
-        else:
-            offset += len(df)
-
-        if len(sum_df) > 0:
-            sum_df.append(df)
-        else:
-            sum_df = df
-
-    return sum_df
+    return df

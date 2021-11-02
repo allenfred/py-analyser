@@ -9,15 +9,14 @@ Base = declarative_base()
 
 
 # 定义 candle 对象:
-class DailyCandle(Base):
+class USDailyCandle(Base):
     # 表的名字:
-    __tablename__ = 'daily_candles'
+    __tablename__ = 'us_daily_candles'
 
     # 表的结构:
     id = Column(Integer, autoincrement=True, primary_key=True)
     ts_code = Column(String)  # TS代码
     trade_date = Column(Date)  # 交易日期
-    exchange = Column(String)  # 交易所代码
     open = Column(Float)  # 开盘价
     high = Column(Float)  # 最高价
     low = Column(Float)  # 最低价
@@ -49,10 +48,9 @@ def get_obj(candle):
     candle = candle.to_dict()
     candle = {k: v if not pd.isna(v) else None for k, v in candle.items()}
 
-    return DailyCandle(
+    return USDailyCandle(
         ts_code=candle.get('ts_code', None),
         trade_date=candle.get('trade_date', None),
-        exchange=candle.get('exchange', None),
         open=candle.get('open', None),
         high=candle.get('high', None),
         low=candle.get('low', None),
@@ -81,29 +79,15 @@ def get_obj(candle):
     )
 
 
-class DailyCandleDao:
+class USDailyCandleDao:
     def __init__(self):
         self.session = DBSession()
 
     def find_all(self, ts_code):
-        statement = select(DailyCandle).filter_by(ts_code=ts_code)
+        statement = select(USDailyCandle).filter_by(ts_code=ts_code)
         result = self.session.execute(statement).scalars().all()
 
         return result
-
-    def add_one(self, candle):
-        obj = get_obj(candle)
-
-        rows = self.session.query(DailyCandle.id).filter(DailyCandle.ts_code == candle['ts_code']).filter(
-            DailyCandle.trade_date == candle['trade_date']).first()
-
-        if len(rows) == 0:
-            self.session.add(obj)
-
-        self.session.commit()
-        self.session.close()
-
-        return obj
 
     def bulk_insert(self, df):
         items = []
@@ -115,13 +99,30 @@ class DailyCandleDao:
                 items.insert(index, item)
 
         try:
-            self.session.bulk_insert_mappings(DailyCandle, items)
+            self.session.bulk_insert_mappings(USDailyCandle, items)
             self.session.commit()
         except Exception as e:
             print('Error:', e)
         finally:
             self.session.close()
 
+    def reinsert(self, df):
+        ts_code = df['ts_code'][0]
+        items = []
+
+        for index, item in df.iterrows():
+            item = item.to_dict()
+            item = {k: v if not pd.isna(v) else None for k, v in item.items()}
+            items.insert(index, item)
+
+        try:
+            self.session.execute("delete from us_daily_candles where ts_code = :ts_code", {"ts_code": ts_code})
+            self.session.bulk_insert_mappings(USDailyCandle, items)
+            self.session.commit()
+        except Exception as e:
+            print('Error:', e)
+
+        self.session.close()
 
     def bulk_upsert(self, df):
 
@@ -129,8 +130,8 @@ class DailyCandleDao:
             obj = get_obj(candle)
 
             try:
-                row = self.session.query(DailyCandle).filter(DailyCandle.ts_code == candle['ts_code']).filter(
-                    DailyCandle.trade_date == candle['trade_date']).first()
+                row = self.session.query(USDailyCandle).filter(USDailyCandle.ts_code == candle['ts_code']).filter(
+                    USDailyCandle.trade_date == candle['trade_date']).first()
 
                 if row is None:
                     self.session.add(obj)

@@ -58,7 +58,7 @@ class DailyIndicator(Base):
     bias6 = Column(Float)
     bias12 = Column(Float)
     bias24 = Column(Float)
-    bias60 = Column(Float)
+    bias72 = Column(Float)
 
 
 def get_obj(indicator):
@@ -115,7 +115,7 @@ def get_obj(indicator):
         bias6=indicator.get('bias6', None),
         bias12=indicator.get('bias12', None),
         bias24=indicator.get('bias24', None),
-        bias60=indicator.get('bias60', None),
+        bias72=indicator.get('bias72', None),
     )
 
 
@@ -222,8 +222,8 @@ class DailyIndicatorDao:
                         row.bias12 = obj.bias12
                     if obj.bias24 is not None:
                         row.bias24 = obj.bias24
-                    if obj.bias60 is not None:
-                        row.bias60 = obj.bias60
+                    if obj.bias72 is not None:
+                        row.bias72 = obj.bias72
 
             except Exception as e:
                 print('Error:', e)

@@ -14,27 +14,27 @@ def long_signals(df):
     ma_arrange = []
     ema_arrange = []
 
-    short_ma_arrange_1 = []
-    short_ma_arrange_2 = []
-    short_ema_arrange_1 = []
-    short_ema_arrange_2 = []
+    short_ma_arrange1 = []
+    short_ma_arrange2 = []
+    short_ema_arrange1 = []
+    short_ema_arrange2 = []
 
-    middle_ma_arrange_1 = []
-    middle_ma_arrange_2 = []
-    middle_ema_arrange_1 = []
-    middle_ema_arrange_2 = []
+    middle_ma_arrange1 = []
+    middle_ma_arrange2 = []
+    middle_ema_arrange1 = []
+    middle_ema_arrange2 = []
 
-    long_ma_arrange_1 = []
-    long_ma_arrange_2 = []
-    long_ema_arrange_1 = []
-    long_ema_arrange_2 = []
+    long_ma_arrange1 = []
+    long_ma_arrange2 = []
+    long_ema_arrange1 = []
+    long_ema_arrange2 = []
 
-    ma_gold_cross_1 = []
-    ma_gold_cross_2 = []
-    ma_gold_cross_3 = []
-    ema_gold_cross_1 = []
-    ema_gold_cross_2 = []
-    ema_gold_cross_3 = []
+    ma_gold_cross1 = []
+    ma_gold_cross2 = []
+    ma_gold_cross3 = []
+    ema_gold_cross1 = []
+    ema_gold_cross2 = []
+    ema_gold_cross3 = []
 
     ma_out_sea = []
     ema_out_sea = []
@@ -49,12 +49,17 @@ def long_signals(df):
     ema_up_group = []
 
     ma_spider = []
-    ma_spider_2 = []
+    ma_spider2 = []
     ema_spider = []
-    ema_spider_2 = []
+    ema_spider2 = []
 
     td8 = []
     td9 = []
+
+    bias6 = []
+    bias12 = []
+    bias24 = []
+    bias72 = []
 
     for index, row in df.iterrows():
         # MA30上行
@@ -110,122 +115,122 @@ def long_signals(df):
         # MA短期组合多头排列（5/10/20）
         if row.ma5_slope > 0 and row.ma10_slope > 0 and row.ma20_slope > 0 \
                 and row.ma5 > row.ma10 > row.ma20:
-            short_ma_arrange_1.insert(len(df) - index - 1, 1)
+            short_ma_arrange1.insert(len(df) - index - 1, 1)
         else:
-            short_ma_arrange_1.insert(len(df) - index - 1, 0)
+            short_ma_arrange1.insert(len(df) - index - 1, 0)
 
         # MA短期组合多头排列（5/10/30）
         if row.ma5_slope > 0 and row.ma10_slope > 0 and row.ma30_slope > 0 \
                 and row.ma5 > row.ma10 > row.ma30:
-            short_ma_arrange_2.insert(len(df) - index - 1, 1)
+            short_ma_arrange2.insert(len(df) - index - 1, 1)
         else:
-            short_ma_arrange_2.insert(len(df) - index - 1, 0)
+            short_ma_arrange2.insert(len(df) - index - 1, 0)
 
         # EMA短期组合多头排列（5/10/20）
         if row.ema5_slope > 0 and row.ema10_slope > 0 and row.ema20_slope > 0 \
                 and row.ema5 > row.ema10 > row.ema20:
-            short_ema_arrange_1.insert(len(df) - index - 1, 1)
+            short_ema_arrange1.insert(len(df) - index - 1, 1)
         else:
-            short_ema_arrange_1.insert(len(df) - index - 1, 0)
+            short_ema_arrange1.insert(len(df) - index - 1, 0)
 
         # EMA短期组合多头排列（5/10/30）
         if row.ema5_slope > 0 and row.ema10_slope > 0 and row.ema30_slope > 0 \
                 and row.ema5 > row.ema10 > row.ema30:
-            short_ema_arrange_2.insert(len(df) - index - 1, 1)
+            short_ema_arrange2.insert(len(df) - index - 1, 1)
         else:
-            short_ema_arrange_2.insert(len(df) - index - 1, 0)
+            short_ema_arrange2.insert(len(df) - index - 1, 0)
 
         # MA中期组合多头排列（10/20/60）
         if row.ma10_slope > 0 and row.ma20_slope > 0 and row.ma60_slope > 0 \
                 and row.ma10 > row.ma20 > row.ma60:
-            middle_ma_arrange_1.insert(len(df) - index - 1, 1)
+            middle_ma_arrange1.insert(len(df) - index - 1, 1)
         else:
-            middle_ma_arrange_1.insert(len(df) - index - 1, 0)
+            middle_ma_arrange1.insert(len(df) - index - 1, 0)
 
         # MA中期组合多头排列（10/20/55）
         if row.ma10_slope > 0 and row.ma20_slope > 0 and row.ma55_slope > 0 \
                 and row.ma10 > row.ma20 > row.ma55:
-            middle_ma_arrange_2.insert(len(df) - index - 1, 1)
+            middle_ma_arrange2.insert(len(df) - index - 1, 1)
         else:
-            middle_ma_arrange_2.insert(len(df) - index - 1, 0)
+            middle_ma_arrange2.insert(len(df) - index - 1, 0)
 
         # EMA中期组合多头排列（10/20/60）
         if row.ema10_slope > 0 and row.ema20_slope > 0 and row.ema60_slope > 0 \
                 and row.ema10 > row.ema20 > row.ema60:
-            middle_ema_arrange_1.insert(len(df) - index - 1, 1)
+            middle_ema_arrange1.insert(len(df) - index - 1, 1)
         else:
-            middle_ema_arrange_1.insert(len(df) - index - 1, 0)
+            middle_ema_arrange1.insert(len(df) - index - 1, 0)
 
         # EMA中期组合多头排列（10/20/55）
         if row.ema10_slope > 0 and row.ema20_slope > 0 and row.ema55_slope > 0 \
                 and row.ema10 > row.ema20 > row.ema55:
-            middle_ema_arrange_2.insert(len(df) - index - 1, 1)
+            middle_ema_arrange2.insert(len(df) - index - 1, 1)
         else:
-            middle_ema_arrange_2.insert(len(df) - index - 1, 0)
+            middle_ema_arrange2.insert(len(df) - index - 1, 0)
 
         # MA长期组合多头排列（20/55/120）
         if row.ma20_slope > 0 and row.ma55_slope > 0 and row.ma120_slope > 0 \
                 and row.ma20 > row.ma55 > row.ma120:
-            long_ma_arrange_1.insert(len(df) - index - 1, 1)
+            long_ma_arrange1.insert(len(df) - index - 1, 1)
         else:
-            long_ma_arrange_1.insert(len(df) - index - 1, 0)
+            long_ma_arrange1.insert(len(df) - index - 1, 0)
 
         # MA长期组合多头排列（30/60/120）
         if row.ma30_slope > 0 and row.ma60_slope > 0 and row.ma120_slope > 0 \
                 and row.ma30 > row.ma60 > row.ma120:
-            long_ma_arrange_2.insert(len(df) - index - 1, 1)
+            long_ma_arrange2.insert(len(df) - index - 1, 1)
         else:
-            long_ma_arrange_2.insert(len(df) - index - 1, 0)
+            long_ma_arrange2.insert(len(df) - index - 1, 0)
 
         # EMA长期组合多头排列（20/55/120）
         if row.ema20_slope > 0 and row.ema55_slope > 0 and row.ema120_slope > 0 \
                 and row.ema20 > row.ema55 > row.ema120:
-            long_ema_arrange_1.insert(len(df) - index - 1, 1)
+            long_ema_arrange1.insert(len(df) - index - 1, 1)
         else:
-            long_ema_arrange_1.insert(len(df) - index - 1, 0)
+            long_ema_arrange1.insert(len(df) - index - 1, 0)
 
         # EMA长期组合多头排列（30/60/120）
         if row.ema30_slope > 0 and row.ema60_slope > 0 and row.ema120_slope > 0 \
                 and row.ema30 > row.ema60 > row.ema120:
-            long_ema_arrange_2.insert(len(df) - index - 1, 1)
+            long_ema_arrange2.insert(len(df) - index - 1, 1)
         else:
-            long_ema_arrange_2.insert(len(df) - index - 1, 0)
+            long_ema_arrange2.insert(len(df) - index - 1, 0)
 
         # MA黄金交叉（5/10）
-        if is_ma_gold_cross_1(df, row, index):
-            ma_gold_cross_1.insert(len(df) - index - 1, 1)
+        if is_ma_gold_cross1(df, row, index):
+            ma_gold_cross1.insert(len(df) - index - 1, 1)
         else:
-            ma_gold_cross_1.insert(len(df) - index - 1, 0)
+            ma_gold_cross1.insert(len(df) - index - 1, 0)
 
         # MA黄金交叉（10/20）
-        if is_ma_gold_cross_2(df, row, index):
-            ma_gold_cross_2.insert(len(df) - index - 1, 1)
+        if is_ma_gold_cross2(df, row, index):
+            ma_gold_cross2.insert(len(df) - index - 1, 1)
         else:
-            ma_gold_cross_2.insert(len(df) - index - 1, 0)
+            ma_gold_cross2.insert(len(df) - index - 1, 0)
 
         # MA黄金交叉（10/30）
-        if is_ma_gold_cross_3(df, row, index):
-            ma_gold_cross_3.insert(len(df) - index - 1, 1)
+        if is_ma_gold_cross3(df, row, index):
+            ma_gold_cross3.insert(len(df) - index - 1, 1)
         else:
-            ma_gold_cross_3.insert(len(df) - index - 1, 0)
+            ma_gold_cross3.insert(len(df) - index - 1, 0)
 
         # EMA黄金交叉（5/10）
-        if is_ema_gold_cross_1(df, row, index):
-            ema_gold_cross_1.insert(len(df) - index - 1, 1)
+        if is_ema_gold_cross1(df, row, index):
+            ema_gold_cross1.insert(len(df) - index - 1, 1)
         else:
-            ema_gold_cross_1.insert(len(df) - index - 1, 0)
+            ema_gold_cross1.insert(len(df) - index - 1, 0)
 
         # EMA黄金交叉（10/20）
-        if is_ema_gold_cross_2(df, row, index):
-            ema_gold_cross_2.insert(len(df) - index - 1, 1)
+        if is_ema_gold_cross2(df, row, index):
+            ema_gold_cross2.insert(len(df) - index - 1, 1)
         else:
-            ema_gold_cross_2.insert(len(df) - index - 1, 0)
+            ema_gold_cross2.insert(len(df) - index - 1, 0)
 
         # EMA黄金交叉（10/30）
-        if is_ema_gold_cross_3(df, row, index):
-            ema_gold_cross_3.insert(len(df) - index - 1, 1)
+        if is_ema_gold_cross3(df, row, index):
+            ema_gold_cross3.insert(len(df) - index - 1, 1)
         else:
-            ema_gold_cross_3.insert(len(df) - index - 1, 0)
+            ema_gold_cross3.insert(len(df) - index - 1, 0)
 
         # MA蛟龙出海(5/10/20)
         if is_ma_out_sea(row):
@@ -283,9 +288,9 @@ def long_signals(df):
 
         # MA金蜘蛛(5/10/20/30)
         if is_ma_spider2(df, row, index):
-            ma_spider_2.insert(len(df) - index - 1, 1)
+            ma_spider2.insert(len(df) - index - 1, 1)
         else:
-            ma_spider_2.insert(len(df) - index - 1, 0)
+            ma_spider2.insert(len(df) - index - 1, 0)
 
         # EMA金蜘蛛(5/10/20)
         if is_ema_spider(df, row, index):
@@ -295,9 +300,9 @@ def long_signals(df):
 
         # EMA金蜘蛛(5/10/20/30)
         if is_ema_spider2(df, row, index):
-            ema_spider_2.insert(len(df) - index - 1, 1)
+            ema_spider2.insert(len(df) - index - 1, 1)
         else:
-            ema_spider_2.insert(len(df) - index - 1, 0)
+            ema_spider2.insert(len(df) - index - 1, 0)
 
         # TD_8
         if row.low_td == 8:
@@ -311,6 +316,30 @@ def long_signals(df):
         else:
             td9.insert(len(df) - index - 1, 0)
 
+        # bias6
+        if row.bias6 < -3:
+            bias6.insert(len(df) - index - 1, 1)
+        else:
+            bias6.insert(len(df) - index - 1, 0)
+
+        # bias12
+        if row.bias12 < -4.5:
+            bias12.insert(len(df) - index - 1, 1)
+        else:
+            bias12.insert(len(df) - index - 1, 0)
+
+        # bias24
+        if row.bias24 < -7:
+            bias24.insert(len(df) - index - 1, 1)
+        else:
+            bias24.insert(len(df) - index - 1, 0)
+
+        # bias72
+        if row.bias72 < -11:
+            bias72.insert(len(df) - index - 1, 1)
+        else:
+            bias72.insert(len(df) - index - 1, 0)
+
     df['ma30_up'] = ma30_up
     df['ema30_up'] = ema30_up
     df['ma60_up'] = ma60_up
@@ -320,27 +349,27 @@ def long_signals(df):
     df['ma_arrange'] = ma_arrange
     df['ema_arrange'] = ema_arrange
 
-    df['short_ma_arrange_1'] = short_ma_arrange_1
-    df['short_ma_arrange_2'] = short_ma_arrange_2
-    df['short_ema_arrange_1'] = short_ema_arrange_1
-    df['short_ema_arrange_2'] = short_ema_arrange_2
+    df['short_ma_arrange1'] = short_ma_arrange1
+    df['short_ma_arrange2'] = short_ma_arrange2
+    df['short_ema_arrange1'] = short_ema_arrange1
+    df['short_ema_arrange2'] = short_ema_arrange2
 
-    df['middle_ma_arrange_1'] = middle_ma_arrange_1
-    df['middle_ma_arrange_2'] = middle_ma_arrange_2
-    df['middle_ema_arrange_1'] = middle_ema_arrange_1
-    df['middle_ema_arrange_2'] = middle_ema_arrange_2
+    df['middle_ma_arrange1'] = middle_ma_arrange1
+    df['middle_ma_arrange2'] = middle_ma_arrange2
+    df['middle_ema_arrange1'] = middle_ema_arrange1
+    df['middle_ema_arrange2'] = middle_ema_arrange2
 
-    df['long_ma_arrange_1'] = long_ma_arrange_1
-    df['long_ma_arrange_2'] = long_ma_arrange_2
-    df['long_ema_arrange_1'] = long_ema_arrange_1
-    df['long_ema_arrange_2'] = long_ema_arrange_2
+    df['long_ma_arrange1'] = long_ma_arrange1
+    df['long_ma_arrange2'] = long_ma_arrange2
+    df['long_ema_arrange1'] = long_ema_arrange1
+    df['long_ema_arrange2'] = long_ema_arrange2
 
-    df['ma_gold_cross_1'] = ma_gold_cross_1
-    df['ma_gold_cross_2'] = ma_gold_cross_2
-    df['ma_gold_cross_3'] = ma_gold_cross_3
-    df['ema_gold_cross_1'] = ema_gold_cross_1
-    df['ema_gold_cross_2'] = ema_gold_cross_2
-    df['ema_gold_cross_3'] = ema_gold_cross_3
+    df['ma_gold_cross1'] = ma_gold_cross1
+    df['ma_gold_cross2'] = ma_gold_cross2
+    df['ma_gold_cross3'] = ma_gold_cross3
+    df['ema_gold_cross1'] = ema_gold_cross1
+    df['ema_gold_cross2'] = ema_gold_cross2
+    df['ema_gold_cross3'] = ema_gold_cross3
 
     df['ma_out_sea'] = ma_out_sea
     df['ema_out_sea'] = ema_out_sea
@@ -351,18 +380,23 @@ def long_signals(df):
     df['ma_up_group'] = ma_up_group
     df['ema_up_group'] = ema_up_group
     df['ma_spider'] = ma_spider
-    df['ma_spider_2'] = ma_spider_2
+    df['ma_spider2'] = ma_spider2
     df['ema_spider'] = ema_spider
-    df['ema_spider_2'] = ema_spider_2
+    df['ema_spider2'] = ema_spider2
     df['td8'] = td8
     df['td9'] = td9
+
+    df['bias6'] = bias6
+    df['bias12'] = bias12
+    df['bias24'] = bias24
+    df['bias72'] = bias72
 
     set_ma_silver_valley(df)
     set_ema_silver_valley(df)
     set_ma_gold_valley(df)
     set_ema_gold_valley(df)
 
-    # print(short_ma_arrange_1)
+    # print(short_ma_arrange1)
     # print(math.max(df['td8']))
     # print(df['ma_silver_valley'][50:100].max())
     # print('silver valley')
@@ -547,7 +581,7 @@ def is_ema_out_sea(row):
         return False
 
 
-def is_ma_gold_cross_1(df, row, index):
+def is_ma_gold_cross1(df, row, index):
     # ma5上穿ma10
     # ma5/ma10上行
     if row.ma5 > row.ma10 and df.iloc[len(df) - index - 1 - 1].ma5 < df.iloc[len(df) - index - 1 - 1].ma10 and \
@@ -557,7 +591,7 @@ def is_ma_gold_cross_1(df, row, index):
         return False
 
 
-def is_ma_gold_cross_2(df, row, index):
+def is_ma_gold_cross2(df, row, index):
     # ma10上穿ma20
     # ma10/ma20上行
     if row.ma10 > row.ma20 and df.iloc[len(df) - index - 1 - 1].ma10 < df.iloc[len(df) - index - 1 - 1].ma20 and \
@@ -567,7 +601,7 @@ def is_ma_gold_cross_2(df, row, index):
         return False
 
 
-def is_ma_gold_cross_3(df, row, index):
+def is_ma_gold_cross3(df, row, index):
     # ma10上穿ma30
     # ma10/ma30上行
     if row.ma10 > row.ma30 and df.iloc[len(df) - index - 1 - 1].ma10 < df.iloc[len(df) - index - 1 - 1].ma30 and \
@@ -577,7 +611,7 @@ def is_ma_gold_cross_3(df, row, index):
         return False
 
 
-def is_ema_gold_cross_1(df, row, index):
+def is_ema_gold_cross1(df, row, index):
     # ema5上穿ema10
     # ema5/ema10上行
     if row.ema5 > row.ema10 and df.iloc[len(df) - index - 1 - 1].ema5 < df.iloc[len(df) - index - 1 - 1].ema10 and \
@@ -587,7 +621,7 @@ def is_ema_gold_cross_1(df, row, index):
         return False
 
 
-def is_ema_gold_cross_2(df, row, index):
+def is_ema_gold_cross2(df, row, index):
     # ema10上穿ema20
     # ema10/ema20上行
     if row.ema10 > row.ema20 and df.iloc[len(df) - index - 1 - 1].ema10 < df.iloc[len(df) - index - 1 - 1].ema20 and \
@@ -597,7 +631,7 @@ def is_ema_gold_cross_2(df, row, index):
         return False
 
 
-def is_ema_gold_cross_3(df, row, index):
+def is_ema_gold_cross3(df, row, index):
     # ema10上穿ema30
     # ema10/ema30上行
     if row.ema10 > row.ema30 and df.iloc[len(df) - index - 1 - 1].ema10 < df.iloc[len(df) - index - 1 - 1].ema30 and \
@@ -613,11 +647,11 @@ def set_ma_silver_valley(df):
     for index, row in df.iterrows():
         if len(df) - index - 1 >= 10:
             gold_cross_cnt = 0
-            if df['ma_gold_cross_1'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
+            if df['ma_gold_cross1'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
                 gold_cross_cnt += 1
-            if df['ma_gold_cross_2'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
+            if df['ma_gold_cross2'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
                 gold_cross_cnt += 1
-            if df['ma_gold_cross_3'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
+            if df['ma_gold_cross3'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
                 gold_cross_cnt += 1
 
             if gold_cross_cnt >= 2:
@@ -636,11 +670,11 @@ def set_ema_silver_valley(df):
     for index, row in df.iterrows():
         if len(df) - index - 1 >= 10:
             gold_cross_cnt = 0
-            if df['ema_gold_cross_1'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
+            if df['ema_gold_cross1'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
                 gold_cross_cnt += 1
-            if df['ema_gold_cross_2'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
+            if df['ema_gold_cross2'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
                 gold_cross_cnt += 1
-            if df['ema_gold_cross_3'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
+            if df['ema_gold_cross3'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
                 gold_cross_cnt += 1
 
             if gold_cross_cnt >= 2:
@@ -659,11 +693,11 @@ def set_ma_gold_valley(df):
     for index, row in df.iterrows():
         if len(df) - index - 1 >= 30:
             gold_cross_cnt = 0
-            if df['ma_gold_cross_1'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
+            if df['ma_gold_cross1'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
                 gold_cross_cnt += 1
-            if df['ma_gold_cross_2'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
+            if df['ma_gold_cross2'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
                 gold_cross_cnt += 1
-            if df['ma_gold_cross_3'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
+            if df['ma_gold_cross3'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
                 gold_cross_cnt += 1
 
             if df['ma_silver_valley'][len(df) - index - 1 - 30: len(df) - index - 1].max() == 1 and \
@@ -684,11 +718,11 @@ def set_ema_gold_valley(df):
     for index, row in df.iterrows():
         if len(df) - index - 1 >= 30:
             gold_cross_cnt = 0
-            if df['ema_gold_cross_1'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
+            if df['ema_gold_cross1'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
                 gold_cross_cnt += 1
-            if df['ema_gold_cross_2'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
+            if df['ema_gold_cross2'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
                 gold_cross_cnt += 1
-            if df['ema_gold_cross_3'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
+            if df['ema_gold_cross3'][len(df) - index - 1 - 10: len(df) - index - 1].max() == 1:
                 gold_cross_cnt += 1
 
             if df['ema_silver_valley'][len(df) - index - 1 - 30: len(df) - index - 1].max() == 1 and \

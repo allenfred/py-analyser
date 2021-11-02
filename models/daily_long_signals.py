@@ -57,6 +57,10 @@ class DailyLongSignal(Base):
     ema_spider2 = Column(SmallInteger)
     td8 = Column(SmallInteger)
     td9 = Column(SmallInteger)
+    bias6 = Column(SmallInteger)
+    bias12 = Column(SmallInteger)
+    bias24 = Column(SmallInteger)
+    bias72 = Column(SmallInteger)
 
 
 def get_obj(signal):
@@ -110,7 +114,11 @@ def get_obj(signal):
         ema_spider=signal.get('ema_spider', None),
         ema_spider2=signal.get('ema_spider2', None),
         td8=signal.get('td8', None),
-        td9=signal.get('td9', None)
+        td9=signal.get('td9', None),
+        bias6=signal.get('bias6', None),
+        bias12=signal.get('bias12', None),
+        bias24=signal.get('bias24', None),
+        bias72=signal.get('bias72', None),
     )
 
 
@@ -253,6 +261,14 @@ class DailyLongSignalDao:
                         row.td8 = obj.td8
                     if obj.td9 is not None:
                         row.td9 = obj.td9
+                    if obj.bias6 is not None:
+                        row.bias6 = obj.bias6
+                    if obj.bias12 is not None:
+                        row.bias12 = obj.bias12
+                    if obj.bias24 is not None:
+                        row.bias24 = obj.bias24
+                    if obj.bias72 is not None:
+                        row.bias72 = obj.bias72
 
             except Exception as e:
                 print('Error:', e)
@@ -262,7 +278,7 @@ class DailyLongSignalDao:
 
         return df
 
-    def reset_insert(self, df):
+    def reinsert(self, df):
         ts_code = df['ts_code'][0]
         self.session.execute("delete from daily_long_signals where ts_code = :ts_code", {"ts_code": ts_code})
         items = []
