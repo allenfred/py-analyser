@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     while not all_scan_set:
         used_time = round(time.time() - job_start, 0)
-        if used_time > 3600 * 4:
+        if used_time > 3600 * 5:
             break
 
         circle_start = time.time()
