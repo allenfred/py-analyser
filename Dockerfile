@@ -9,6 +9,10 @@ RUN echo "09aa49b96a8cbe75878dfcdc4f6d313e430d9f92b1f4625116b117a21caaba89  acti
 # Extract the installer
 RUN tar xzf ./actions-runner-linux-x64-2.283.3.tar.gz
 
+# add new user
+RUN useradd temp -u 111
+RUN su -l temp
+
 # Configure
-RUN ./config.sh --url https://github.com/allenfred/py-crawler --token ACRZMKZHLBV4355SGPTVJ3LBQIRBU
+RUN ./config.sh --url https://github.com/allenfred/py-crawler --token ACRZMK4MVOAHME7K63ES76LBQJHKU
 RUN ./run.shg
