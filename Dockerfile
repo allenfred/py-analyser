@@ -1,0 +1,14 @@
+FROM python:3
+
+WORKDIR actions-runner
+RUN cd /actions-runner
+# Download the latest runner package
+RUN curl -o actions-runner-linux-x64-2.283.3.tar.gz -L https://github.com/actions/runner/releases/download/v2.283.3/actions-runner-linux-x64-2.283.3.tar.gz
+# Optional: Validate the hash
+RUN echo "09aa49b96a8cbe75878dfcdc4f6d313e430d9f92b1f4625116b117a21caaba89  actions-runner-linux-x64-2.283.3.tar.gz" | shasum -a 256 -c
+# Extract the installer
+RUN tar xzf ./actions-runner-linux-x64-2.283.3.tar.gz
+
+# Configure
+RUN ./config.sh --url https://github.com/allenfred/py-crawler --token ACRZMKZHLBV4355SGPTVJ3LBQIRBU
+RUN ./run.shg
