@@ -83,11 +83,19 @@ class USDailyCandleDao:
     def __init__(self):
         self.session = DBSession()
 
-    def find_all(self, ts_code):
+    def find_by_ts_code(self, ts_code):
         s = text("select trade_date, open, close, high, low from us_daily_candles where ts_code = :ts_code "
                  "order by trade_date desc limit 0,2000;")
         statement = self.session.execute(s.params(ts_code=ts_code))
         df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low'])
+        self.session.close()
+
+        return df
+
+    def find_by_trade_date(self, trade_date):
+        s = text("select ts_code, open, close, high, low from us_daily_candles where trade_date = :trade_date;")
+        statement = self.session.execute(s.params(trade_date=trade_date))
+        df = pd.DataFrame(statement.fetchall(), columns=['ts_code', 'open', 'close', 'high', 'low'])
         self.session.close()
 
         return df

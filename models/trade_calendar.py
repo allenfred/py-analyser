@@ -5,7 +5,6 @@ from .db import engine, DBSession
 from datetime import date
 import pandas as pd
 
-
 Base = declarative_base()
 metadata_obj = MetaData()
 
@@ -123,7 +122,7 @@ class TradeCalendarDao:
                 trade_calendar.c.exchange == exchange,
                 trade_calendar.c.candle_ready != 1,
                 trade_calendar.c.is_open == 1,
-                trade_calendar.c.cal_date >= '2010-01-01',
+                trade_calendar.c.cal_date >= '2012-01-01',
                 trade_calendar.c.cal_date <= today).order_by(desc(trade_calendar.c.cal_date)).limit(1)
 
             rows = conn.execute(stmts).fetchall()
@@ -133,18 +132,17 @@ class TradeCalendarDao:
             else:
                 return None
 
-    def set_candle_ready(self, exchange, dte):
-        stmts = ''
-
+    def set_cn_candle_ready(self, dte):
         with engine.connect() as conn:
-            if exchange == 'CN':
-                stmts = trade_calendar.update(). \
-                    values(candle_ready=1). \
-                    where(trade_calendar.c.cal_date == dte). \
-                    where(or_(trade_calendar.c.exchange == 'SSE', trade_calendar.c.exchange == 'SZSE'))
-            else:
-                stmts = trade_calendar.update(). \
-                    values(candle_ready=1). \
-                    where(trade_calendar.c.cal_date == dte, trade_calendar.c.exchange == exchange)
+            conn.execute(trade_calendar.update().values(candle_ready=1).where(trade_calendar.c.cal_date == dte). \
+                         where(or_(trade_calendar.c.exchange == 'SSE', trade_calendar.c.exchange == 'SZSE')))
 
-            conn.execute(stmts)
+    def set_hk_candle_ready(self, dte):
+        with engine.connect() as conn:
+            conn.execute(trade_calendar.update().values(candle_ready=1). \
+                         where(trade_calendar.c.cal_date == dte, trade_calendar.c.exchange == 'HK'))
+
+    def set_us_candle_ready(self, dte):
+        with engine.connect() as conn:
+            conn.execute(trade_calendar.update().values(candle_ready=1). \
+                         where(trade_calendar.c.cal_date == dte, trade_calendar.c.exchange == 'US'))

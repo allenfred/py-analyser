@@ -36,11 +36,9 @@ stockShortSignalDao = StockShortSignalDao()
 
 if __name__ == "__main__":
     job_start = time.time()
-
-    all_scan_set = False
     today = datetime.now().strftime("%Y-%m-%d")
 
-    while not all_scan_set:
+    while True:
         used_time = round(time.time() - job_start, 0)
         if used_time > 3600 * 5:
             break
@@ -58,7 +56,7 @@ if __name__ == "__main__":
             ts_code = stock_result[0]
             print('开始扫描: ', ts_code)
         else:
-            all_scan_set = True
+            break
 
         statement = dailyCandleDao.session.execute(text("select trade_date, open, close, high, low, pct_chg "
                                                         "from cn_daily_candles where ts_code = :ts_code "

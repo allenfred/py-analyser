@@ -1,7 +1,0 @@
-FROM python:3.6-alpine
-
-RUN mkdir -p /app
-WORKDIR app
-COPY . /app/
-RUN cd /app
-RUN PYTHONPATH=/app/venv/lib/python3.8/site-packages python jobs/history/cn_stock_daily.py
