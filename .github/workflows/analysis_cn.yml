@@ -1,6 +1,9 @@
 name: Technical Analysis CN
 
 on:
+  workflow_run:
+    workflows: ["History daily candle CN"]
+    types: [completed]
 #  schedule:
     # * 每天17点，开始获取K线行情数据
 #    - cron: '0 17 */1 */1 *'

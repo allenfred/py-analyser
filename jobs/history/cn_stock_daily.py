@@ -3,7 +3,7 @@ import sys
 
 path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(path)
-
+print(sys.path)
 import numpy as np
 import tushare as ts
 import pandas as pd
