@@ -59,6 +59,7 @@ class StockLongSignal(Base):
     bias6 = Column(SmallInteger)
     bias12 = Column(SmallInteger)
     bias24 = Column(SmallInteger)
+    bias60 = Column(SmallInteger)
     bias72 = Column(SmallInteger)
 
 
@@ -115,6 +116,7 @@ def get_obj(signal):
         bias6=signal.get('bias6', None),
         bias12=signal.get('bias12', None),
         bias24=signal.get('bias24', None),
+        bias60=signal.get('bias60', None),
         bias72=signal.get('bias72', None),
     )
 
@@ -226,6 +228,8 @@ class StockLongSignalDao:
                     row.bias12 = obj.bias12
                 if obj.bias24 is not None:
                     row.bias24 = obj.bias24
+                if obj.bias60 is not None:
+                    row.bias60 = obj.bias60
                 if obj.bias72 is not None:
                     row.bias72 = obj.bias72
 

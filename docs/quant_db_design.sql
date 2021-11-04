@@ -182,6 +182,7 @@ CREATE TABLE `daily_indicators` (
   `bias6` float,
   `bias12` float,
   `bias24` float,
+  `bias60` float,
   `bias72` float,
   `high_td` tinyint(2),
   `low_td` tinyint(2)
@@ -238,6 +239,7 @@ CREATE TABLE `daily_long_signals` (
   `bias6` tinyint(2),
   `bias12` tinyint(2),
   `bias24` tinyint(2),
+  `bias60` tinyint(2),
   `bias72` tinyint(2)
 );
 
@@ -292,6 +294,7 @@ CREATE TABLE `daily_short_signals` (
   `bias6` tinyint(2),
   `bias12` tinyint(2),
   `bias24` tinyint(2),
+  `bias60` tinyint(2),
   `bias72` tinyint(2)
 );
 
@@ -345,6 +348,7 @@ CREATE TABLE `stock_long_signals` (
   `bias6` tinyint(2),
   `bias12` tinyint(2),
   `bias24` tinyint(2),
+  `bias60` tinyint(2),
   `bias72` tinyint(2)
 );
 
@@ -398,6 +402,7 @@ CREATE TABLE `stock_short_signals` (
   `bias6` tinyint(2),
   `bias12` tinyint(2),
   `bias24` tinyint(2),
+  `bias60` tinyint(2),
   `bias72` tinyint(2)
 );
 
@@ -426,6 +431,7 @@ CREATE TABLE `weekly_candles` (
   `bias6` float,
   `bias12` float,
   `bias24` float,
+  `bias60` float,
   `bias72` float
 );
 
