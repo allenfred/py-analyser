@@ -1,5 +1,5 @@
 # 导入:
-from sqlalchemy import Column, Integer, String, Date, Float, select
+from sqlalchemy import Column, Integer, String, Date, Float, select, text
 from sqlalchemy.ext.declarative import declarative_base
 from .db import DBSession
 import pandas as pd
@@ -17,7 +17,6 @@ class CNDailyCandle(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     ts_code = Column(String)  # TS代码
     trade_date = Column(Date)  # 交易日期
-    exchange = Column(String)  # 交易所代码
     open = Column(Float)  # 开盘价
     high = Column(Float)  # 最高价
     low = Column(Float)  # 最低价
@@ -52,7 +51,6 @@ def get_obj(candle):
     return CNDailyCandle(
         ts_code=candle.get('ts_code', None),
         trade_date=candle.get('trade_date', None),
-        exchange=candle.get('exchange', None),
         open=candle.get('open', None),
         high=candle.get('high', None),
         low=candle.get('low', None),
@@ -86,24 +84,13 @@ class CNDailyCandleDao:
         self.session = DBSession()
 
     def find_all(self, ts_code):
-        statement = select(DailyCandle).filter_by(ts_code=ts_code)
-        result = self.session.execute(statement).scalars().all()
-
-        return result
-
-    def add_one(self, candle):
-        obj = get_obj(candle)
-
-        rows = self.session.query(CNDailyCandle.id).filter(CNDailyCandle.ts_code == candle['ts_code']).filter(
-            CNDailyCandle.trade_date == candle['trade_date']).first()
-
-        if len(rows) == 0:
-            self.session.add(obj)
-
-        self.session.commit()
+        s = text("select trade_date, open, close, high, low from cn_daily_candles where ts_code = :ts_code "
+                 "order by trade_date desc limit 0,2000;")
+        statement = self.session.execute(s.params(ts_code=ts_code))
+        df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low'])
         self.session.close()
 
-        return obj
+        return df
 
     def bulk_insert(self, df):
         items = []

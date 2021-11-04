@@ -6,9 +6,6 @@ pro = ts.pro_api(TS_TOKEN)
 
 
 def get_cn_candles(options):
-    if options.get("ts_code") is None:
-        return
-
     df = pro.daily(**{
         "ts_code": options.get("ts_code", ""),
         "trade_date": options.get("trade_date", ""),
@@ -34,19 +31,13 @@ def get_cn_candles(options):
 
 
 def get_hk_candles(options):
-    if options.get("ts_code") is None:
-        return
-
-    limit = 3000
-    offset = 0
-
     df = pro.hk_daily(**{
         "ts_code": options.get("ts_code", ""),
         "trade_date": options.get("trade_date", ""),
         "start_date": options.get("start_date", ""),
         "end_date": options.get("end_date", ""),
-        "offset": options.get("offset", offset),
-        "limit": options.get("limit", limit)
+        "offset": options.get("offset", 0),
+        "limit": options.get("limit", 3000)
     }, fields=[
         "ts_code",
         "trade_date",
@@ -65,19 +56,13 @@ def get_hk_candles(options):
 
 
 def get_us_candles(options):
-    if options.get("ts_code") is None:
-        return
-
-    limit = 6000
-    offset = 0
-
     df = pro.us_daily(**{
         "ts_code": options.get("ts_code", ""),
         "trade_date": options.get("trade_date", ""),
         "start_date": options.get("start_date", ""),
         "end_date": options.get("end_date", ""),
-        "offset": options.get("offset", offset),
-        "limit": options.get("limit", limit)
+        "offset": options.get("offset", 0),
+        "limit": options.get("limit", 5000)
     }, fields=[
         "ts_code",
         "trade_date",

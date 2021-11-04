@@ -6,89 +6,58 @@ sys.path.append(path)
 
 import tushare as ts
 import pandas as pd
-from models.daily_candles import DailyCandleDao
-from models.trade_calendar import TradeCalendarDao
+from models.us_daily_candles import USDailyCandleDao
+from models.stocks import StockDao
 import time
 from datetime import datetime
 from config.common import TS_TOKEN
+from api.daily_candle import get_us_candles
 
 pro = ts.pro_api(TS_TOKEN)
-dailyCandleDao = DailyCandleDao()
-calendarDao = TradeCalendarDao()
+dailyCandleDao = USDailyCandleDao()
+stockDao = StockDao()
 
-if __name__ == "__main__":
 
-    start = time.time()
+def ready_candles_by_stock():
     all_history_candle_set = False
-    is_last_req = False
-    df = pd.DataFrame(data={})
-    offset = 0
-    totalGotCount = 0
-    limit = 5000
+    today = datetime.now().strftime("%Y-%m-%d")
+    today = '2021-11-03'
+    df = get_us_candles({"limit": 1, "offset": 0})
+    latest_candle_date = datetime.strftime(datetime.strptime(df["trade_date"][0], "%Y%m%d"), '%Y-%m-%d')
+
+    if not latest_candle_date == today:
+        print('tushare 尚未同步 HK 最新行情数据:', today)
+        quit()
 
     while not all_history_candle_set:
         circle_start = time.time()
-        item = calendarDao.find_one_candle_not_ready('US')
-        trade_dte = ''
+        ts_code = stockDao.find_one_candle_not_ready('US', today)
 
-        if item:
-            trade_dte = datetime.strftime(item.cal_date, "%Y%m%d")
-            is_last_req = False
-            totalGotCount = 0
-            offset = 0
-        else:
-            all_history_candle_set = True
+        if ts_code is None:
+            break
 
-        while not is_last_req:
+        try:
+            df = get_us_candles({"ts_code": ts_code, "limit": 2000, "offset": 0})
+            df = df.sort_values(by='trade_date', ascending=False)
+            df['pct_chg'] = df['pct_change']
 
-            try:
-                df = pro.us_daily(**{
-                    "ts_code": "",
-                    "trade_date": trade_dte,
-                    "start_date": "",
-                    "end_date": "",
-                    "offset": offset,
-                    "limit": limit
-                }, fields=[
-                    "ts_code",
-                    "trade_date",
-                    "close",
-                    "open",
-                    "high",
-                    "low",
-                    "pre_close",
-                    "pct_change",
-                    "vol",
-                    "amount",
-                    "vwap",
-                    "total_mv",
-                    "pe",
-                    "pb",
-                    "change",
-                    "turnover_ratio"
-                ])
+            # 过滤出最新candle数据 (相较于db)
+            db_df = dailyCandleDao.find_all(ts_code)
+            new_df = df.loc[~pd.to_datetime(df["trade_date"], format='%Y-%m-%d').isin(db_df["trade_date"].to_numpy())]
 
-                print('获取 US daily_candles ', item.cal_date, ': ', len(df), ' 条数据，用时 ',
-                      round(time.time() - circle_start, 2), ' s')
+            dailyCandleDao.bulk_insert(new_df)
+            stockDao.set_candle_ready(ts_code, today)
 
-                totalGotCount += len(df)
-                if len(df) < limit:
-                    is_last_req = True
-                else:
-                    offset += len(df)
-                df['exchange'] = 'US'
-                df['pct_chg'] = df['pct_change']
-
-                dailyCandleDao.bulk_insert(df)
-
-            except Exception as e:
-                print('Error:', e)
-
-        if item:
-            calendarDao.set_candle_ready('US', item.cal_date)
-
-            print('已更新 US daily_candles ', item.cal_date, ': ', totalGotCount, ' 条数据，用时 ',
+            print('已更新 US daily_candles / ', ts_code, ': ', len(df), ' 条数据，用时 ',
                   round(time.time() - circle_start, 2), ' s')
+        except Exception as e:
+            stockDao.set_candle_ready(ts_code, today)
+            print('Error:', e)
 
+
+if __name__ == "__main__":
+    start = time.time()
+    ready_candles_by_stock()
     end = time.time()
+
     print('用时', round(end - start, 2), 's')

@@ -1,9 +1,10 @@
 # 导入:
-from sqlalchemy import Table, MetaData, Column, Integer, String, Date, SmallInteger, Float, select, insert
+from sqlalchemy import Table, MetaData, Column, Integer, String, Date, SmallInteger, Float, select, insert, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.mysql.dml import Insert
 from .db import engine, DBSession
 import pandas as pd
+from datetime import datetime, date
 
 # 创建对象的基类:
 Base = declarative_base()
@@ -48,9 +49,10 @@ class Stock(Base):
     total_mv = Column(Float)  # 总市值
     circ_mv = Column(Float)  # 流通市值
     scan_date = Column(Date)  # 上一次扫描完成日期
+    candle_date = Column(Date)  # 上一次获取candle完成日期
 
 
-stocks = Table('trade_calendar', metadata_obj,
+stocks = Table('stocks', metadata_obj,
                Column('id', Integer, primary_key=True),
                Column('ts_code', String),
                Column('symbol', String),
@@ -82,6 +84,7 @@ stocks = Table('trade_calendar', metadata_obj,
                Column('total_mv', Float),
                Column('circ_mv', Float),
                Column('scan_date', Date),
+               Column('candle_date', Date),
                )
 
 
@@ -119,7 +122,8 @@ def get_obj(item):
         free_share=item.get('free_share', None),
         total_mv=item.get('total_mv', None),
         circ_mv=item.get('circ_mv', None),
-        scan_date=item.get('scan_date', None)
+        scan_date=item.get('scan_date', None),
+        candle_date=item.get('candle_date', None)
     )
 
 
@@ -127,9 +131,29 @@ class StockDao:
     def __init__(self):
         self.session = DBSession()
 
+    def find_one_candle_not_ready(self, area, candle_date):
+        exchange_query = "(exchange = 'SSE' or exchange = 'SZSE')"
+        if area == 'HK':
+            exchange_query = "exchange = 'HK'"
+        if area == 'US':
+            exchange_query = "exchange = 'US'"
+
+        stock_stmts = self.session.execute(text("select ts_code from stocks where (candle_date is null or candle_date"
+                                                " < :candle_date) and "
+                                                + exchange_query + "  limit 1").params(
+            candle_date=candle_date))
+        stock_result = stock_stmts.fetchone()
+        self.session.close()
+
+        if len(stock_result) > 0:
+            return stock_result[0]
+        else:
+            return None
+
     def find_one(self, ts_code):
         statement = select(Stock).filter_by(ts_code=ts_code)
         result = self.session.execute(statement).scalars().first()
+        self.session.close()
 
         return result
 
@@ -209,6 +233,8 @@ class StockDao:
                     row.circ_mv = obj.get('circ_mv')
                 if obj.get('scan_date') is not None:
                     row.scan_date = obj.get('scan_date')
+                if obj.get('candle_date') is not None:
+                    row.candle_date = obj.get('candle_date')
 
         except Exception as e:
             print('Error:', e)
@@ -302,3 +328,11 @@ class StockDao:
         self.session.close()
 
         return df
+
+    def set_candle_ready(self, ts_code, dte):
+        with engine.connect() as conn:
+            stmts = stocks.update(). \
+                values(candle_date=dte). \
+                where(stocks.c.ts_code == ts_code)
+
+            conn.execute(stmts)

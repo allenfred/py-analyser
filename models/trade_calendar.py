@@ -133,7 +133,6 @@ class TradeCalendarDao:
             else:
                 return None
 
-
     def set_candle_ready(self, exchange, dte):
         stmts = ''
 

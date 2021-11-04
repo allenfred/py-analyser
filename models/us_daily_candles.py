@@ -1,5 +1,5 @@
 # 导入:
-from sqlalchemy import Column, Integer, String, Date, Float, select
+from sqlalchemy import Column, Integer, String, Date, Float, select, text
 from sqlalchemy.ext.declarative import declarative_base
 from .db import DBSession
 import pandas as pd
@@ -84,10 +84,13 @@ class USDailyCandleDao:
         self.session = DBSession()
 
     def find_all(self, ts_code):
-        statement = select(USDailyCandle).filter_by(ts_code=ts_code)
-        result = self.session.execute(statement).scalars().all()
+        s = text("select trade_date, open, close, high, low from us_daily_candles where ts_code = :ts_code "
+                 "order by trade_date desc limit 0,2000;")
+        statement = self.session.execute(s.params(ts_code=ts_code))
+        df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low'])
+        self.session.close()
 
-        return result
+        return df
 
     def bulk_insert(self, df):
         items = []
@@ -136,8 +139,6 @@ class USDailyCandleDao:
                 if row is None:
                     self.session.add(obj)
                 else:
-                    if obj.exchange is not None:
-                        row.exchange = obj.exchange
                     if obj.open is not None:
                         row.open = obj.open
                     if obj.high is not None:

@@ -1,6 +1,6 @@
 import pandas as pd
 from models.db import DBSession
-from models.daily_candles import DailyCandleDao
+from models.cn_daily_candles import CNDailyCandleDao
 from models.daily_indicators import DailyIndicatorDao
 from models.daily_long_signals import DailyLongSignalDao
 from models.daily_short_signals import DailyShortSignalDao
@@ -19,7 +19,7 @@ import numpy as np
 from api.daily_candle import get_cn_candles
 
 stockDao = StockDao()
-dailyCandleDao = DailyCandleDao()
+dailyCandleDao = CNDailyCandleDao()
 dailyIndicatorDao = DailyIndicatorDao()
 dailyLongSignalDao = DailyLongSignalDao()
 dailyShortSignalDao = DailyShortSignalDao()
@@ -28,12 +28,13 @@ stockLongSignalDao = StockLongSignalDao()
 stockShortSignalDao = StockShortSignalDao()
 
 if __name__ == "__main__":
-    ts_code = '002466.SZ'
+    ts_code = '000001.SZ'
 
-    s = text("select trade_date, open, close, high, low, `change` from daily_candles where ts_code = :ts_code "
+    s = text("select trade_date, open, close, high, low, `change`, pct_chg from cn_daily_candles "
+             "where ts_code = :ts_code "
              + "order by trade_date desc limit 0,200")
     statement = dailyCandleDao.session.execute(s.params(ts_code=ts_code))
-    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'change'])
+    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'change', 'pct_chg'])
     df = df.sort_values(by='trade_date', ascending=True)
 
     close = df.close.to_numpy()
@@ -90,11 +91,11 @@ if __name__ == "__main__":
     df['dea'] = DEA
     df['macd'] = MACD_BAR
 
-    bias6, bias12, bias24, bias60 = bias(close)
+    bias6, bias12, bias24, bias72 = bias(close)
     df['bias6'] = bias6
     df['bias12'] = bias12
     df['bias24'] = bias24
-    df['bias60'] = bias60
+    df['bias72'] = bias72
 
     high_td, low_td = td(close)
     df['high_td'] = high_td
@@ -107,8 +108,8 @@ if __name__ == "__main__":
         df_len = len(df)
         small_df = df.iloc[df_len - 10: df_len]
         item = df.iloc[df_len-1].to_dict()
-        dailyLongSignalDao.bulk_upsert(small_df)
-        stockLongSignalDao.upsert(item)
-        print('扫描成功: ', ts_code, ', 扫描最新K线时间: ', last_update_date)
+        # dailyLongSignalDao.bulk_upsert(small_df)
+        # stockLongSignalDao.upsert(item)
+        print('扫描成功: ', ts_code, ', 扫描最新K线时间: ', datetime.now())
     except Exception as e:
         print('更新扫描结果 Catch Error:', e)
