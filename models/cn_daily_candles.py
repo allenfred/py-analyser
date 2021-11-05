@@ -1,19 +1,14 @@
-# 导入:
 from sqlalchemy import Column, Integer, String, Date, Float, select, text
 from sqlalchemy.ext.declarative import declarative_base
 from .db import DBSession
 import pandas as pd
 
-# 创建对象的基类:
 Base = declarative_base()
 
 
-# 定义 candle 对象:
 class CNDailyCandle(Base):
-    # 表的名字:
     __tablename__ = 'cn_daily_candles'
 
-    # 表的结构:
     id = Column(Integer, autoincrement=True, primary_key=True)
     ts_code = Column(String)  # TS代码
     trade_date = Column(Date)  # 交易日期
@@ -82,6 +77,17 @@ def get_obj(candle):
 class CNDailyCandleDao:
     def __init__(self):
         self.session = DBSession()
+
+    def find_latest_candle(self):
+        s = text("select trade_date, open, close, high, low from cn_daily_candles order by trade_date desc limit 1;")
+        statement = self.session.execute(s.params())
+        df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low'])
+        self.session.close()
+
+        if len(df):
+            return df.iloc[0]
+        else:
+            return None
 
     def find_by_ts_code(self, ts_code):
         s = text("select trade_date, open, close, high, low from cn_daily_candles where ts_code = :ts_code "

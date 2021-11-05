@@ -21,7 +21,7 @@ calendarDao = TradeCalendarDao()
 stockDao = StockDao()
 
 
-def ready_candles_by_date():
+def ready_candles_by_date(start_time):
     while True:
         circle_start = time.time()
         item = calendarDao.find_one_candle_not_ready('CN')
@@ -39,7 +39,6 @@ def ready_candles_by_date():
                 df = get_cn_candles({"trade_date": trade_dte, "limit": 5000, "offset": offset})
                 df = df.sort_values(by='trade_date', ascending=False)
 
-                total_got_count += len(df)
                 if len(df) < 5000:
                     is_last_req = True
                 else:
@@ -49,6 +48,7 @@ def ready_candles_by_date():
                 db_df = dailyCandleDao.find_by_trade_date(item.cal_date)
                 new_df = df.loc[~df["ts_code"].isin(db_df["ts_code"].to_numpy())]
 
+                total_got_count += len(new_df)
                 dailyCandleDao.bulk_insert(new_df)
 
             except Exception as e:
@@ -56,11 +56,11 @@ def ready_candles_by_date():
 
         if item:
             print('已更新 CN daily_candles ', item.cal_date, ': ', total_got_count, ' 条数据，用时 ',
-                  round(time.time() - circle_start, 2), ' s')
+                  round(time.time() - circle_start, 1), ' s', ', 总用时 ',  round(time.time() - start_time, 1), 's')
             calendarDao.set_cn_candle_ready(item.cal_date)
 
 
-def ready_candles_by_stock():
+def ready_candles_by_stock(start_time):
     today = datetime.now().strftime("%Y-%m-%d")
     df = get_cn_candles({"ts_code": ts_code, "limit": 1, "offset": 0})
     latest_candle_date = datetime.strftime(datetime.strptime(df["trade_date"][0], "%Y%m%d"), '%Y-%m-%d')
@@ -87,8 +87,8 @@ def ready_candles_by_stock():
             dailyCandleDao.bulk_insert(new_df)
             stockDao.set_candle_ready(ts_code, today)
 
-            print('已更新 CN daily_candles :', ts_code, ': ', len(df), ' 条数据，用时 ',
-                  round(time.time() - circle_start, 2), ' s')
+            print('已更新 CN daily_candles :', ts_code, ': ', len(new_df), ' 条数据，用时 ',
+                  round(time.time() - circle_start, 1), 's', ', 总用时 ',  round(time.time() - start_time, 1), 's')
         except Exception as e:
             stockDao.set_candle_ready(ts_code, today)
             print('Error:', e)
@@ -96,6 +96,6 @@ def ready_candles_by_stock():
 
 if __name__ == "__main__":
     start = time.time()
-    ready_candles_by_date()
+    ready_candles_by_date(start)
     end = time.time()
-    print('用时', round(end - start, 2), 's')
+    print('用时', round(end - start, 1), 's')

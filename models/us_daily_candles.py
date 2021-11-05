@@ -83,6 +83,17 @@ class USDailyCandleDao:
     def __init__(self):
         self.session = DBSession()
 
+    def find_latest_candle(self):
+        s = text("select trade_date, open, close, high, low from us_daily_candles order by trade_date desc limit 1;")
+        statement = self.session.execute(s.params())
+        df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low'])
+        self.session.close()
+
+        if len(df):
+            return df.iloc[0]
+        else:
+            return None
+
     def find_by_ts_code(self, ts_code):
         s = text("select trade_date, open, close, high, low from us_daily_candles where ts_code = :ts_code "
                  "order by trade_date desc limit 0,2000;")

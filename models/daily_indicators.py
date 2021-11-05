@@ -58,7 +58,10 @@ class DailyIndicator(Base):
     bias6 = Column(Float)
     bias12 = Column(Float)
     bias24 = Column(Float)
+    bias60 = Column(Float)
     bias72 = Column(Float)
+    high_td = Column(Float)
+    low_td = Column(Float)
 
 
 def get_obj(indicator):
@@ -115,7 +118,10 @@ def get_obj(indicator):
         bias6=indicator.get('bias6', None),
         bias12=indicator.get('bias12', None),
         bias24=indicator.get('bias24', None),
+        bias60=indicator.get('bias60', None),
         bias72=indicator.get('bias72', None),
+        high_td=indicator.get('high_td', None),
+        low_td=indicator.get('low_td', None),
     )
 
 
@@ -222,6 +228,8 @@ class DailyIndicatorDao:
                         row.bias12 = obj.bias12
                     if obj.bias24 is not None:
                         row.bias24 = obj.bias24
+                    if obj.bias60 is not None:
+                        row.bias60 = obj.bias60
                     if obj.bias72 is not None:
                         row.bias72 = obj.bias72
 
@@ -232,3 +240,21 @@ class DailyIndicatorDao:
         self.session.close()
 
         return df
+
+    def reinsert(self, df):
+        ts_code = df['ts_code'][0]
+        self.session.execute("delete from daily_indicators where ts_code = :ts_code", {"ts_code": ts_code})
+        items = []
+
+        for index, item in df.iterrows():
+            item = item.to_dict()
+            item = {k: v if not pd.isna(v) else None for k, v in item.items()}
+            items.insert(index, item)
+
+        try:
+            self.session.bulk_insert_mappings(DailyIndicator, items)
+            self.session.commit()
+        except Exception as e:
+            print('Error:', e)
+
+        self.session.close()

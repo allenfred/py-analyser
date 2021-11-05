@@ -5,6 +5,16 @@ from .magic_nine_turn import td
 from .ma_shape import long_signals
 
 
+def used_time_fmt(start, end):
+    seconds = int(end - start)
+    if seconds > 3600:
+        return str(seconds // 3600) + ' h ' + str((seconds - (3600 * (seconds // 3600))) // 60) + \
+               ' min ' + str(seconds % 60) + ' s'
+    if 60 < seconds < 3600:
+        return str(seconds // 60) + ' min ' + str(int(seconds % 60)) + ' s'
+    return str(seconds) + ' s'
+
+
 def wrap_technical_quota(df):
     close = df.close.to_numpy()
 
