@@ -10,12 +10,14 @@ def bias(close):
     ma24 = SMA(close, 24)
     ma60 = SMA(close, 60)
     ma72 = SMA(close, 72)
+    ma120 = SMA(close, 120)
 
     bias6 = []
     bias12 = []
     bias24 = []
     bias60 = []
     bias72 = []
+    bias120 = []
 
     for index, value in enumerate(close):
         bias_6 = round((value - ma6[index]) / ma6[index], 5)
@@ -23,11 +25,13 @@ def bias(close):
         bias_24 = round((value - ma24[index]) / ma24[index], 5)
         bias_60 = round((value - ma60[index]) / ma60[index], 5)
         bias_72 = round((value - ma72[index]) / ma72[index], 5)
+        bias_120 = round((value - ma120[index]) / ma120[index], 5)
 
-        bias6.insert(index, round(bias_6 * 100, 1))
-        bias12.insert(index, round(bias_12 * 100, 1))
-        bias24.insert(index, round(bias_24 * 100, 1))
-        bias60.insert(index, round(bias_60 * 100, 1))
-        bias72.insert(index, round(bias_72 * 100, 1))
+        bias6.insert(index, round(bias_6 * 100, 2))
+        bias12.insert(index, round(bias_12 * 100, 2))
+        bias24.insert(index, round(bias_24 * 100, 2))
+        bias60.insert(index, round(bias_60 * 100, 2))
+        bias72.insert(index, round(bias_72 * 100, 2))
+        bias120.insert(index, round(bias_120 * 100, 2))
 
-    return bias6, bias12, bias24, bias_60, bias_72
+    return bias6, bias12, bias24, bias60, bias72, bias120

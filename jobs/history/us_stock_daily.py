@@ -13,6 +13,7 @@ import time
 from datetime import datetime
 from config.common import TS_TOKEN
 from api.daily_candle import get_us_candles
+from lib.util import used_time_fmt
 
 pro = ts.pro_api(TS_TOKEN)
 dailyCandleDao = USDailyCandleDao()
@@ -22,7 +23,6 @@ stockDao = StockDao()
 
 def ready_candles_by_date(start_time):
     while True:
-        circle_start = time.time()
         item = calendarDao.find_one_candle_not_ready('US')
 
         if item:
@@ -34,11 +34,15 @@ def ready_candles_by_date(start_time):
             break
 
         while not is_last_req:
-            try:
-                df = get_us_candles({"trade_date": trade_dte, "limit": 6000, "offset": offset})
-                df = df.sort_values(by='trade_date', ascending=False)
+            circle_start = time.time()
 
-                if len(df) < 6000:
+            try:
+                df = get_us_candles({"trade_date": trade_dte, "limit": 3000, "offset": offset})
+                df = df.sort_values(by='trade_date', ascending=False)
+                df['pct_chg'] = df['pct_change']
+                df['turnover_rate'] = df['turnover_ratio']
+
+                if len(df) < 3000:
                     is_last_req = True
                 else:
                     offset += len(df)
@@ -49,12 +53,12 @@ def ready_candles_by_date(start_time):
 
                 total_got_count += len(new_df)
                 dailyCandleDao.bulk_insert(new_df)
-
             except Exception as e:
                 print('Error:', e)
 
-        print('已更新 US daily_candles ', item.cal_date, ': ', total_got_count, ' 条数据，用时 ',
-              round(time.time() - circle_start, 1), ' s', ', 总用时 ',  round(time.time() - start_time, 1), 's')
+            print('已更新 US daily_candles ', item.cal_date, ': ', total_got_count, ' 条数据，用时 ',
+                  used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start_time, time.time()))
+
         calendarDao.set_us_candle_ready(item.cal_date)
 
 
@@ -87,8 +91,8 @@ def ready_candles_by_stock(start_time):
             dailyCandleDao.bulk_insert(new_df)
             stockDao.set_candle_ready(ts_code, today)
 
-            print('已更新 US daily_candles / ', ts_code, ': ', len(new_df), ' 条数据，用时 ',
-                  round(time.time() - circle_start, 1), ' s', ', 总用时 ',  round(time.time() - start_time, 1), 's')
+            print('已更新 US daily_candles :', ts_code, ': ', len(new_df), ' 条数据，用时 ',
+                  used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start_time, time.time()))
         except Exception as e:
             stockDao.set_candle_ready(ts_code, today)
             print('Error:', e)
@@ -99,4 +103,4 @@ if __name__ == "__main__":
     ready_candles_by_date(start)
     end = time.time()
 
-    print('用时', round(end - start, 1), 's')
+    print('用时', used_time_fmt(start, end))

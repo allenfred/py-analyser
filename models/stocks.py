@@ -50,6 +50,7 @@ class Stock(Base):
     circ_mv = Column(Float)  # 流通市值
     scan_date = Column(Date)  # 上一次扫描完成日期
     candle_date = Column(Date)  # 上一次获取candle完成日期
+    indicator_date = Column(Date)  # 上一次计算indicator完成日期
 
 
 stocks = Table('stocks', metadata_obj,
@@ -85,6 +86,7 @@ stocks = Table('stocks', metadata_obj,
                Column('circ_mv', Float),
                Column('scan_date', Date),
                Column('candle_date', Date),
+               Column('indicator_date', Date),
                )
 
 
@@ -123,7 +125,8 @@ def get_obj(item):
         total_mv=item.get('total_mv', None),
         circ_mv=item.get('circ_mv', None),
         scan_date=item.get('scan_date', None),
-        candle_date=item.get('candle_date', None)
+        candle_date=item.get('candle_date', None),
+        indicator_date=item.get('indicator_date', None)
     )
 
 
@@ -142,6 +145,25 @@ class StockDao:
                                                 " < :candle_date) and "
                                                 + exchange_query + "  limit 1").params(
             candle_date=candle_date))
+        stock_result = stock_stmts.fetchone()
+        self.session.close()
+
+        if len(stock_result) > 0:
+            return stock_result[0]
+        else:
+            return None
+
+    def find_one_indicator_not_ready(self, area, indicator_date):
+        exchange_query = "(exchange = 'SSE' or exchange = 'SZSE')"
+        if area == 'HK':
+            exchange_query = "exchange = 'HK'"
+        if area == 'US':
+            exchange_query = "exchange = 'US'"
+
+        stock_stmts = self.session.execute(text("select ts_code from stocks where (indicator_date is null "
+                                                "or indicator_date < :indicator_date) and "
+                                                + exchange_query + "  limit 1").params(
+            indicator_date=indicator_date))
         stock_result = stock_stmts.fetchone()
         self.session.close()
 
@@ -235,6 +257,8 @@ class StockDao:
                     row.scan_date = obj.get('scan_date')
                 if obj.get('candle_date') is not None:
                     row.candle_date = obj.get('candle_date')
+                if obj.get('indicator_date') is not None:
+                    row.indicator_date = obj.get('indicator_date')
 
         except Exception as e:
             print('Error:', e)

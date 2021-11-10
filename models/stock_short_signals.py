@@ -10,8 +10,9 @@ class StockShortSignal(Base):
     __tablename__ = 'stock_short_signals'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    ts_code = Column(String)  # TS代码
-    # 技术信号
+    ts_code = Column(String)
+    ma20_down = Column(SmallInteger)
+    ema20_down = Column(SmallInteger)
     ma30_down = Column(SmallInteger)
     ema30_down = Column(SmallInteger)
     ma60_down = Column(SmallInteger)
@@ -61,6 +62,7 @@ class StockShortSignal(Base):
     bias24 = Column(SmallInteger)
     bias60 = Column(SmallInteger)
     bias72 = Column(SmallInteger)
+    bias120 = Column(SmallInteger)
 
 
 def get_obj(signal):
@@ -69,7 +71,8 @@ def get_obj(signal):
 
     return StockShortSignal(
         ts_code=signal.get('ts_code', None),
-        # 技术信号
+        ma20_down=signal.get('ma20_down', None),
+        ema20_down=signal.get('ema20_down', None),
         ma30_down=signal.get('ma30_down', None),
         ema30_down=signal.get('ema30_down', None),
         ma60_down=signal.get('ma60_down', None),
@@ -119,6 +122,7 @@ def get_obj(signal):
         bias24=signal.get('bias24', None),
         bias60=signal.get('bias60', None),
         bias72=signal.get('bias72', None),
+        bias120=signal.get('bias120', None),
     )
 
 
@@ -136,6 +140,10 @@ class StockShortSignalDao:
             if row is None:
                 self.session.add(obj)
             else:
+                if obj.ma20_down is not None:
+                    row.ma20_down = obj.ma20_down
+                if obj.ema20_down is not None:
+                    row.ema20_down = obj.ema20_down
                 if obj.ma30_down is not None:
                     row.ma30_down = obj.ma30_down
                 if obj.ema30_down is not None:
@@ -234,6 +242,8 @@ class StockShortSignalDao:
                     row.bias60 = obj.bias60
                 if obj.bias72 is not None:
                     row.bias72 = obj.bias72
+                if obj.bias120 is not None:
+                    row.bias120 = obj.bias120
 
         except Exception as e:
             print('Error:', e)

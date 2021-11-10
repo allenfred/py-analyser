@@ -18,8 +18,9 @@ from talib import SMA, EMA, MACD
 from lib.bias import bias
 from lib.ma_slope import slope
 from lib.magic_nine_turn import td
-from lib.ma_shape import long_signals
-from lib.util import wrap_technical_quota, used_time_fmt
+from lib.signals import long_signals
+from lib.signal_analysis import rise_support_analysis
+from lib.util import wrap_technical_indicator, used_time_fmt
 import time
 from datetime import datetime, date
 import numpy as np
@@ -75,7 +76,11 @@ if __name__ == "__main__":
 
         if len(df) > 20:
             try:
-                df = wrap_technical_quota(df)
+                df = wrap_technical_indicator(df)
+                # 会对 bias6/bias12/bias24/bias60/bias72/bias120 发生替换
+                long_signals(df)
+                rise_support_analysis(df)
+
                 df_len = len(df)
                 small_df = df.iloc[df_len - 10: df_len]
                 item = df.iloc[df_len - 1].to_dict()

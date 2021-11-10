@@ -18,8 +18,9 @@ from talib import SMA, EMA, MACD
 from lib.bias import bias
 from lib.ma_slope import slope
 from lib.magic_nine_turn import td
-from lib.ma_shape import long_signals
-from lib.util import wrap_technical_quota
+from lib.signals import long_signals
+from lib.signal_analysis import rise_support_analysis
+from lib.util import wrap_technical_indicator, used_time_fmt
 import time
 from datetime import datetime, date
 import numpy as np
@@ -44,11 +45,10 @@ if __name__ == "__main__":
     scan_date = candle['trade_date']
 
     while True:
+        circle_start = time.time()
         used_time = round(time.time() - job_start, 0)
         if used_time > 3600 * 5:
             break
-
-        circle_start = time.time()
 
         ts_code = ''
         stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
@@ -74,14 +74,15 @@ if __name__ == "__main__":
         df = df.sort_values(by='trade_date', ascending=True)
         close = df.close.to_numpy()
         df['ts_code'] = ts_code
-        df['pct_chg'] = df['pct_change']
-        df['turnover_rate'] = df['turnover_ratio']
 
-        if len(df):
+        if len(df) > 20:
             try:
-                df = wrap_technical_quota(df)
-                df_len = len(df)
+                df = wrap_technical_indicator(df)
+                # 会对 bias6/bias12/bias24/bias60/bias72/bias120 发生替换
+                long_signals(df)
+                rise_support_analysis(df)
 
+                df_len = len(df)
                 small_df = df.iloc[df_len - 10: df_len]
                 item = df.iloc[df_len - 1].to_dict()
 

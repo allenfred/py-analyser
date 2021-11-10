@@ -14,6 +14,7 @@ import time
 from datetime import datetime
 from config.common import TS_TOKEN
 from api.daily_candle import get_cn_candles
+from lib.util import used_time_fmt
 
 pro = ts.pro_api(TS_TOKEN)
 dailyCandleDao = CNDailyCandleDao()
@@ -23,7 +24,6 @@ stockDao = StockDao()
 
 def ready_candles_by_date(start_time):
     while True:
-        circle_start = time.time()
         item = calendarDao.find_one_candle_not_ready('CN')
 
         if item:
@@ -35,6 +35,7 @@ def ready_candles_by_date(start_time):
             break
 
         while not is_last_req:
+            circle_start = time.time()
             try:
                 df = get_cn_candles({"trade_date": trade_dte, "limit": 5000, "offset": offset})
                 df = df.sort_values(by='trade_date', ascending=False)
@@ -54,10 +55,13 @@ def ready_candles_by_date(start_time):
             except Exception as e:
                 print('Error:', e)
 
-        if item:
-            print('已更新 CN daily_candles ', item.cal_date, ': ', total_got_count, ' 条数据，用时 ',
-                  round(time.time() - circle_start, 1), ' s', ', 总用时 ',  round(time.time() - start_time, 1), 's')
-            calendarDao.set_cn_candle_ready(item.cal_date)
+        if total_got_count == 0:
+            print('未获取到行情数据')
+            break
+
+        print('已更新 CN daily_candles ', item.cal_date, ': ', total_got_count, ' 条数据，用时 ',
+              used_time_fmt(circle_start, time.time()), ', 总用时 ',  used_time_fmt(start_time, time.time()))
+        calendarDao.set_cn_candle_ready(item.cal_date)
 
 
 def ready_candles_by_stock(start_time):
@@ -88,7 +92,7 @@ def ready_candles_by_stock(start_time):
             stockDao.set_candle_ready(ts_code, today)
 
             print('已更新 CN daily_candles :', ts_code, ': ', len(new_df), ' 条数据，用时 ',
-                  round(time.time() - circle_start, 1), 's', ', 总用时 ',  round(time.time() - start_time, 1), 's')
+                  used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start_time, time.time()))
         except Exception as e:
             stockDao.set_candle_ready(ts_code, today)
             print('Error:', e)
@@ -98,4 +102,5 @@ if __name__ == "__main__":
     start = time.time()
     ready_candles_by_date(start)
     end = time.time()
-    print('用时', round(end - start, 1), 's')
+
+    print('用时', used_time_fmt(start, end))

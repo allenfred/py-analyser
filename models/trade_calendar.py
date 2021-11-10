@@ -2,7 +2,7 @@
 from sqlalchemy import Table, MetaData, Column, Integer, String, Date, SmallInteger, select, or_, asc, desc
 from sqlalchemy.ext.declarative import declarative_base
 from .db import engine, DBSession
-from datetime import date
+from datetime import date, datetime, timedelta
 import pandas as pd
 
 Base = declarative_base()
@@ -113,10 +113,14 @@ class TradeCalendarDao:
     def find_one_candle_not_ready(self, exchange):
 
         with engine.connect() as conn:
+            today = date.today().strftime("%Y-%m-%d")
             if exchange == 'CN':
                 exchange = 'SSE'
 
-            today = date.today().strftime("%Y-%m-%d")
+            if exchange == 'US':
+                today = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
+
+            print(today)
 
             stmts = select(trade_calendar).where(
                 trade_calendar.c.exchange == exchange,

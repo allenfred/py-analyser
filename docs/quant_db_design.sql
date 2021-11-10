@@ -182,8 +182,8 @@ CREATE TABLE `daily_indicators` (
   `bias6` float,
   `bias12` float,
   `bias24` float,
-  `bias60` float,
   `bias72` float,
+  `bias120` float,
   `high_td` tinyint(2),
   `low_td` tinyint(2)
 );
@@ -192,6 +192,8 @@ CREATE TABLE `daily_long_signals` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `ts_code` varchar(255) NOT NULL COMMENT 'TS代码',
   `trade_date` date NOT NULL COMMENT '交易日期',
+  `ma20_up` tinyint(2) COMMENT 'MA20上行',
+  `ema20_up` tinyint(2) COMMENT 'EMA20上行',
   `ma30_up` tinyint(2) COMMENT 'MA30上行',
   `ema30_up` tinyint(2) COMMENT 'EMA30上行',
   `ma60_up` tinyint(2) COMMENT 'MA60上行',
@@ -239,14 +241,16 @@ CREATE TABLE `daily_long_signals` (
   `bias6` tinyint(2),
   `bias12` tinyint(2),
   `bias24` tinyint(2),
-  `bias60` tinyint(2),
-  `bias72` tinyint(2)
+  `bias72` tinyint(2),
+  `bias120` tinyint(2)
 );
 
 CREATE TABLE `daily_short_signals` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `ts_code` varchar(255) NOT NULL COMMENT 'TS代码',
   `trade_date` date NOT NULL COMMENT '交易日期',
+  `ma20_down` tinyint(2) COMMENT 'MA20下行',
+  `ema20_down` tinyint(2) COMMENT 'EMA20下行',
   `ma30_down` tinyint(2) COMMENT 'MA30下行',
   `ema30_down` tinyint(2) COMMENT 'EMA30下行',
   `ma60_down` tinyint(2) COMMENT 'MA60下行',
@@ -294,13 +298,15 @@ CREATE TABLE `daily_short_signals` (
   `bias6` tinyint(2),
   `bias12` tinyint(2),
   `bias24` tinyint(2),
-  `bias60` tinyint(2),
-  `bias72` tinyint(2)
+  `bias72` tinyint(2),
+  `bias120` tinyint(2)
 );
 
 CREATE TABLE `stock_long_signals` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `ts_code` varchar(255) NOT NULL COMMENT 'TS代码',
+  `ma20_up` tinyint(2) COMMENT 'MA20上行',
+  `ema20_up` tinyint(2) COMMENT 'EMA20上行',
   `ma30_up` tinyint(2) COMMENT 'MA30上行',
   `ema30_up` tinyint(2) COMMENT 'EMA30上行',
   `ma60_up` tinyint(2) COMMENT 'MA60上行',
@@ -348,13 +354,15 @@ CREATE TABLE `stock_long_signals` (
   `bias6` tinyint(2),
   `bias12` tinyint(2),
   `bias24` tinyint(2),
-  `bias60` tinyint(2),
-  `bias72` tinyint(2)
+  `bias72` tinyint(2),
+  `bias120` tinyint(2)
 );
 
 CREATE TABLE `stock_short_signals` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `ts_code` varchar(255) NOT NULL COMMENT 'TS代码',
+  `ma20_down` tinyint(2) COMMENT 'MA20下行',
+  `ema20_down` tinyint(2) COMMENT 'EMA20下行',
   `ma30_down` tinyint(2) COMMENT 'MA30下行',
   `ema30_down` tinyint(2) COMMENT 'EMA30下行',
   `ma60_down` tinyint(2) COMMENT 'MA60下行',
@@ -402,8 +410,8 @@ CREATE TABLE `stock_short_signals` (
   `bias6` tinyint(2),
   `bias12` tinyint(2),
   `bias24` tinyint(2),
-  `bias60` tinyint(2),
-  `bias72` tinyint(2)
+  `bias72` tinyint(2),
+  `bias120` tinyint(2)
 );
 
 CREATE TABLE `weekly_candles` (
@@ -431,8 +439,19 @@ CREATE TABLE `weekly_candles` (
   `bias6` float,
   `bias12` float,
   `bias24` float,
-  `bias60` float,
-  `bias72` float
+  `bias72` float,
+  `bias120` float
+);
+
+CREATE TABLE `signal_analysis` (
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
+  `ts_code` varchar(255) NOT NULL COMMENT 'TS代码',
+  `trade_date` date NOT NULL COMMENT '交易日期',
+  `exchange` varchar(255) NOT NULL COMMENT '交易所代码 CN HK US',
+  `weak_bias60_support` tinyint(2),
+  `strong_bias60_support` tinyint(2),
+  `weak_bias120_support` tinyint(2),
+  `strong_bias120_support` tinyint(2)
 );
 
 CREATE TABLE `users` (
@@ -505,3 +524,11 @@ CREATE INDEX `weekly_candles_index_23` ON `weekly_candles` (`ts_code`);
 CREATE INDEX `weekly_candles_index_24` ON `weekly_candles` (`trade_date`);
 
 CREATE UNIQUE INDEX `weekly_candle_unique` ON `weekly_candles` (`ts_code`, `trade_date`);
+
+CREATE INDEX `signal_analysis_index_26` ON `signal_analysis` (`ts_code`);
+
+CREATE INDEX `signal_analysis_index_27` ON `signal_analysis` (`trade_date`);
+
+CREATE INDEX `signal_analysis_index_28` ON `signal_analysis` (`exchange`);
+
+CREATE UNIQUE INDEX `signal_analysis_unique` ON `signal_analysis` (`ts_code`, `trade_date`);
