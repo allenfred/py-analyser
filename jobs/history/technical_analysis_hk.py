@@ -1,3 +1,5 @@
+# -- coding: utf-8 -
+
 import os
 import sys
 
@@ -12,6 +14,8 @@ from models.daily_long_signals import DailyLongSignalDao
 from models.daily_short_signals import DailyShortSignalDao
 from models.stock_long_signals import StockLongSignalDao
 from models.stock_short_signals import StockShortSignalDao
+from models.signal_analysis import SignalAnalysisDao
+
 from models.stocks import StockDao
 from sqlalchemy import text
 from talib import SMA, EMA, MACD
@@ -33,6 +37,7 @@ dailyLongSignalDao = DailyLongSignalDao()
 dailyShortSignalDao = DailyShortSignalDao()
 stockLongSignalDao = StockLongSignalDao()
 stockShortSignalDao = StockShortSignalDao()
+analysisDao = SignalAnalysisDao()
 
 if __name__ == "__main__":
     job_start = time.time()
@@ -60,7 +65,8 @@ if __name__ == "__main__":
             ts_code = stock_result[0]
             print('开始扫描: ', ts_code)
         else:
-            all_scan_set = True
+            print('没有需要扫描的股票')
+            break
 
         statement = dailyCandleDao.session.execute(text("select trade_date, open, close, high, low, pct_chg "
                                                         "from hk_daily_candles where ts_code = :ts_code "
@@ -71,8 +77,10 @@ if __name__ == "__main__":
                                                           "limit 0,500").params(ts_code=ts_code))
         df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
         df = df.sort_values(by='trade_date', ascending=True)
-        close = df.close.to_numpy()
+        df['num'] = df.index[::-1].to_numpy()
+        df = df.set_index('num')
         df['ts_code'] = ts_code
+        df['exchange'] = 'HK'
 
         if len(df) > 20:
             try:
@@ -82,10 +90,11 @@ if __name__ == "__main__":
                 rise_support_analysis(df)
 
                 df_len = len(df)
-                small_df = df.iloc[df_len - 10: df_len]
+                small_df = df.iloc[df_len - 60: df_len]
                 item = df.iloc[df_len - 1].to_dict()
 
-                dailyLongSignalDao.reinsert(small_df)
+                analysisDao.reinsert(small_df, ts_code)
+                dailyLongSignalDao.reinsert(small_df, ts_code)
                 stockLongSignalDao.upsert(item)
 
                 stockDao.update({'ts_code': ts_code, 'scan_date': scan_date})

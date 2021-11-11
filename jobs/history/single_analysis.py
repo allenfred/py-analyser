@@ -40,10 +40,10 @@ analysisDao = SignalAnalysisDao()
 
 
 if __name__ == "__main__":
-    ts_code = '603927.SH'
+    ts_code = '600183.SH'
 
     s = text("select trade_date, open, close, high, low, `pct_chg` from cn_daily_candles where ts_code = :ts_code "
-             + "order by trade_date desc limit 0,200")
+             + "order by trade_date desc limit 0,400")
     statement = dailyCandleDao.session.execute(s.params(ts_code=ts_code))
     df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
     df = df.sort_values(by='trade_date', ascending=True)
@@ -56,16 +56,15 @@ if __name__ == "__main__":
     df = wrap_technical_indicator(df)
     # 会对 bias6/bias12/bias24/bias60/bias72/bias120 发生替换
     long_signals(df)
-    # rise_support_analysis(df)
+    rise_support_analysis(df)
     df_len = len(df)
 
-    small_df = df.iloc[df_len - 30: df_len]
-    # item = df.iloc[df_len - 1].to_dict()
+    small_df = df.iloc[df_len - 60: df_len]
+    item = df.iloc[df_len - 1].to_dict()
 
-    print(small_df)
-    # analysisDao.reinsert(small_df)
-    # dailyLongSignalDao.reinsert(small_df)
-    # stockLongSignalDao.upsert(item)
+    analysisDao.reinsert(small_df, ts_code)
+    dailyLongSignalDao.reinsert(small_df, ts_code)
+    stockLongSignalDao.upsert(item)
 
     # stockDao.update({'ts_code': ts_code, 'scan_date': scan_date})
 

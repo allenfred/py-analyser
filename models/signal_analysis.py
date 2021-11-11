@@ -13,10 +13,32 @@ class SignalAnalysis(Base):
     ts_code = Column(String)
     trade_date = Column(Date)
     exchange = Column(String)  # 交易所 CN HK US
-    weak_bias60_support = Column(SmallInteger)
-    strong_bias60_support = Column(SmallInteger)
-    weak_bias120_support = Column(SmallInteger)
-    strong_bias120_support = Column(SmallInteger)
+    ma60_support = Column(SmallInteger)
+    ema60_support = Column(SmallInteger)
+    ma120_support = Column(SmallInteger)
+    ema120_support = Column(SmallInteger)
+
+    yearly_price_position = Column(SmallInteger)
+    yearly_price_position10 = Column(SmallInteger)
+    yearly_price_position1020 = Column(SmallInteger)
+    yearly_price_position2030 = Column(SmallInteger)
+    yearly_price_position3050 = Column(SmallInteger)
+    yearly_price_position5070 = Column(SmallInteger)
+    yearly_price_position70100 = Column(SmallInteger)
+
+    ma_group_glue = Column(SmallInteger)
+    ema_group_glue = Column(SmallInteger)
+    ma_up_arrange51020 = Column(SmallInteger)
+    ma_up_arrange5102030 = Column(SmallInteger)
+    ma_up_arrange510203060 = Column(SmallInteger)
+    ma_up_arrange203060 = Column(SmallInteger)
+    ma_up_arrange2060120 = Column(SmallInteger)
+
+    ema_up_arrange51020 = Column(SmallInteger)
+    ema_up_arrange5102030 = Column(SmallInteger)
+    ema_up_arrange510203060 = Column(SmallInteger)
+    ema_up_arrange203060 = Column(SmallInteger)
+    ema_up_arrange2055120 = Column(SmallInteger)
 
 
 def get_obj(signal):
@@ -27,10 +49,31 @@ def get_obj(signal):
         ts_code=signal.get('ts_code', None),
         trade_date=signal.get('trade_date', None),
         exchange=item.get('exchange', None),
-        weak_bias60_support=signal.get('weak_bias60_support', None),
-        strong_bias60_support=signal.get('strong_bias60_support', None),
-        weak_bias120_support=signal.get('weak_bias120_support', None),
-        strong_bias120_support=signal.get('strong_bias120_support', None),
+        ma60_support=signal.get('ma60_support', None),
+        ema60_support=signal.get('ema60_support', None),
+        ma120_support=signal.get('ma120_support', None),
+        ema120_support=signal.get('ema120_support', None),
+
+        yearly_price_position=signal.get('yearly_price_position', None),
+        yearly_price_position10=signal.get('yearly_price_position10', None),
+        yearly_price_position1020=signal.get('yearly_price_position1020', None),
+        yearly_price_position2030=signal.get('yearly_price_position2030', None),
+        yearly_price_position3050=signal.get('yearly_price_position3050', None),
+        yearly_price_position5070=signal.get('yearly_price_position5070', None),
+        yearly_price_position70100=signal.get('yearly_price_position70100', None),
+
+        ma_group_glue=signal.get('ma_group_glue', None),
+        ema_group_glue=signal.get('ema_group_glue', None),
+        ma_up_arrange51020=signal.get('ma_up_arrange51020', None),
+        ma_up_arrange5102030=signal.get('ma_up_arrange5102030', None),
+        ma_up_arrange510203060=signal.get('ma_up_arrange510203060', None),
+        ma_up_arrange203060=signal.get('ma_up_arrange203060', None),
+        ma_up_arrange2060120=signal.get('ma_up_arrange2060120', None),
+        ema_up_arrange51020=signal.get('ema_up_arrange51020', None),
+        ema_up_arrange5102030=signal.get('ema_up_arrange5102030', None),
+        ema_up_arrange510203060=signal.get('ema_up_arrange510203060', None),
+        ema_up_arrange203060=signal.get('ema_up_arrange203060', None),
+        ema_up_arrange2055120=signal.get('ema_up_arrange2055120', None),
     )
 
 
@@ -84,14 +127,14 @@ class SignalAnalysisDao:
                 if row is None:
                     self.session.add(obj)
                 else:
-                    if obj.weak_bias60_support is not None:
-                        row.weak_bias60_support = obj.weak_bias60_support
-                    if obj.strong_bias60_support is not None:
-                        row.strong_bias60_support = obj.strong_bias60_support
-                    if obj.weak_bias120_support is not None:
-                        row.weak_bias120_support = obj.weak_bias120_support
-                    if obj.strong_bias120_support is not None:
-                        row.strong_bias120_support = obj.strong_bias120_support
+                    if obj.ma60_support is not None:
+                        row.ma60_support = obj.ma60_support
+                    if obj.ma120_support is not None:
+                        row.ma120_support = obj.ma120_support
+                    if obj.ema60_support is not None:
+                        row.ema60_support = obj.ema60_support
+                    if obj.ema120_support is not None:
+                        row.ema120_support = obj.ema120_support
 
             except Exception as e:
                 print('Error:', e)
@@ -101,8 +144,7 @@ class SignalAnalysisDao:
 
         return df
 
-    def reinsert(self, df):
-        ts_code = df['ts_code'][0]
+    def reinsert(self, df, ts_code):
         self.session.execute("delete from signal_analysis where ts_code = :ts_code", {"ts_code": ts_code})
         items = []
 

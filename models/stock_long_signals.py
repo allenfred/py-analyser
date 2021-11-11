@@ -36,9 +36,11 @@ class StockLongSignal(Base):
     ma_gold_cross1 = Column(SmallInteger)
     ma_gold_cross2 = Column(SmallInteger)
     ma_gold_cross3 = Column(SmallInteger)
+    ma_gold_cross4 = Column(SmallInteger)
     ema_gold_cross1 = Column(SmallInteger)
     ema_gold_cross2 = Column(SmallInteger)
     ema_gold_cross3 = Column(SmallInteger)
+    ema_gold_cross4 = Column(SmallInteger)
     ma_silver_valley = Column(SmallInteger)
     ema_silver_valley = Column(SmallInteger)
     ma_gold_valley = Column(SmallInteger)
@@ -95,9 +97,11 @@ def get_obj(signal):
         ma_gold_cross1=signal.get('ma_gold_cross1', None),
         ma_gold_cross2=signal.get('ma_gold_cross2', None),
         ma_gold_cross3=signal.get('ma_gold_cross3', None),
+        ma_gold_cross4=signal.get('ma_gold_cross4', None),
         ema_gold_cross1=signal.get('ema_gold_cross1', None),
         ema_gold_cross2=signal.get('ema_gold_cross2', None),
         ema_gold_cross3=signal.get('ema_gold_cross3', None),
+        ema_gold_cross4=signal.get('ema_gold_cross4', None),
         ma_silver_valley=signal.get('ma_silver_valley', None),
         ema_silver_valley=signal.get('ema_silver_valley', None),
         ma_gold_valley=signal.get('ma_gold_valley', None),
@@ -188,12 +192,16 @@ class StockLongSignalDao:
                     row.ma_gold_cross2 = obj.ma_gold_cross2
                 if obj.ma_gold_cross3 is not None:
                     row.ma_gold_cross3 = obj.ma_gold_cross3
+                if obj.ma_gold_cross4 is not None:
+                    row.ma_gold_cross4 = obj.ma_gold_cross4
                 if obj.ema_gold_cross1 is not None:
                     row.ema_gold_cross1 = obj.ema_gold_cross1
                 if obj.ema_gold_cross2 is not None:
                     row.ema_gold_cross2 = obj.ema_gold_cross2
                 if obj.ema_gold_cross3 is not None:
                     row.ema_gold_cross3 = obj.ema_gold_cross3
+                if obj.ema_gold_cross4 is not None:
+                    row.ema_gold_cross4 = obj.ema_gold_cross4
                 if obj.ma_silver_valley is not None:
                     row.ma_silver_valley = obj.ma_silver_valley
                 if obj.ema_silver_valley is not None:

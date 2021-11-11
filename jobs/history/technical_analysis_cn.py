@@ -1,3 +1,5 @@
+# -- coding: utf-8 -
+
 import os
 import sys
 
@@ -33,10 +35,8 @@ dailyCandleDao = CNDailyCandleDao()
 dailyIndicatorDao = DailyIndicatorDao()
 dailyLongSignalDao = DailyLongSignalDao()
 dailyShortSignalDao = DailyShortSignalDao()
-
 stockLongSignalDao = StockLongSignalDao()
 stockShortSignalDao = StockShortSignalDao()
-
 analysisDao = SignalAnalysisDao()
 
 if __name__ == "__main__":
@@ -67,6 +67,7 @@ if __name__ == "__main__":
             ts_code = stock_result[0]
             print('开始扫描: ', ts_code)
         else:
+            print('没有需要扫描的股票')
             break
 
         statement = dailyCandleDao.session.execute(text("select trade_date, open, close, high, low, pct_chg "
@@ -79,6 +80,8 @@ if __name__ == "__main__":
 
         df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
         df = df.sort_values(by='trade_date', ascending=True)
+        df['num'] = df.index[::-1].to_numpy()
+        df = df.set_index('num')
         df['ts_code'] = ts_code
         df['exchange'] = 'CN'
 
@@ -90,11 +93,11 @@ if __name__ == "__main__":
                 rise_support_analysis(df)
                 df_len = len(df)
 
-                small_df = df.iloc[df_len - 30: df_len]
+                small_df = df.iloc[df_len - 60: df_len]
                 item = df.iloc[df_len - 1].to_dict()
 
-                analysisDao.reinsert(small_df)
-                dailyLongSignalDao.reinsert(small_df)
+                analysisDao.reinsert(small_df, ts_code)
+                dailyLongSignalDao.reinsert(small_df, ts_code)
                 stockLongSignalDao.upsert(item)
 
                 stockDao.update({'ts_code': ts_code, 'scan_date': scan_date})
@@ -103,8 +106,9 @@ if __name__ == "__main__":
                       used_time_fmt(circle_start, time.time()), ",总用时",
                       used_time_fmt(job_start, time.time()))
             except Exception as e:
-                stockDao.update({'ts_code': ts_code, 'scan_date': scan_date})
                 print('更新 Catch Error:', e)
+                break
+                stockDao.update({'ts_code': ts_code, 'scan_date': scan_date})
         else:
             stockDao.update({'ts_code': ts_code, 'scan_date': scan_date})
             print('股票代码: ', ts_code, ' 没有行情数据')
