@@ -50,7 +50,8 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
         table_name = 'us_daily_candles'
 
     start = time.time()
-    statement = dailyCandleDao.session.execute(text("select trade_date, open, close, high, low, pct_chg from "
+    session = DBSession()
+    statement = session.execute(text("select trade_date, open, close, high, low, pct_chg from "
                                                     + table_name + " where ts_code = :ts_code "
                                                     + "and trade_date > '2015-01-01' and open is not null "
                                                       "and close is not null and high is not null and"
@@ -59,6 +60,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
                                                       "limit 0,400").params(ts_code=ts_code))
 
     df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
+    session.commit()
 
     if len(df):
         df = df.sort_values(by='trade_date', ascending=True)
