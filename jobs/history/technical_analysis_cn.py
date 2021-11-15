@@ -7,7 +7,7 @@ path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 sys.path.append(path)
 
 import pandas as pd
-from models.db import DBSession
+from models.db import engine, DBSession
 from models.cn_daily_candles import CNDailyCandleDao
 from models.daily_indicators import DailyIndicatorDao
 from models.daily_long_signals import DailyLongSignalDao
@@ -82,6 +82,8 @@ if __name__ == "__main__":
             scan_date=scan_date))
         stock_result = stock_stmts.fetchall()
         session.commit()
+        session.close()
+        engine.dispose()
 
         if len(stock_result) == 0:
             print('没有需要扫描的股票')

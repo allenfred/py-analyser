@@ -7,7 +7,7 @@ path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 sys.path.append(path)
 
 import pandas as pd
-from models.db import DBSession
+from models.db import engine, DBSession
 from models.cn_daily_candles import CNDailyCandleDao
 from models.daily_indicators import DailyIndicatorDao
 from models.daily_long_signals import DailyLongSignalDao
@@ -61,6 +61,8 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
 
     df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
     session.commit()
+    session.close()
+    engine.dispose()
 
     if len(df):
         df = df.sort_values(by='trade_date', ascending=True)
