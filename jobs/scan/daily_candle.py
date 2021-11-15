@@ -62,6 +62,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
     df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
     session.commit()
     session.close()
+    engine.dispose()
 
     if len(df):
         df = df.sort_values(by='trade_date', ascending=True)
