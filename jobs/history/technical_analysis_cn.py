@@ -58,7 +58,7 @@ def multi_scan(stocks):
     for i in range(len(stocks)):
         p.apply_async(scan_daily_candles, args=(stocks[i][0], 'CN', scan_date,))
 
-    p.close()
+    p.start()
     p.join()
 
 
