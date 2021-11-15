@@ -44,22 +44,33 @@ stockLongSignalDao = StockLongSignalDao()
 stockShortSignalDao = StockShortSignalDao()
 analyticDao = AnalyticSignalDao()
 
+#
+# def multi_scan(stocks):
+#     pool_cnt = multiprocessing.cpu_count()
+#
+#     if pool_cnt > 8:
+#         pool_cnt = 8
+#     else:
+#         pool_cnt = 8
+#
+#     p = Pool(pool_cnt)
+#
+#     for i in range(len(stocks)):
+#         p.apply_async(scan_daily_candles, args=(stocks[i][0], 'CN', scan_date,))
+#
+#     p.close()
+#     p.join()
+
 
 def multi_scan(stocks):
-    pool_cnt = multiprocessing.cpu_count()
-
-    if pool_cnt > 8:
-        pool_cnt = 8
-    else:
-        pool_cnt = 8
-
-    p = Pool(pool_cnt)
-
+    jobs = []
     for i in range(len(stocks)):
-        p.apply_async(scan_daily_candles, args=(stocks[i][0], 'CN', scan_date,))
+        p = multiprocessing.Process(target=scan_daily_candles, args=(stocks[i][0], 'CN', scan_date,))
+        jobs.append(p)
+        p.start()
 
-    p.start()
-    p.join()
+    for j in jobs:
+        j.join()
 
 
 if __name__ == "__main__":
@@ -82,7 +93,7 @@ if __name__ == "__main__":
         session = DBSession()
         stock_stmts = session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
                                            " < :scan_date) and "
-                                           "(exchange = 'SSE' or exchange = 'SZSE')  limit 20").params(
+                                           "(exchange = 'SSE' or exchange = 'SZSE')  limit 10").params(
             scan_date=scan_date))
         stock_result = stock_stmts.fetchall()
         session.commit()
