@@ -47,6 +47,7 @@ analyticDao = AnalyticSignalDao()
 
 def multi_scan(stocks):
     pool_cnt = multiprocessing.cpu_count()
+    print(pool_cnt)
     if pool_cnt > 8:
         pool_cnt = 8
 
@@ -83,6 +84,7 @@ if __name__ == "__main__":
         stock_result = stock_stmts.fetchall()
         session.commit()
         session.close()
+        engine.dispose()
 
         if len(stock_result) == 0:
             print('没有需要扫描的股票')
