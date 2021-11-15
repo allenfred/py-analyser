@@ -66,6 +66,7 @@ if __name__ == "__main__":
         quit()
 
     scan_date = candle['trade_date']
+    scan_date = datetime.strftime(scan_date, "%Y-%m-%d")
 
     while True:
         used_time = round(time.time() - job_start, 0)
