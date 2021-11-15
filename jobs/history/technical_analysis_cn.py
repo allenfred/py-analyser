@@ -31,7 +31,6 @@ import numpy as np
 from api.daily_candle import get_cn_candles
 import time
 import threading
-import psutil
 import multiprocessing
 from multiprocessing import Pool
 from jobs.scan.daily_candle import scan_daily_candles
