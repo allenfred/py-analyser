@@ -78,6 +78,7 @@ if __name__ == "__main__":
         if used_time > 3600 * 5:
             break
 
+        engine.dispose()
         session = DBSession()
         stock_stmts = session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
                                            " < :scan_date) and "
@@ -85,8 +86,7 @@ if __name__ == "__main__":
             scan_date=scan_date))
         stock_result = stock_stmts.fetchall()
         session.commit()
-        session.close()
-        engine.dispose()
+        # session.close()
 
         if len(stock_result) == 0:
             print('没有需要扫描的股票')

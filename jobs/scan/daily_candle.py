@@ -50,6 +50,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
         table_name = 'us_daily_candles'
 
     start = time.time()
+    engine.dispose()
     session = DBSession()
     statement = session.execute(text("select trade_date, open, close, high, low, pct_chg from "
                                                     + table_name + " where ts_code = :ts_code "
@@ -60,8 +61,8 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
                                                       "limit 0,400").params(ts_code=ts_code))
 
     df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
-    session.commit()
-    session.close()
+    # session.commit()
+    # session.close()
 
     if len(df):
         df = df.sort_values(by='trade_date', ascending=True)
