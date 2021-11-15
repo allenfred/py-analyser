@@ -83,7 +83,6 @@ if __name__ == "__main__":
         stock_result = stock_stmts.fetchall()
         session.commit()
         session.close()
-        engine.dispose()
 
         if len(stock_result) == 0:
             print('没有需要扫描的股票')
