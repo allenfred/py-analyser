@@ -31,6 +31,7 @@ import numpy as np
 from api.daily_candle import get_cn_candles
 import time
 import threading
+import psutil
 import multiprocessing
 from multiprocessing import Pool
 from jobs.scan.daily_candle import scan_daily_candles
@@ -47,8 +48,10 @@ analyticDao = AnalyticSignalDao()
 
 def multi_scan(stocks):
     pool_cnt = multiprocessing.cpu_count()
-    print(pool_cnt)
+
     if pool_cnt > 8:
+        pool_cnt = 8
+    else:
         pool_cnt = 8
 
     p = Pool(pool_cnt)
