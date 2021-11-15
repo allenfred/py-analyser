@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Float, SmallInteger, select
+from sqlalchemy import Column, Integer, String, Date, Float, SmallInteger, select, text
 from sqlalchemy.ext.declarative import declarative_base
 from .db import DBSession
 import pandas as pd
@@ -131,7 +131,16 @@ class DailyIndicatorDao:
     def __init__(self):
         self.session = DBSession()
 
-    def find_all(self, ts_code):
+    def find_by_ts_code(self, ts_code):
+        s = text("select trade_date from daily_indicators where ts_code = :ts_code "
+                 "order by trade_date desc limit 0,500;")
+        statement = self.session.execute(s.params(ts_code=ts_code))
+        df = pd.DataFrame(statement.fetchall(), columns=['trade_date'])
+        self.session.close()
+
+        return df
+
+    def find_all_by_ts_code(self, ts_code):
         statement = select(DailyIndicator).filter_by(ts_code=ts_code)
         result = self.session.execute(statement).scalars().all()
 
@@ -151,99 +160,24 @@ class DailyIndicatorDao:
 
         return obj
 
-    def bulk_insert(self, df):
+    def bulk_insert(self, df, ts_code):
+        db_df = self.find_by_ts_code(ts_code)
+        insert_needed_df = df.loc[~df["trade_date"].isin(db_df["trade_date"].to_numpy())]
+
         items = []
-        for index, item in df.iterrows():
+        for index, item in insert_needed_df.iterrows():
             item = item.to_dict()
             item = {k: v if not pd.isna(v) else None for k, v in item.items()}
             items.insert(index, item)
 
         try:
+
             self.session.bulk_insert_mappings(DailyIndicator, items)
             self.session.commit()
         except Exception as e:
             print('Error:', e)
         finally:
             self.session.close()
-
-    def bulk_upsert(self, df):
-
-        for index, indicator in df.iterrows():
-            obj = get_obj(indicator)
-
-            try:
-                row = self.session.query(DailyIndicator).filter(DailyIndicator.ts_code == indicator['ts_code']).filter(
-                    DailyIndicator.trade_date == indicator['trade_date']).first()
-
-                if row is None:
-                    self.session.add(obj)
-                else:
-                    if obj.ma5 is not None:
-                        row.ma5 = obj.ma5
-                    if obj.ma10 is not None:
-                        row.ma10 = obj.ma10
-                    if obj.ma20 is not None:
-                        row.ma20 = obj.ma20
-                    if obj.ma30 is not None:
-                        row.ma30 = obj.ma30
-                    if obj.ma34 is not None:
-                        row.ma34 = obj.ma34
-                    if obj.ma55 is not None:
-                        row.ma55 = obj.ma55
-                    if obj.ma60 is not None:
-                        row.ma60 = obj.ma60
-                    if obj.ma120 is not None:
-                        row.ma120 = obj.ma120
-                    if obj.ma144 is not None:
-                        row.ma144 = obj.ma44
-                    if obj.ma169 is not None:
-                        row.ma169 = obj.ma169
-                    if obj.ema5 is not None:
-                        row.ema5 = obj.ema5
-                    if obj.ema10 is not None:
-                        row.ema10 = obj.ema10
-                    if obj.ema20 is not None:
-                        row.ema20 = obj.ema20
-                    if obj.ema30 is not None:
-                        row.ema30 = obj.ema30
-                    if obj.ema34 is not None:
-                        row.ema34 = obj.ema34
-                    if obj.ema55 is not None:
-                        row.ema55 = obj.ema55
-                    if obj.ema60 is not None:
-                        row.ema60 = obj.ema60
-                    if obj.ema120 is not None:
-                        row.ema120 = obj.ema120
-                    if obj.ema144 is not None:
-                        row.ema144 = obj.ema144
-                    if obj.ema169 is not None:
-                        row.ema169 = obj.ema169
-                    if obj.diff is not None:
-                        row.diff = obj.diff
-                    if obj.dea is not None:
-                        row.dea = obj.dea
-                    if obj.macd is not None:
-                        row.macd = obj.macd
-                    if obj.bias6 is not None:
-                        row.bias6 = obj.bias6
-                    if obj.bias12 is not None:
-                        row.bias12 = obj.bias12
-                    if obj.bias24 is not None:
-                        row.bias24 = obj.bias24
-                    if obj.bias60 is not None:
-                        row.bias60 = obj.bias60
-                    if obj.bias72 is not None:
-                        row.bias72 = obj.bias72
-                    if obj.bias120 is not None:
-                        row.bias120 = obj.bias120
-
-            except Exception as e:
-                print('Error:', e)
-
-            self.session.commit()
-        self.session.close()
-
-        return df
 
     def reinsert(self, df):
         ts_code = df['ts_code'][0]

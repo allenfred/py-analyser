@@ -13,6 +13,12 @@ def rise_support_analysis(df):
 
     # 连续两日K线在ma120上方止跌
 
+    # 最近3个交易日站上 ma60/ma120 ema60/ema120
+    set_stand_up_ma60(df)
+    set_stand_up_ma120(df)
+    set_stand_up_ema60(df)
+    set_stand_up_ema120(df)
+
     # 连续两日K线在ma60上方收出下影线 / 或遇支撑
     set_ma60_support(df)
     set_ema60_support(df)
@@ -24,23 +30,20 @@ def rise_support_analysis(df):
     # 收盘价 yearly_price_position
     set_yearly_price_position(df)
 
-    # 收盘价处于最近一年10%分位点 price_position10
+    # 收盘价处于最近一年 10% 以下分位点 price_position10
     set_yearly_price_position10(df)
 
-    # 收盘价处于最近一年 (10%-20%) 分位点 price_position1020
-    set_yearly_price_position1020(df)
+    # 收盘价处于最近一年 20% 以下分位点 price_position20
+    set_yearly_price_position20(df)
 
-    # 收盘价处于最近一年 (20%-30%) 分位点 price_position2030
-    set_yearly_price_position2030(df)
+    # 收盘价处于最近一年 30% 以下分位点 price_position30
+    set_yearly_price_position30(df)
 
-    # 收盘价处于最近一年 (30%-50%) 分位点 price_position3050
-    set_yearly_price_position3050(df)
+    # 收盘价处于最近一年 50% 以下分位点 price_position50
+    set_yearly_price_position50(df)
 
-    # 收盘价处于最近一年 (50%-70%) 分位点 price_position5070
-    set_yearly_price_position5070(df)
-
-    # 收盘价处于最近一年 (70%-100%) 分位点 price_position70100
-    set_yearly_price_position70100(df)
+    # 收盘价处于最近一年 70% 以下分位点 price_position70
+    set_yearly_price_position70(df)
 
     # 最近20个交易日 沿着ma30上行 未曾跌破ma30
 
@@ -82,26 +85,28 @@ def rise_support_analysis(df):
 
 
 def set_stand_up_ma60(df):
-    # 前55个交易日 收盘价位于ma60下方
-    # 前55个交易日 ma60向下运行
+    # 前55个交易日(除最近3个交易日外) 收盘价位于ma60下方
+    # 前55个交易日(除最近3个交易日外) ma60向下运行
 
     arr = []
     for index, row in df.iterrows():
-        small_set = df.iloc[index - 55: index - 1]
+        small_set = df.iloc[index - 55: index - 2]
         pre_row = df.iloc[index - 1]
-        ma60_down_still = False
+        before_pre_row = df.iloc[index - 2]
+        ma60_down_still = True
         ma60_up_recently = False
 
-        for index_2, row_2 in df.iterrows():
-            if row_2.close < row_2.ma60 and row_2.ma60_slope < 0:
-                ma60_down_still = True
+        for index_2, row_2 in small_set.iterrows():
+            if row_2.close > row_2.ma60 or row_2.ma60_slope >= 0:
+                ma60_down_still = False
 
-        # 收盘价高于ma60
-        # 最近2个交易日ma60 开始向上
-        if row.close > row.ma60 and pre_row.close < pre_row.ma60 and row.ma60_slope > 0 and pre_row.ma60_slope > 0:
+        # 最近3个交易日收盘价高于 ma60
+        # 最近3个交易日 ma60 开始向上
+        if row.close > row.ma60 and pre_row.close > pre_row.ma60 and before_pre_row.close > before_pre_row.ma60 \
+                and row.ma60_slope > 0 and pre_row.ma60_slope > 0 and before_pre_row.ma60_slope > 0:
             ma60_up_recently = True
 
-        if ma60_down_still and ma60_up_recently:
+        if len(df) > 81 and ma60_down_still and ma60_up_recently:
             arr.insert(index, 1)
         else:
             arr.insert(index, 0)
@@ -110,27 +115,28 @@ def set_stand_up_ma60(df):
 
 
 def set_stand_up_ma120(df):
-    # 前20个交易日 收盘价位于ma60下方
-    # 前20个交易日 ma60向下运行
+    # 前89个交易日(除最近3个交易日外) 收盘价位于ma120下方
+    # 前89个交易日(除最近3个交易日外) ma120向下运行
 
     arr = []
     for index, row in df.iterrows():
-        small_set = df.iloc[index - 120: index - 1]
+        small_set = df.iloc[index - 89: index - 2]
         pre_row = df.iloc[index - 1]
-        ma120_down_still = False
+        before_pre_row = df.iloc[index - 2]
+        ma120_down_still = True
         ma120_up_recently = False
 
-        for index_2, row_2 in df.iterrows():
-            if row_2.close < row_2.ma120 and row_2.ma120_slope < 0:
-                ma120_down_still = True
+        for index_2, row_2 in small_set.iterrows():
+            if row_2.close > row_2.ma120 or row_2.ma120_slope > 0:
+                ma120_down_still = False
 
-        # 收盘价高于ma120
-        # 最近2个交易日ma120 开始向上
-        if row.close > row.ma120 and pre_row.close < pre_row.ma120 \
-                and row.ma120_slope > 0 and pre_row.ma120_slope > 0:
+        # 最近3个交易日收盘价高于 ma120
+        # 最近3个交易日 ma120 开始向上
+        if row.close > row.ma120 and pre_row.close > pre_row.ma120 and before_pre_row.close > before_pre_row.ma120 \
+                and row.ma120_slope > 0 and pre_row.ma120_slope > 0 and before_pre_row.ma120_slope > 0:
             ma120_up_recently = True
 
-        if ma120_down_still and ma120_up_recently:
+        if len(df) > 154 and ma120_down_still and ma120_up_recently:
             arr.insert(index, 1)
         else:
             arr.insert(index, 0)
@@ -138,117 +144,93 @@ def set_stand_up_ma120(df):
     df['stand_up_ma120'] = arr
 
 
-def is_ma60_support(df, row, index):
-    pre_row = df.iloc[index - 1]
-    # bias_low: N日BIAS=(当日最低价-N日平均收盘价)/N日平均收盘价*100%
-    bias_60_low = round((row.low - row.ma60) / row.ma60, 5)
-    # bias_high: N日BIAS=(当日最高价-N日平均收盘价)/N日平均收盘价*100%
-    bias_60_high = round((row.high - row.ma60) / row.ma60, 5)
-    # 取百分比
-    bias_60_low = round(bias_60_low * 100, 2)
-    bias_60_high = round(bias_60_high * 100, 2)
+def set_stand_up_ema60(df):
+    # 前55个交易日(除最近3个交易日外) 收盘价位于 ema60 下方
+    # 前55个交易日(除最近3个交易日外) ema60 向下运行
 
-    pre_bias_60_low = round((pre_row.low - pre_row.ma60) / pre_row.ma60, 5)
-    pre_bias_60_high = round((pre_row.high - pre_row.ma60) / pre_row.ma60, 5)
-    # 取百分比
-    pre_bias_60_low = round(pre_bias_60_low * 100, 2)
-    pre_bias_60_high = round(pre_bias_60_high * 100, 2)
+    arr = []
+    for index, row in df.iterrows():
+        small_set = df.iloc[index - 55: index - 2]
+        pre_row = df.iloc[index - 1]
+        before_pre_row = df.iloc[index - 2]
+        ma60_down_still = True
+        ma60_up_recently = False
 
-    # 前一交易日/当日 收盘价高于 ma60
-    # 前一交易日bias / 当前交易日bias 位于 [-1,1]
-    # 最近2个交易日 ma20/ma30/ma60/ma120 上行
-    if pre_row.close > pre_row.ma60 and row.close > row.ma60 \
-            and (1.5 >= bias_60_low >= -1 or 1.5 >= bias_60_high >= -1.5) \
-            and (1.5 >= pre_bias_60_low >= -1 or 1.5 >= pre_bias_60_high >= -1) \
-            and ((10 > pre_row.ma20_slope > 0 and 10 > row.ma20_slope > 0) or
-                 (10 > pre_row.ma30_slope > 0 and 10 > row.ma30_slope > 0)) \
-            and ((10 > pre_row.ma60_slope > 0 and 10 > row.ma60_slope > 0) or
-                 (pre_row.ma120_slope > 0 and row.ma120_slope > 0)):
+        for index_2, row_2 in small_set.iterrows():
+            if row_2.close > row_2.ema60 or row_2.ema60_slope >= 0:
+                ma60_down_still = False
+
+        # 最近3个交易日收盘价高于 ema60
+        # 最近3个交易日 ema60 开始向上
+        if row.close > row.ema60 and pre_row.close > pre_row.ema60 and before_pre_row.close > before_pre_row.ema60 \
+                and row.ema60_slope > 0 and pre_row.ema60_slope > 0 and before_pre_row.ema60_slope > 0:
+            ma60_up_recently = True
+
+        if len(df) > 81 and ma60_down_still and ma60_up_recently:
+            arr.insert(index, 1)
+        else:
+            arr.insert(index, 0)
+
+    df['stand_up_ema60'] = arr
+
+
+def set_stand_up_ema120(df):
+    # 前89个交易日(除最近3个交易日外) 收盘价位于ma120下方
+    # 前89个交易日(除最近3个交易日外) ma120向下运行
+
+    arr = []
+    for index, row in df.iterrows():
+        small_set = df.iloc[index - 89: index - 2]
+        pre_row = df.iloc[index - 1]
+        before_pre_row = df.iloc[index - 2]
+        ma120_down_still = True
+        ma120_up_recently = False
+
+        for index_2, row_2 in small_set.iterrows():
+            if row_2.close > row_2.ma120 or row_2.ma120_slope > 0:
+                ma120_down_still = False
+
+        # 最近3个交易日收盘价高于 ma120
+        # 最近3个交易日 ma120 开始向上
+        if row.close > row.ema120 and pre_row.close > pre_row.ema120 and before_pre_row.close > before_pre_row.ema120 \
+                and row.ema120_slope > 0 and pre_row.ema120_slope > 0 and before_pre_row.ema120_slope > 0:
+            ma120_up_recently = True
+
+        if len(df) > 154 and ma120_down_still and ma120_up_recently:
+            arr.insert(index, 1)
+        else:
+            arr.insert(index, 0)
+
+    df['stand_up_ema120'] = arr
+
+
+def is_ma60_steady_up(df, row, index):
+    # 最近21个交易日 ma60 稳步向上
+    if len(df) > 81 and df['ma60_slope'][index - 20: index].min() > 0:
         return True
     else:
         return False
 
 
-def is_ma120_support(df, row, index):
-    pre_row = df.iloc[index - 1]
-    before_pre_row = df.iloc[index - 2]
-
-    # 修正版bias: N日BIAS=(当日最低价-N日平均收盘价)/N日平均收盘价*100%
-    bias_120 = round((row.low - row.ma120) / row.ma120, 5)
-    pre_bias_120 = round((pre_row.low - pre_row.ma120) / pre_row.ma120, 5)
-    before_pre_bias_120 = round((before_pre_row.low - before_pre_row.ma120) / before_pre_row.ma120, 5)
-
-    # 取百分比
-    bias_120 = round(bias_120 * 100, 2)
-    pre_bias_120 = round(pre_bias_120 * 100, 2)
-    before_pre_bias_120 = round(before_pre_bias_120 * 100, 2)
-
-    # 收盘价高于 ma120
-    # 前一交易日bias / 当前交易日bias 位于 [-1,1]
-    # 最近3个交易日 ma60 / ma120 上行
-    if row.close > row.ma120 and \
-            1 >= bias_120 >= -1 and 1 >= pre_bias_120 >= -1 \
-            and 1 >= before_pre_bias_120 >= -1 \
-            and 10 > row.ma60_slope > 0 and 10 > row.ma120_slope > 0 \
-            and 10 > pre_row.ma60_slope > 0 and 10 > pre_row.ma120_slope > 0 \
-            and 10 > before_pre_row.ma60_slope > 0 and 10 > before_pre_row.ma120_slope > 0:
+def is_ma120_steady_up(df, row, index):
+    # 最近34个交易日 ma120 稳步向上
+    if len(df) > 154 and df['ma120_slope'][index - 33: index].min() > 0:
         return True
     else:
         return False
 
 
-def is_ema60_support(df, row, index):
-    pre_row = df.iloc[index - 1]
-    # bias_low: N日BIAS=(当日最低价-N日平均收盘价)/N日平均收盘价*100%
-    bias_60_low = round((row.low - row.ema60) / row.ema60, 5)
-    # bias_high: N日BIAS=(当日最高价-N日平均收盘价)/N日平均收盘价*100%
-    bias_60_high = round((row.high - row.ema60) / row.ema60, 5)
-    # 取百分比
-    bias_60_low = round(bias_60_low * 100, 2)
-    bias_60_high = round(bias_60_high * 100, 2)
-
-    pre_bias_60_low = round((pre_row.low - pre_row.ema60) / pre_row.ema60, 5)
-    pre_bias_60_high = round((pre_row.high - pre_row.ema60) / pre_row.ema60, 5)
-    # 取百分比
-    pre_bias_60_low = round(pre_bias_60_low * 100, 2)
-    pre_bias_60_high = round(pre_bias_60_high * 100, 2)
-
-    # 前一交易日/当日 收盘价高于 ema60
-    # 前一交易日bias / 当前交易日bias 位于 [-1,1]
-    # 最近2个交易日 ema20/ema30/ema60/ema120 上行
-    if pre_row.close > pre_row.ema60 and row.close > row.ema60 \
-            and (1.5 >= bias_60_low >= -1 or 1.5 >= bias_60_high >= -1.5) \
-            and (1.5 >= pre_bias_60_low >= -1 or 1.5 >= pre_bias_60_high >= -1) \
-            and ((10 > pre_row.ema60_slope > 0 and 10 > row.ema60_slope > 0) or
-                 (pre_row.ema120_slope > 0 and row.ema120_slope > 0)):
+def is_ema60_steady_up(df, row, index):
+    # 最近21个交易日 ma60 稳步向上
+    if len(df) > 81 and df['ema60_slope'][index - 20: index].min() > 0:
         return True
     else:
         return False
 
 
-def is_ema120_support(df, row, index):
-    pre_row = df.iloc[index - 1]
-    before_pre_row = df.iloc[index - 2]
-
-    # 修正版bias: N日BIAS=(当日最低价-N日平均收盘价)/N日平均收盘价*100%
-    bias_120 = round((row.low - row.ema120) / row.ema120, 5)
-    pre_bias_120 = round((pre_row.low - pre_row.ema120) / pre_row.ema120, 5)
-    before_pre_bias_120 = round((before_pre_row.low - before_pre_row.ema120) / before_pre_row.ema120, 5)
-
-    # 取百分比
-    bias_120 = round(bias_120 * 100, 2)
-    pre_bias_120 = round(pre_bias_120 * 100, 2)
-    before_pre_bias_120 = round(before_pre_bias_120 * 100, 2)
-
-    # 收盘价高于 ema120
-    # 前一交易日bias / 当前交易日bias 位于 [-1,1]
-    # 最近3个交易日 ema60 / ema120 上行
-    if row.close > row.ema120 and \
-            1 >= bias_120 >= -1 and 1 >= pre_bias_120 >= -1 \
-            and 1 >= before_pre_bias_120 >= -1 \
-            and 10 > row.ema60_slope > 0 and 10 > row.ema120_slope > 0 \
-            and 10 > pre_row.ema60_slope > 0 and 10 > pre_row.ema120_slope > 0 \
-            and 10 > before_pre_row.ema60_slope > 0 and 10 > before_pre_row.ema120_slope > 0:
+def is_ema120_steady_up(df, row, index):
+    # 最近34个交易日 ma120 稳步向上
+    if len(df) > 154 and df['ema120_slope'][index - 33: index].min() > 0:
         return True
     else:
         return False
@@ -258,7 +240,7 @@ def set_ma60_support(df):
     ma60_support = []
 
     for index, row in df.iterrows():
-        if is_ma60_support(df, row, index) or stand_on_ma(df, row, 60):
+        if stand_on_ma(df, row, 60) and is_ma60_steady_up(df, row, index):
             ma60_support.insert(index, 1)
         else:
             ma60_support.insert(index, 0)
@@ -270,7 +252,7 @@ def set_ma120_support(df):
     ma120_support = []
 
     for index, row in df.iterrows():
-        if is_ma120_support(df, row, index) or stand_on_ma(df, row, 120):
+        if stand_on_ma(df, row, 120) and is_ma120_steady_up(df, row, index):
             ma120_support.insert(index, 1)
         else:
             ma120_support.insert(index, 0)
@@ -282,7 +264,7 @@ def set_ema60_support(df):
     ema60_support = []
 
     for index, row in df.iterrows():
-        if is_ema60_support(df, row, index) or stand_on_ema(df, row, 60):
+        if stand_on_ema(df, row, 60) and is_ema60_steady_up(df, row, index):
             ema60_support.insert(index, 1)
         else:
             ema60_support.insert(index, 0)
@@ -294,7 +276,7 @@ def set_ema120_support(df):
     ema120_support = []
 
     for index, row in df.iterrows():
-        if is_ema120_support(df, row, index) or stand_on_ema(df, row, 120):
+        if stand_on_ema(df, row, 120) and is_ema120_steady_up(df, row, index):
             ema120_support.insert(index, 1)
         else:
             ema120_support.insert(index, 0)
@@ -330,64 +312,52 @@ def set_yearly_price_position10(df):
     df['yearly_price_position10'] = yearly_price_position
 
 
-def set_yearly_price_position1020(df):
+def set_yearly_price_position20(df):
     yearly_price_position = []
 
     for index, row in df.iterrows():
-        if 20 >= row.yearly_price_position > 10:
+        if 20 >= row.yearly_price_position:
             yearly_price_position.insert(index, 1)
         else:
             yearly_price_position.insert(index, 0)
 
-    df['yearly_price_position1020'] = yearly_price_position
+    df['yearly_price_position20'] = yearly_price_position
 
 
-def set_yearly_price_position2030(df):
+def set_yearly_price_position30(df):
     yearly_price_position = []
 
     for index, row in df.iterrows():
-        if 30 >= row.yearly_price_position > 20:
+        if 30 >= row.yearly_price_position:
             yearly_price_position.insert(index, 1)
         else:
             yearly_price_position.insert(index, 0)
 
-    df['yearly_price_position2030'] = yearly_price_position
+    df['yearly_price_position30'] = yearly_price_position
 
 
-def set_yearly_price_position3050(df):
+def set_yearly_price_position50(df):
     yearly_price_position = []
 
     for index, row in df.iterrows():
-        if 50 >= row.yearly_price_position > 30:
+        if 50 >= row.yearly_price_position:
             yearly_price_position.insert(index, 1)
         else:
             yearly_price_position.insert(index, 0)
 
-    df['yearly_price_position3050'] = yearly_price_position
+    df['yearly_price_position50'] = yearly_price_position
 
 
-def set_yearly_price_position5070(df):
+def set_yearly_price_position70(df):
     yearly_price_position = []
 
     for index, row in df.iterrows():
-        if 70 >= row.yearly_price_position > 50:
+        if 70 >= row.yearly_price_position:
             yearly_price_position.insert(index, 1)
         else:
             yearly_price_position.insert(index, 0)
 
-    df['yearly_price_position5070'] = yearly_price_position
-
-
-def set_yearly_price_position70100(df):
-    yearly_price_position = []
-
-    for index, row in df.iterrows():
-        if 100 > row.yearly_price_position > 70:
-            yearly_price_position.insert(index, 1)
-        else:
-            yearly_price_position.insert(index, 0)
-
-    df['yearly_price_position70100'] = yearly_price_position
+    df['yearly_price_position70'] = yearly_price_position
 
 
 def set_ma_group_glue(df):

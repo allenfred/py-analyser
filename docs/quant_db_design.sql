@@ -39,7 +39,11 @@ CREATE TABLE `stocks` (
   `float_share` float COMMENT '流通股本',
   `free_share` float COMMENT '自由流通股本',
   `total_mv` float COMMENT '总市值',
-  `circ_mv` float COMMENT '流通市值'
+  `circ_mv` float COMMENT '流通市值',
+  `scan_date` date COMMENT '扫描买卖信号日期',
+  `candle_date` date COMMENT '更新日K日期',
+  `indicator_date` date COMMENT '更新indicator日期',
+  `weekly_candle_date` date COMMENT '更新周K日期'
 );
 
 CREATE TABLE `cn_daily_candles` (
@@ -182,6 +186,7 @@ CREATE TABLE `daily_indicators` (
   `bias6` float,
   `bias12` float,
   `bias24` float,
+  `bias60` float,
   `bias72` float,
   `bias120` float,
   `high_td` tinyint(2),
@@ -243,6 +248,7 @@ CREATE TABLE `daily_long_signals` (
   `bias6` tinyint(2),
   `bias12` tinyint(2),
   `bias24` tinyint(2),
+  `bias60` tinyint(2),
   `bias72` tinyint(2),
   `bias120` tinyint(2)
 );
@@ -274,11 +280,13 @@ CREATE TABLE `daily_short_signals` (
   `long_ema_arrange1` tinyint(2) COMMENT 'EMA长期组合空头排列（20/55/120）',
   `long_ema_arrange2` tinyint(2) COMMENT 'EMA长期组合空头排列（30/60/120）',
   `ma_dead_cross_1` tinyint(2) COMMENT 'MA死亡交叉（5/10）',
-  `ma_dead_cross2` tinyint(2) COMMENT 'MA死亡交叉（10/20）',
-  `ma_dead_cross3` tinyint(2) COMMENT 'MA死亡交叉（10/30）',
+  `ma_dead_cross2` tinyint(2) COMMENT 'MA死亡交叉（5/20）',
+  `ma_dead_cross3` tinyint(2) COMMENT 'MA死亡交叉（10/20）',
+  `ma_dead_cross4` tinyint(2) COMMENT 'MA死亡交叉（10/30）',
   `ema_dead_cross1` tinyint(2) COMMENT 'EMA死亡交叉（5/10）',
-  `ema_dead_cross2` tinyint(2) COMMENT 'EMA死亡交叉（10/20）',
-  `ema_dead_cross3` tinyint(2) COMMENT 'EMA死亡交叉（10/30）',
+  `ema_dead_cross2` tinyint(2) COMMENT 'EMA死亡交叉（5/20）',
+  `ema_dead_cross3` tinyint(2) COMMENT 'EMA死亡交叉（10/20）',
+  `ema_dead_cross4` tinyint(2) COMMENT 'EMA死亡交叉（10/30）',
   `ma_dead_valley` tinyint(2) COMMENT 'MA死亡谷（5/10，5/20，10/20）',
   `ema_dead_valley` tinyint(2) COMMENT 'EMA死亡谷（5/10，5/20，10/20）',
   `ma_knife` tinyint(2) COMMENT 'MA断头铡刀(5/10/20)',
@@ -300,6 +308,7 @@ CREATE TABLE `daily_short_signals` (
   `bias6` tinyint(2),
   `bias12` tinyint(2),
   `bias24` tinyint(2),
+  `bias60` tinyint(2),
   `bias72` tinyint(2),
   `bias120` tinyint(2)
 );
@@ -358,6 +367,7 @@ CREATE TABLE `stock_long_signals` (
   `bias6` tinyint(2),
   `bias12` tinyint(2),
   `bias24` tinyint(2),
+  `bias60` tinyint(2),
   `bias72` tinyint(2),
   `bias120` tinyint(2)
 );
@@ -388,11 +398,13 @@ CREATE TABLE `stock_short_signals` (
   `long_ema_arrange1` tinyint(2) COMMENT 'EMA长期组合空头排列（20/55/120）',
   `long_ema_arrange2` tinyint(2) COMMENT 'EMA长期组合空头排列（30/60/120）',
   `ma_dead_cross1` tinyint(2) COMMENT 'MA死亡交叉（5/10）',
-  `ma_dead_cross2` tinyint(2) COMMENT 'MA死亡交叉（10/20）',
-  `ma_dead_cross3` tinyint(2) COMMENT 'MA死亡交叉（10/30）',
+  `ma_dead_cross2` tinyint(2) COMMENT 'MA死亡交叉（5/20）',
+  `ma_dead_cross3` tinyint(2) COMMENT 'MA死亡交叉（10/20）',
+  `ma_dead_cross4` tinyint(2) COMMENT 'MA死亡交叉（10/30）',
   `ema_dead_cross1` tinyint(2) COMMENT 'EMA死亡交叉（5/10）',
-  `ema_dead_cross2` tinyint(2) COMMENT 'EMA死亡交叉（10/20）',
-  `ema_dead_cross3` tinyint(2) COMMENT 'EMA死亡交叉（10/30）',
+  `ema_dead_cross2` tinyint(2) COMMENT 'EMA死亡交叉（5/20）',
+  `ema_dead_cross3` tinyint(2) COMMENT 'EMA死亡交叉（10/20）',
+  `ema_dead_cross4` tinyint(2) COMMENT 'EMA死亡交叉（10/30）',
   `ma_dead_valley` tinyint(2) COMMENT 'MA死亡谷（5/10，5/20，10/20）',
   `ema_dead_valley` tinyint(2) COMMENT 'EMA死亡谷（5/10，5/20，10/20）',
   `ma_knife` tinyint(2) COMMENT 'MA断头铡刀(5/10/20)',
@@ -414,6 +426,7 @@ CREATE TABLE `stock_short_signals` (
   `bias6` tinyint(2),
   `bias12` tinyint(2),
   `bias24` tinyint(2),
+  `bias60` tinyint(2),
   `bias72` tinyint(2),
   `bias120` tinyint(2)
 );
@@ -443,11 +456,12 @@ CREATE TABLE `weekly_candles` (
   `bias6` float,
   `bias12` float,
   `bias24` float,
+  `bias60` float,
   `bias72` float,
   `bias120` float
 );
 
-CREATE TABLE `signal_analysis` (
+CREATE TABLE `analytic_signals` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `ts_code` varchar(255) NOT NULL COMMENT 'TS代码',
   `trade_date` date NOT NULL COMMENT '交易日期',
@@ -458,11 +472,10 @@ CREATE TABLE `signal_analysis` (
   `ema120_support` tinyint(2),
   `yearly_price_position` tinyint(5),
   `yearly_price_position10` tinyint(5),
-  `yearly_price_position1020` tinyint(5),
-  `yearly_price_position2030` tinyint(5),
-  `yearly_price_position3050` tinyint(5),
-  `yearly_price_position5070` tinyint(5),
-  `yearly_price_position70100` tinyint(5),
+  `yearly_price_position20` tinyint(5),
+  `yearly_price_position30` tinyint(5),
+  `yearly_price_position50` tinyint(5),
+  `yearly_price_position70` tinyint(5),
   `ma_group_glue` tinyint(1),
   `ema_group_glue` tinyint(1),
   `ma_up_arrange51020` tinyint(1),
@@ -475,6 +488,10 @@ CREATE TABLE `signal_analysis` (
   `ema_up_arrange510203060` tinyint(1),
   `ema_up_arrange203060` tinyint(1),
   `ema_up_arrange2055120` tinyint(1),
+  `stand_up_ma60` tinyint(1),
+  `stand_up_ema60` tinyint(1),
+  `stand_up_ma120` tinyint(1),
+  `stand_up_ema120` tinyint(1)
 );
 
 CREATE TABLE `users` (
@@ -491,7 +508,7 @@ CREATE TABLE `invite_codes` (
   `user_id` integer
 );
 
-CREATE TABLE `user_stock_postions` (
+CREATE TABLE `user_stock_positions` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `user_id` integer
 );
@@ -548,10 +565,10 @@ CREATE INDEX `weekly_candles_index_24` ON `weekly_candles` (`trade_date`);
 
 CREATE UNIQUE INDEX `weekly_candle_unique` ON `weekly_candles` (`ts_code`, `trade_date`);
 
-CREATE INDEX `signal_analysis_index_26` ON `signal_analysis` (`ts_code`);
+CREATE INDEX `analytic_signals_index_26` ON `analytic_signals` (`ts_code`);
 
-CREATE INDEX `signal_analysis_index_27` ON `signal_analysis` (`trade_date`);
+CREATE INDEX `analytic_signals_index_27` ON `analytic_signals` (`trade_date`);
 
-CREATE INDEX `signal_analysis_index_28` ON `signal_analysis` (`exchange`);
+CREATE INDEX `analytic_signals_index_28` ON `analytic_signals` (`exchange`);
 
-CREATE UNIQUE INDEX `signal_analysis_unique` ON `signal_analysis` (`ts_code`, `trade_date`);
+CREATE UNIQUE INDEX `analytic_signals_unique` ON `analytic_signals` (`ts_code`, `trade_date`);
