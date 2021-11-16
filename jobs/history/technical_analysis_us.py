@@ -22,9 +22,6 @@ from talib import SMA, EMA, MACD
 from lib.bias import bias
 from lib.ma_slope import slope
 from lib.magic_nine_turn import td
-from lib.signals import long_signals
-from lib.signal_analysis import rise_support_analysis
-from lib.util import wrap_technical_indicator, used_time_fmt
 import time
 from datetime import datetime, date
 import numpy as np
@@ -34,15 +31,6 @@ import threading
 import multiprocessing
 from multiprocessing import Pool
 from jobs.scan.daily_candle import scan_daily_candles
-
-stockDao = StockDao()
-dailyCandleDao = CNDailyCandleDao()
-dailyIndicatorDao = DailyIndicatorDao()
-dailyLongSignalDao = DailyLongSignalDao()
-dailyShortSignalDao = DailyShortSignalDao()
-stockLongSignalDao = StockLongSignalDao()
-stockShortSignalDao = StockShortSignalDao()
-analyticDao = AnalyticSignalDao()
 
 
 def multi_scan(stocks):
@@ -78,7 +66,7 @@ if __name__ == "__main__":
         session = DBSession()
         stock_stmts = session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
                                            " < :scan_date) and "
-                                           "exchange = 'US' limit 20").params(scan_date=scan_date))
+                                           "exchange = 'US' limit 5").params(scan_date=scan_date))
         stock_result = stock_stmts.fetchall()
         session.commit()
 

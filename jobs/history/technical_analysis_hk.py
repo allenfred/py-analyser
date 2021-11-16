@@ -8,22 +8,12 @@ sys.path.append(path)
 
 import pandas as pd
 from models.db import DBSession
-from models.cn_daily_candles import CNDailyCandleDao
-from models.daily_indicators import DailyIndicatorDao
-from models.daily_long_signals import DailyLongSignalDao
-from models.daily_short_signals import DailyShortSignalDao
-from models.stock_long_signals import StockLongSignalDao
-from models.stock_short_signals import StockShortSignalDao
-from models.analytic_signals import AnalyticSignalDao
-
 from models.stocks import StockDao
 from sqlalchemy import text
 from talib import SMA, EMA, MACD
 from lib.bias import bias
 from lib.ma_slope import slope
 from lib.magic_nine_turn import td
-from lib.signals import long_signals
-from lib.signal_analysis import rise_support_analysis
 from lib.util import wrap_technical_indicator, used_time_fmt
 import time
 from datetime import datetime, date
@@ -36,13 +26,6 @@ from multiprocessing import Pool
 from jobs.scan.daily_candle import scan_daily_candles
 
 stockDao = StockDao()
-dailyCandleDao = CNDailyCandleDao()
-dailyIndicatorDao = DailyIndicatorDao()
-dailyLongSignalDao = DailyLongSignalDao()
-dailyShortSignalDao = DailyShortSignalDao()
-stockLongSignalDao = StockLongSignalDao()
-stockShortSignalDao = StockShortSignalDao()
-analyticDao = AnalyticSignalDao()
 
 
 def multi_scan(stocks):

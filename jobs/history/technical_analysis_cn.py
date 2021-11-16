@@ -7,23 +7,14 @@ path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 sys.path.append(path)
 
 import pandas as pd
-from models.db import engine, DBSession
+from models.db import DBSession
 from models.cn_daily_candles import CNDailyCandleDao
-from models.daily_indicators import DailyIndicatorDao
-from models.daily_long_signals import DailyLongSignalDao
-from models.daily_short_signals import DailyShortSignalDao
-from models.stock_long_signals import StockLongSignalDao
-from models.stock_short_signals import StockShortSignalDao
-from models.analytic_signals import AnalyticSignalDao
-
 from models.stocks import StockDao
 from sqlalchemy import text
 from talib import SMA, EMA, MACD
 from lib.bias import bias
 from lib.ma_slope import slope
 from lib.magic_nine_turn import td
-from lib.signals import long_signals
-from lib.signal_analysis import rise_support_analysis
 from lib.util import wrap_technical_indicator, used_time_fmt
 import time
 from datetime import datetime, date
@@ -37,40 +28,17 @@ from jobs.scan.daily_candle import scan_daily_candles
 
 stockDao = StockDao()
 dailyCandleDao = CNDailyCandleDao()
-dailyIndicatorDao = DailyIndicatorDao()
-dailyLongSignalDao = DailyLongSignalDao()
-dailyShortSignalDao = DailyShortSignalDao()
-stockLongSignalDao = StockLongSignalDao()
-stockShortSignalDao = StockShortSignalDao()
-analyticDao = AnalyticSignalDao()
-
-#
-# def multi_scan(stocks):
-#     pool_cnt = multiprocessing.cpu_count()
-#
-#     if pool_cnt > 8:
-#         pool_cnt = 8
-#     else:
-#         pool_cnt = 8
-#
-#     p = Pool(pool_cnt)
-#
-#     for i in range(len(stocks)):
-#         p.apply_async(scan_daily_candles, args=(stocks[i][0], 'CN', scan_date,))
-#
-#     p.close()
-#     p.join()
 
 
 def multi_scan(stocks):
-    jobs = []
-    for i in range(len(stocks)):
-        p = multiprocessing.Process(target=scan_daily_candles, args=(stocks[i][0], 'CN', scan_date,))
-        jobs.append(p)
-        p.start()
+    pool_cnt = multiprocessing.cpu_count()
+    p = Pool(5)
 
-    for j in jobs:
-        j.join()
+    for i in range(len(stocks)):
+        p.apply_async(scan_daily_candles, args=(stocks[i][0], 'CN', scan_date,))
+
+    p.close()
+    p.join()
 
 
 if __name__ == "__main__":
@@ -89,20 +57,18 @@ if __name__ == "__main__":
         if used_time > 3600 * 5:
             break
 
-        engine.dispose()
-        session = DBSession()
-        stock_stmts = session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
-                                           " < :scan_date) and "
-                                           "(exchange = 'SSE' or exchange = 'SZSE')  limit 10").params(
+        stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
+                                                    " < :scan_date) and "
+                                                    "(exchange = 'SSE' or exchange = 'SZSE')  limit 1").params(
             scan_date=scan_date))
         stock_result = stock_stmts.fetchall()
-        session.commit()
-        # session.close()
+        stockDao.session.commit()
 
         if len(stock_result) == 0:
             print('没有需要扫描的股票')
             break
 
-        multi_scan(stock_result)
+        # multi_scan(stock_result)
+        scan_daily_candles(stock_result[0][0], 'CN', scan_date)
         total_scan_cnt += len(stock_result)
         print("当前已扫描股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))
