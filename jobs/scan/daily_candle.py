@@ -23,7 +23,7 @@ from lib.bias import bias
 from lib.ma_slope import slope
 from lib.magic_nine_turn import td
 from lib.signals import long_signals
-from lib.signal_analysis import analytic_signals
+from lib.analytic_signals import analytic_signals
 from lib.util import wrap_technical_indicator, used_time_fmt
 import time
 from datetime import datetime, date
@@ -93,4 +93,4 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
             stockDao.update({'ts_code': ts_code, 'scan_date': scan_date})
     else:
         stockDao.update({'ts_code': ts_code, 'scan_date': scan_date})
-        print('股票代码: ', ts_code, ' 没有行情数据或者上市不足1年')
+        print('股票代码: ', ts_code, ' 没有足够行情数据')

@@ -510,18 +510,18 @@ def is_ema120_support(df, row):
 
 def is_ma_group_glue(df, row):
     index = row.name
-    # 最近9个交易日 0 <= ma60_slope <= 1
-    # 最近9个交易日 0 <= ma30_slope <= 1
-    # 最近9个交易日 0 <= ma20_slope <= 1
-    # 最近9个交易日 -1.5 < ma10_slope < 1.5
+    # 最近9个交易日 0 <= ma60_slope < 0.6
+    # 最近9个交易日 0 <= ma30_slope < 0.6
+    # 最近9个交易日 0 <= ma20_slope < 0.6
+    # 最近9个交易日 -1 < ma10_slope < 1.2
     if df.ma60_slope[index - 8: index + 1].min() >= 0 \
-            and df.ma60_slope[index - 8: index + 1].max() <= 1 \
+            and df.ma60_slope[index - 8: index + 1].max() < 0.6 \
             and df.ma30_slope[index - 8: index + 1].min() >= 0 \
-            and df.ma30_slope[index - 8: index + 1].max() <= 1 \
+            and df.ma30_slope[index - 8: index + 1].max() < 0.6 \
             and df.ma20_slope[index - 8: index + 1].min() >= 0 \
-            and df.ma20_slope[index - 8: index + 1].max() < 1 \
-            and df.ma10_slope[index - 8: index + 1].min() > -1.5 \
-            and df.ma10_slope[index - 8: index + 1].max() < 1.5:
+            and df.ma20_slope[index - 8: index + 1].max() < 0.6 \
+            and df.ma10_slope[index - 8: index + 1].min() > -1 \
+            and df.ma10_slope[index - 8: index + 1].max() < 1.2:
         return True
     else:
         return False
@@ -529,18 +529,18 @@ def is_ma_group_glue(df, row):
 
 def is_ema_group_glue(df, row):
     index = row.name
-    # 最近9个交易日 0 <= ma60_slope <= 1
-    # 最近9个交易日 0 <= ma30_slope <= 1
-    # 最近9个交易日 0 <= ma20_slope <= 1
-    # 最近9个交易日 -1.5 < ma10_slope < 1.5
+    # 最近9个交易日 0 <= ema60_slope < 0.6
+    # 最近9个交易日 0 <= ema30_slope < 0.6
+    # 最近9个交易日 0 <= ema20_slope < 0.6
+    # 最近9个交易日 -1 < ema10_slope < 1.2
     if df.ema60_slope[index - 8: index + 1].min() >= 0 \
-            and df.ema60_slope[index - 8: index + 1].max() <= 1 \
+            and df.ema60_slope[index - 8: index + 1].max() < 0.6 \
             and df.ema30_slope[index - 8: index + 1].min() >= 0 \
-            and df.ema30_slope[index - 8: index + 1].max() <= 1 \
+            and df.ema30_slope[index - 8: index + 1].max() < 0.6 \
             and df.ema20_slope[index - 8: index + 1].min() >= 0 \
-            and df.ema20_slope[index - 8: index + 1].max() <= 1 \
-            and df.ema10_slope[index - 8: index + 1].min() > -1.5 \
-            and df.ema10_slope[index - 8: index + 1].max() < 1.5:
+            and df.ema20_slope[index - 8: index + 1].max() < 0.6 \
+            and df.ema10_slope[index - 8: index + 1].min() > -1 \
+            and df.ema10_slope[index - 8: index + 1].max() < 1.2:
         return True
     else:
         return False

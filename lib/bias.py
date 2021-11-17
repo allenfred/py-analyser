@@ -1,5 +1,5 @@
 from talib import SMA
-
+import numpy as np
 
 # 6 12 24 60 72
 # N日BIAS=(当日收盘价-N日平均收盘价)/N日平均收盘价*100%
@@ -20,12 +20,35 @@ def bias(close):
     bias120 = []
 
     for index, value in enumerate(close):
-        bias_6 = round((value - ma6[index]) / ma6[index], 5)
-        bias_12 = round((value - ma12[index]) / ma12[index], 5)
-        bias_24 = round((value - ma24[index]) / ma24[index], 5)
-        bias_60 = round((value - ma60[index]) / ma60[index], 5)
-        bias_72 = round((value - ma72[index]) / ma72[index], 5)
-        bias_120 = round((value - ma120[index]) / ma120[index], 5)
+        if value == 0 or np.nan_to_num(ma6[index], nan=0) == 0:
+            bias_6 = 0
+        else:
+            bias_6 = round((value - ma6[index]) / ma6[index], 5)
+
+        if value == 0 or np.nan_to_num(ma12[index], nan=0) == 0:
+            bias_12 = 0
+        else:
+            bias_12 = round((value - ma12[index]) / ma12[index], 5)
+
+        if value == 0 or np.nan_to_num(ma24[index], nan=0) == 0:
+            bias_24 = 0
+        else:
+            bias_24 = round((value - ma24[index]) / ma24[index], 5)
+
+        if value == 0 or np.nan_to_num(ma60[index], nan=0) == 0:
+            bias_60 = 0
+        else:
+            bias_60 = round((value - ma60[index]) / ma60[index], 5)
+
+        if value == 0 or np.nan_to_num(ma72[index], nan=0) == 0:
+            bias_72 = 0
+        else:
+            bias_72 = round((value - ma72[index]) / ma72[index], 5)
+
+        if value == 0 or np.nan_to_num(ma120[index], nan=0) == 0:
+            bias_120 = 0
+        else:
+            bias_120 = round((value - ma120[index]) / ma120[index], 5)
 
         bias6.insert(index, round(bias_6 * 100, 2))
         bias12.insert(index, round(bias_12 * 100, 2))

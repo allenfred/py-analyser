@@ -2,6 +2,15 @@ from talib import SMA, EMA, MACD
 from .bias import bias
 from .ma_slope import slope
 from .magic_nine_turn import td
+import platform
+
+
+def is_mac_os():
+    system_p = platform.platform()
+    if "macOS" in system_p:
+        return True
+    else:
+        return False
 
 
 def used_time_fmt(start, end):

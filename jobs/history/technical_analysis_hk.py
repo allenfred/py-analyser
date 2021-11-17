@@ -8,13 +8,14 @@ sys.path.append(path)
 
 import pandas as pd
 from models.db import DBSession
+from models.hk_daily_candles import HKDailyCandleDao
 from models.stocks import StockDao
 from sqlalchemy import text
 from talib import SMA, EMA, MACD
 from lib.bias import bias
 from lib.ma_slope import slope
 from lib.magic_nine_turn import td
-from lib.util import wrap_technical_indicator, used_time_fmt
+from lib.util import wrap_technical_indicator, used_time_fmt, is_mac_os
 import time
 from datetime import datetime, date
 import numpy as np
@@ -26,12 +27,14 @@ from multiprocessing import Pool
 from jobs.scan.daily_candle import scan_daily_candles
 
 stockDao = StockDao()
+dailyCandleDao = HKDailyCandleDao()
 
 
 def multi_scan(stocks):
-    pool_cnt = multiprocessing.cpu_count()
-    if pool_cnt > 8:
+    if len(stocks) > 1:
         pool_cnt = 8
+    else:
+        pool_cnt = 1
 
     p = Pool(pool_cnt)
 
@@ -46,10 +49,14 @@ if __name__ == "__main__":
     job_start = time.time()
     candle = dailyCandleDao.find_latest_candle()
     total_scan_cnt = 0
+    limit = 1
 
     if candle is None:
         print('没有K线数据')
         quit()
+
+    if is_mac_os():
+        limit = 10
 
     scan_date = candle['trade_date']
 
@@ -58,12 +65,11 @@ if __name__ == "__main__":
         if used_time > 3600 * 5:
             break
 
-        session = DBSession()
-        stock_stmts = session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
-                                           " < :scan_date) and exchange='HK' limit 20").params(
-            scan_date=scan_date))
+        stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
+                                                    " < :scan_date) and exchange='HK' limit " + str(limit)
+                                                    ).params(scan_date=scan_date))
         stock_result = stock_stmts.fetchall()
-        session.commit()
+        stockDao.session.commit()
 
         if len(stock_result) == 0:
             print('没有需要扫描的股票')

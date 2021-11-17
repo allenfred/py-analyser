@@ -12,11 +12,11 @@ from talib import SMA, EMA, MACD
 from lib.bias import bias
 from lib.ma_slope import slope
 from lib.magic_nine_turn import td
-from lib.ma_shape import long_signals
 import time
 from datetime import datetime, date
 import numpy as np
 from api.daily_candle import get_cn_candles
+import platform
 
 stockDao = StockDao()
 dailyCandleDao = CNDailyCandleDao()
@@ -28,5 +28,7 @@ stockLongSignalDao = StockLongSignalDao()
 stockShortSignalDao = StockShortSignalDao()
 
 if __name__ == "__main__":
-    t = 1212
-    print(str(t // 60)+' min')
+    # print("platform.platform()=%s", platform.platform())
+    system_p = platform.platform()
+    if "macOS" in system_p:
+        print('is macos ', system_p)
