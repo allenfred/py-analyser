@@ -35,7 +35,7 @@ def multi_scan(stocks):
     if len(stocks) > 1:
         pool_cnt = 8
     else:
-        pool_cnt = 2
+        pool_cnt = 1
 
     p = Pool(pool_cnt)
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     job_start = time.time()
     candle = dailyCandleDao.find_latest_candle()
     total_scan_cnt = 0
-    limit = 2
+    limit = 1
 
     if candle is None:
         print('没有K线数据')
