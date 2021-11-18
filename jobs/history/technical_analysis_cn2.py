@@ -1,3 +1,12 @@
+# -- coding: utf-8 -
+
+import os
+import sys
+
+path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(path)
+
+from sqlalchemy.orm import scoped_session
 import pandas as pd
 from models.db import DBSession
 from models.cn_daily_candles import CNDailyCandleDao
@@ -8,24 +17,18 @@ from models.stock_long_signals import StockLongSignalDao
 from models.stock_short_signals import StockShortSignalDao
 from models.analytic_signals import AnalyticSignalDao
 from models.stocks import StockDao
-
 from sqlalchemy import text
-from talib import SMA, EMA, MACD
-from lib.bias import bias
-from lib.ma_slope import slope
-from lib.magic_nine_turn import td
 from lib.signals import long_signals
 from lib.analytic_signals import analytic_signals
-from lib.util import wrap_technical_indicator, used_time_fmt
+from lib.util import wrap_technical_indicator, used_time_fmt, is_mac_os
 import time
 from datetime import datetime, date
 import numpy as np
 from api.daily_candle import get_cn_candles
-
+import time
+from jobs.scan.daily_candle import scan_daily_candles
 import threading
-from sqlalchemy.orm import scoped_session
-import pandas as pd
-from models.db import DBSession
+from models.analytic_signals import AnalyticSignalDao
 
 stockDao = StockDao()
 dailyCandleDao = CNDailyCandleDao()
@@ -89,16 +92,37 @@ def work_parallel(stocks):
 
 
 if __name__ == "__main__":
-    start = time.time()
-    # The Session object created here will be used by the function f1 directly.
+    job_start = time.time()
+    candle = dailyCandleDao.find_latest_candle()
+    total_scan_cnt = 0
+    limit = 4
     Session = scoped_session(DBSession)
     session = Session()
-    scan_date = '2021-11-18'
-    stock_stmts = session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
-                                       "< :scan_date) and (exchange = 'SSE' or exchange = 'SZSE') limit 5"
-                                       ).params(scan_date=scan_date))
-    stock_result = stock_stmts.fetchall()
-    work_parallel(stock_result)
 
-    Session.remove()
-    print('all ', time.time() - start)
+    if candle is None:
+        print('没有K线数据')
+        quit()
+
+    if is_mac_os():
+        limit = 10
+
+    scan_date = candle['trade_date']
+
+    while True:
+        used_time = round(time.time() - job_start, 0)
+        if used_time > 3600 * 5:
+            break
+
+        stock_stmts = session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
+                                                    "< :scan_date) and (exchange = 'SSE' or exchange = 'SZSE') limit "
+                                                    + str(limit)).params(scan_date=scan_date))
+        stock_result = stock_stmts.fetchall()
+        session.commit()
+
+        if len(stock_result) == 0:
+            print('没有需要扫描的股票')
+            break
+
+        work_parallel(stock_result)
+        total_scan_cnt += len(stock_result)
+        print("当前已扫描股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))

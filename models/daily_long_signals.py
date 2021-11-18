@@ -184,8 +184,8 @@ class DailyLongSignalDao:
         finally:
             self.session.close()
 
-    def reinsert(self, df, ts_code):
-        self.session.execute("delete from daily_long_signals where ts_code = :ts_code", {"ts_code": ts_code})
+    def reinsert(self, df, ts_code, session):
+        session.execute("delete from daily_long_signals where ts_code = :ts_code", {"ts_code": ts_code})
         items = []
 
         for index, item in df.iterrows():
@@ -194,9 +194,9 @@ class DailyLongSignalDao:
             items.insert(index, item)
 
         try:
-            self.session.bulk_insert_mappings(DailyLongSignal, items)
-            self.session.commit()
+            session.bulk_insert_mappings(DailyLongSignal, items)
+            session.commit()
         except Exception as e:
             print('Error:', e)
 
-        self.session.close()
+        session.close()

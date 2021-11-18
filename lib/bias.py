@@ -1,6 +1,7 @@
 from talib import SMA
 import numpy as np
 
+
 # 6 12 24 60 72
 # N日BIAS=(当日收盘价-N日平均收盘价)/N日平均收盘价*100%
 

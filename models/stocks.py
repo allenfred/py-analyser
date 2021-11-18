@@ -5,11 +5,13 @@ from sqlalchemy.dialects.mysql.dml import Insert
 from .db import engine, DBSession
 import pandas as pd
 from datetime import datetime, date
+from sqlalchemy.orm import scoped_session
 
 # 创建对象的基类:
 Base = declarative_base()
 conn = engine.connect()
 metadata_obj = MetaData()
+Session = scoped_session(DBSession)
 
 
 class Stock(Base):
@@ -192,9 +194,9 @@ class StockDao:
 
         return obj
 
-    def update(self, obj):
+    def update(self, obj, session):
         try:
-            row = self.session.query(Stock).filter(Stock.ts_code == obj.get('ts_code')).first()
+            row = session.query(Stock).filter(Stock.ts_code == obj.get('ts_code')).first()
 
             if row:
                 if obj.get('symbol') is not None:
@@ -263,8 +265,8 @@ class StockDao:
         except Exception as e:
             print('Error:', e)
 
-        self.session.commit()
-        self.session.close()
+        session.commit()
+        session.close()
 
     def bulk_insert(self, df):
         items = []

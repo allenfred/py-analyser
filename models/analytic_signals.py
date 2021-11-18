@@ -123,8 +123,9 @@ class AnalyticSignalDao:
         finally:
             self.session.close()
 
-    def reinsert(self, df, ts_code):
-        self.session.execute("delete from analytic_signals where ts_code = :ts_code", {"ts_code": ts_code})
+    def reinsert(self, df, ts_code, session):
+        # self.session.execute("delete from analytic_signals where ts_code = :ts_code", {"ts_code": ts_code})
+        session.execute("delete from analytic_signals where ts_code = :ts_code", {"ts_code": ts_code})
         items = []
 
         for index, item in df.iterrows():
@@ -133,9 +134,9 @@ class AnalyticSignalDao:
             items.insert(index, item)
 
         try:
-            self.session.bulk_insert_mappings(AnalyticSignal, items)
-            self.session.commit()
+            session.bulk_insert_mappings(AnalyticSignal, items)
+            session.commit()
         except Exception as e:
             print('Error:', e)
 
-        self.session.close()
+        session.close()

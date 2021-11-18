@@ -133,14 +133,14 @@ class StockLongSignalDao:
     def __init__(self):
         self.session = DBSession()
 
-    def upsert(self, signal):
+    def upsert(self, signal, session):
         obj = get_obj(signal)
 
         try:
-            row = self.session.query(StockLongSignal).filter(StockLongSignal.ts_code == signal['ts_code']).first()
+            row = session.query(StockLongSignal).filter(StockLongSignal.ts_code == signal['ts_code']).first()
 
             if row is None:
-                self.session.add(obj)
+                session.add(obj)
             else:
                 if obj.ma20_up is not None:
                     row.ma20_up = obj.ma20_up
@@ -254,6 +254,6 @@ class StockLongSignalDao:
         except Exception as e:
             print('Error:', e)
 
-        self.session.commit()
-        self.session.close()
+        session.commit()
+        session.close()
 

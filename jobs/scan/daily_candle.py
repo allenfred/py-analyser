@@ -6,6 +6,7 @@ import sys
 path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(path)
 
+from sqlalchemy.orm import scoped_session
 import pandas as pd
 from models.db import DBSession
 from models.cn_daily_candles import CNDailyCandleDao
@@ -41,6 +42,8 @@ stockLongSignalDao = StockLongSignalDao()
 stockShortSignalDao = StockShortSignalDao()
 analyticDao = AnalyticSignalDao()
 
+Session = scoped_session(DBSession)
+
 
 def scan_daily_candles(ts_code, exchange_type, scan_date):
     table_name = 'cn_daily_candles'
@@ -50,7 +53,8 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
         table_name = 'us_daily_candles'
 
     start = time.time()
-    statement = dailyCandleDao.session.execute(text("select trade_date, open, close, high, low, pct_chg from "
+    session = Session()
+    statement = session.execute(text("select trade_date, open, close, high, low, pct_chg from "
                                                     + table_name + " where ts_code = :ts_code "
                                                     + "and trade_date > '2015-01-01' and open is not null "
                                                       "and close is not null and high is not null and"
@@ -59,6 +63,8 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
                                                       "limit 250").params(ts_code=ts_code))
 
     df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
+    session.close()
+    # session.romove()
 
     if len(df) > 60:
         df = df.sort_values(by='trade_date', ascending=True)
@@ -79,10 +85,9 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
             small_df = df.iloc[df_len - 60: df_len]
             item = df.iloc[df_len - 1].to_dict()
 
-            analyticDao.bulk_insert(small_df, ts_code)
-            dailyLongSignalDao.bulk_insert(small_df, ts_code)
-            stockLongSignalDao.upsert(item)
-
+            # analyticDao.bulk_insert(small_df, ts_code)
+            # dailyLongSignalDao.bulk_insert(small_df, ts_code)
+            # stockLongSignalDao.upsert(item)
             stockDao.update({'ts_code': ts_code, 'scan_date': scan_date})
 
             print_str = '扫描成功: ' + str(ts_code) + ', 最新K线时间: ' + str(scan_date) + \

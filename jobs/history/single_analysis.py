@@ -20,13 +20,14 @@ from lib.bias import bias
 from lib.ma_slope import slope
 from lib.magic_nine_turn import td
 from lib.signals import long_signals
-from lib.signal_analysis2 import analytic_signals
+from lib.analytic_signals import analytic_signals
 from lib.util import wrap_technical_indicator, used_time_fmt
 import time
 from datetime import datetime, date
 import numpy as np
 from api.daily_candle import get_cn_candles
 from jobs.scan.daily_candle import scan_daily_candles
+import threading
 
 stockDao = StockDao()
 dailyCandleDao = CNDailyCandleDao()
@@ -43,8 +44,8 @@ analyticDao = AnalyticSignalDao()
 def scan():
     job_start = time.time()
 
-    ts_code = '600183.SH'
-    s = text("select trade_date, open, close, high, low, `pct_chg` from cn_daily_candles where ts_code = :ts_code "
+    ts_code = 'BIDU'
+    s = text("select trade_date, open, close, high, low, `pct_chg` from us_daily_candles where ts_code = :ts_code "
              + "order by trade_date desc limit 300")
 
     statement = dailyCandleDao.session.execute(s.params(ts_code=ts_code))
@@ -53,17 +54,13 @@ def scan():
     df['num'] = df.index[::-1].to_numpy()
     df = df.set_index('num')
     df['ts_code'] = ts_code
-    df['exchange'] = 'CN'
-    print(time.time()-job_start)
+    df['exchange'] = 'US'
 
     # calc ma/slope/...
     df = wrap_technical_indicator(df)
-    print(time.time()-job_start)
-    print('long_signals-', time.time()-job_start)
 
     # 会对 bias6/bias12/bias24/bias60/bias72/bias120 发生替换
     long_signals(df)
-    print('rise_support_analysis-', time.time()-job_start)
     analytic_signals(df)
 
     df_len = len(df)
@@ -71,7 +68,8 @@ def scan():
     small_df = df.iloc[df_len - 60: df_len]
     item = df.iloc[df_len - 1].to_dict()
 
-    print(df.iloc[len(df) - 1].trade_date)
+    scan_date = df.iloc[len(df) - 1].trade_date
+
     analyticDao.reinsert(small_df, ts_code)
     dailyLongSignalDao.reinsert(small_df, ts_code)
     stockLongSignalDao.upsert(item)
@@ -83,7 +81,14 @@ def scan():
 
 if __name__ == "__main__":
     ts_code = '600183.SH'
-    scan_daily_candles(ts_code, 'CN', '2021-11-16')
+    # scan_daily_candles(ts_code, 'CN', '2021-11-16')
     # scan()
+    scan_date = '2021-11-17'
+    stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
+                                                "< :scan_date) and (exchange = 'SSE' or exchange = 'SZSE') limit 1"
+                                                ).params(scan_date=scan_date))
+    stock_result = stock_stmts.fetchall()
+    stockDao.session.commit()
+    print(stock_result)
     print('扫描成功')
 
