@@ -31,7 +31,7 @@ dailyCandleDao = CNDailyCandleDao()
 
 
 def multi_scan(stocks):
-    if len(stocks) > 1:
+    if len(stocks) > 4:
         pool_cnt = 8
     else:
         pool_cnt = 1
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         quit()
 
     if is_mac_os():
-        limit = 10
+        limit = 8
 
     scan_date = candle['trade_date']
 
@@ -66,15 +66,15 @@ if __name__ == "__main__":
             break
 
         stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
-                                                    "< :scan_date) and (exchange = 'SSE' or exchange = 'SZSE') limit "
+                                                    "< :scan_date) and exchange = 'SSE' limit "
                                                     + str(limit)).params(scan_date=scan_date))
         stock_result = stock_stmts.fetchall()
         stockDao.session.commit()
 
         if len(stock_result) == 0:
-            print('没有需要扫描的股票')
+            print('SSE 没有需要扫描的股票')
             break
 
         multi_scan(stock_result)
         total_scan_cnt += len(stock_result)
-        print("当前已扫描股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))
+        print("当前已扫描 SSE 股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))
