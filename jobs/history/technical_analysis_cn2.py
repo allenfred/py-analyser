@@ -41,12 +41,11 @@ analyticDao = AnalyticSignalDao()
 
 
 def scan(ts_code):
-    job_start = time.time()
+    circle_start = time.time()
     s = text("select trade_date, open, close, high, low, `pct_chg` from cn_daily_candles where ts_code = :ts_code "
              + "order by trade_date desc limit 300")
 
     session = Session()
-    print(ts_code)
     statement = session.execute(s.params(ts_code=ts_code))
     df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
     df = df.sort_values(by='trade_date', ascending=True)
@@ -75,7 +74,7 @@ def scan(ts_code):
 
     stockDao.update({'ts_code': ts_code, 'scan_date': scan_date}, session)
 
-    print('扫描成功', used_time_fmt(job_start, time.time()))
+    print(ts_code, '扫描成功', used_time_fmt(circle_start, time.time()))
 
 
 def work_parallel(stocks):
@@ -87,8 +86,6 @@ def work_parallel(stocks):
 
     for thread in threads:
         thread.join()
-
-    print('Main thread end here')
 
 
 if __name__ == "__main__":
@@ -104,7 +101,7 @@ if __name__ == "__main__":
         quit()
 
     if is_mac_os():
-        limit = 10
+        limit = 5
 
     scan_date = candle['trade_date']
 
@@ -114,8 +111,8 @@ if __name__ == "__main__":
             break
 
         stock_stmts = session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
-                                                    "< :scan_date) and (exchange = 'SSE' or exchange = 'SZSE') limit "
-                                                    + str(limit)).params(scan_date=scan_date))
+                                           "< :scan_date) and (exchange = 'SSE' or exchange = 'SZSE') limit "
+                                           + str(limit)).params(scan_date=scan_date))
         stock_result = stock_stmts.fetchall()
         session.commit()
 

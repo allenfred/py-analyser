@@ -255,5 +255,5 @@ class StockLongSignalDao:
             print('Error:', e)
 
         session.commit()
-        session.close()
+        # session.close()
 

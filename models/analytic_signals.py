@@ -139,4 +139,4 @@ class AnalyticSignalDao:
         except Exception as e:
             print('Error:', e)
 
-        session.close()
+        # session.close()

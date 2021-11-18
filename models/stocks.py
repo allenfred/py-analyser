@@ -266,7 +266,7 @@ class StockDao:
             print('Error:', e)
 
         session.commit()
-        session.close()
+        # session.close()
 
     def bulk_insert(self, df):
         items = []
