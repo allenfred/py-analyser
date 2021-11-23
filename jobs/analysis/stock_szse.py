@@ -1,4 +1,10 @@
 # -- coding: utf-8 -
+import os
+import sys
+
+path = os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(path)
 
 from jobs.scan.daily_candle import scan_daily_candles
 from multiprocessing import Pool
@@ -18,21 +24,14 @@ from models.stocks import StockDao
 from models.cn_daily_candles import CNDailyCandleDao
 from models.db import DBSession
 import pandas as pd
-import os
-import sys
-
-path = os.path.dirname(os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(path)
-
 
 stockDao = StockDao()
 dailyCandleDao = CNDailyCandleDao()
 
 
 def multi_scan(stocks):
-    if len(stocks) > 1:
-        pool_cnt = 8
+    if is_mac_os():
+        pool_cnt = 4
     else:
         pool_cnt = 1
 
@@ -57,7 +56,7 @@ if __name__ == "__main__":
         quit()
 
     if is_mac_os():
-        limit = 10
+        limit = 5
 
     scan_date = candle['trade_date']
 
@@ -67,8 +66,8 @@ if __name__ == "__main__":
             break
 
         stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
-                                                        "< :scan_date) and exchange = 'SZSE' limit "
-                                                        + str(limit)).params(scan_date=scan_date))
+                                                    "< :scan_date) and exchange = 'SZSE' limit "
+                                                    + str(limit)).params(scan_date=scan_date))
 
         stock_result = stock_stmts.fetchall()
         stockDao.session.commit()
@@ -79,5 +78,4 @@ if __name__ == "__main__":
 
         multi_scan(stock_result)
         total_scan_cnt += len(stock_result)
-        print("当前已扫描 SZSE 股票个数", total_scan_cnt, ",总用时",
-              used_time_fmt(job_start, time.time()))
+        print("当前已扫描 SZSE 股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))

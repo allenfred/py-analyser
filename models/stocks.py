@@ -193,6 +193,8 @@ class StockDao:
         return obj
 
     def update(self, obj):
+        obj = {k: v if not pd.isna(v) else None for k, v in obj.items()}
+
         try:
             row = self.session.query(Stock).filter(Stock.ts_code == obj.get('ts_code')).first()
 

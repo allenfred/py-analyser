@@ -32,8 +32,8 @@ dailyCandleDao = USDailyCandleDao()
 
 
 def multi_scan(stocks):
-    if len(stocks) > 1:
-        pool_cnt = 8
+    if is_mac_os():
+        pool_cnt = 4
     else:
         pool_cnt = 1
 
@@ -57,7 +57,7 @@ if __name__ == "__main__":
         quit()
 
     if is_mac_os():
-        limit = 10
+        limit = 5
 
     scan_date = candle['trade_date']
 

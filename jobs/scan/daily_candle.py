@@ -15,6 +15,7 @@ from models.daily_short_signals import DailyShortSignalDao
 from models.stock_long_signals import StockLongSignalDao
 from models.stock_short_signals import StockShortSignalDao
 from models.analytic_signals import AnalyticSignalDao
+from models.stock_analytic_signals import StockAnalyticSignalDao
 
 from models.stocks import StockDao
 from sqlalchemy import text
@@ -40,6 +41,7 @@ dailyShortSignalDao = DailyShortSignalDao()
 stockLongSignalDao = StockLongSignalDao()
 stockShortSignalDao = StockShortSignalDao()
 analyticDao = AnalyticSignalDao()
+stockAnalyticDao = StockAnalyticSignalDao()
 
 
 def scan_daily_candles(ts_code, exchange_type, scan_date):
@@ -56,7 +58,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
                                                       "and close is not null and high is not null and"
                                                     + " low is not null "
                                                     + "order by trade_date desc "
-                                                      "limit 250").params(ts_code=ts_code))
+                                                      "limit 400").params(ts_code=ts_code))
 
     df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
 
@@ -77,11 +79,12 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
             df_len = len(df)
 
             small_df = df.iloc[df_len - 60: df_len]
-            item = df.iloc[df_len - 1].to_dict()
+            signal = df.iloc[df_len - 1].to_dict()
 
             analyticDao.bulk_insert(small_df, ts_code)
             dailyLongSignalDao.bulk_insert(small_df, ts_code)
-            stockLongSignalDao.upsert(item)
+            stockLongSignalDao.upsert(signal)
+            stockAnalyticDao.upsert(signal)
 
             stockDao.update({'ts_code': ts_code, 'scan_date': scan_date})
 

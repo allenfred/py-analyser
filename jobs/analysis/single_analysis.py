@@ -4,7 +4,12 @@ import sys
 path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(path)
 
+from sqlalchemy import text
 import pandas as pd
+import time
+from datetime import datetime, date
+import numpy as np
+
 from models.db import DBSession
 from models.cn_daily_candles import CNDailyCandleDao
 from models.daily_indicators import DailyIndicatorDao
@@ -14,17 +19,10 @@ from models.stock_long_signals import StockLongSignalDao
 from models.stock_short_signals import StockShortSignalDao
 from models.analytic_signals import AnalyticSignalDao
 from models.stocks import StockDao
-from sqlalchemy import text
-from talib import SMA, EMA, MACD
-from lib.bias import bias
-from lib.ma_slope import slope
-from lib.magic_nine_turn import td
+
 from lib.signals import long_signals
-from lib.signal_analysis2 import analytic_signals
+from lib.analytic_signals import analytic_signals
 from lib.util import wrap_technical_indicator, used_time_fmt
-import time
-from datetime import datetime, date
-import numpy as np
 from api.daily_candle import get_cn_candles
 from jobs.scan.daily_candle import scan_daily_candles
 
@@ -39,51 +37,8 @@ stockShortSignalDao = StockShortSignalDao()
 
 analyticDao = AnalyticSignalDao()
 
-
-def scan():
-    job_start = time.time()
-
-    ts_code = '600183.SH'
-    s = text("select trade_date, open, close, high, low, `pct_chg` from cn_daily_candles where ts_code = :ts_code "
-             + "order by trade_date desc limit 300")
-
-    statement = dailyCandleDao.session.execute(s.params(ts_code=ts_code))
-    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
-    df = df.sort_values(by='trade_date', ascending=True)
-    df['num'] = df.index[::-1].to_numpy()
-    df = df.set_index('num')
-    df['ts_code'] = ts_code
-    df['exchange'] = 'CN'
-    print(time.time()-job_start)
-
-    # calc ma/slope/...
-    df = wrap_technical_indicator(df)
-    print(time.time()-job_start)
-    print('long_signals-', time.time()-job_start)
-
-    # 会对 bias6/bias12/bias24/bias60/bias72/bias120 发生替换
-    long_signals(df)
-    print('rise_support_analysis-', time.time()-job_start)
-    analytic_signals(df)
-
-    df_len = len(df)
-
-    small_df = df.iloc[df_len - 60: df_len]
-    item = df.iloc[df_len - 1].to_dict()
-
-    print(df.iloc[len(df) - 1].trade_date)
-    analyticDao.reinsert(small_df, ts_code)
-    dailyLongSignalDao.reinsert(small_df, ts_code)
-    stockLongSignalDao.upsert(item)
-
-    stockDao.update({'ts_code': ts_code, 'scan_date': scan_date})
-
-    print('扫描成功', used_time_fmt(job_start, time.time()))
-
-
 if __name__ == "__main__":
-    ts_code = '600183.SH'
-    scan_daily_candles(ts_code, 'CN', '2021-11-16')
-    # scan()
+    ts_code = '600051.SH'
+    scan_daily_candles(ts_code, 'CN', '2021-11-22')
     print('扫描成功')
 

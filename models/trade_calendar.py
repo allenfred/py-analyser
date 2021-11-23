@@ -120,8 +120,6 @@ class TradeCalendarDao:
             if exchange == 'US':
                 today = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
 
-            print(today)
-
             stmts = select(trade_calendar).where(
                 trade_calendar.c.exchange == exchange,
                 trade_calendar.c.candle_ready != 1,

@@ -1,15 +1,7 @@
-FROM python:3.6-alpine
-
-WORKDIR actions-runner
-RUN cd /actions-runner
-# Download the latest runner package
-RUN curl -o actions-runner-linux-x64-2.283.3.tar.gz -L https://github.com/actions/runner/releases/download/v2.283.3/actions-runner-linux-x64-2.283.3.tar.gz
-# Optional: Validate the hash
-RUN echo "09aa49b96a8cbe75878dfcdc4f6d313e430d9f92b1f4625116b117a21caaba89  actions-runner-linux-x64-2.283.3.tar.gz" | shasum -a 256 -c
-# Extract the installer
-RUN tar xzf ./actions-runner-linux-x64-2.283.3.tar.gz
-
-
-# Configure
-#RUN RUNNER_ALLOW_RUNASROOT="1" ./config.sh --url https://github.com/allenfred/py-crawler --token ACRZMK4MVOAHME7K63ES76LBQJHKU
-#RUN RUNNER_ALLOW_RUNASROOT="1" ./run.sh
+# Below are the dependencies required for installing the common combination of numpy, scipy, pandas and matplotlib 
+# in an Alpine based Docker image.
+FROM alpine:3.4
+RUN echo "http://dl-8.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+RUN apk --no-cache --update-cache add gcc gfortran python python-dev py-pip build-base wget freetype-dev libpng-dev openblas-dev
+RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
+RUN pip install numpy pandas PyMySQL SQLAlchemy TA-Lib tushare

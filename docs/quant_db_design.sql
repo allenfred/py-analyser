@@ -461,6 +461,38 @@ CREATE TABLE `weekly_candles` (
   `bias120` float
 );
 
+CREATE TABLE `stock_analytic_signals` (
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
+  `ts_code` varchar(255) NOT NULL COMMENT 'TS代码',
+  `exchange` varchar(255) NOT NULL COMMENT '交易所代码 CN HK US',
+  `ma60_support` tinyint(2),
+  `ema60_support` tinyint(2),
+  `ma120_support` tinyint(2),
+  `ema120_support` tinyint(2),
+  `yearly_price_position` tinyint(5),
+  `yearly_price_position10` tinyint(5),
+  `yearly_price_position20` tinyint(5),
+  `yearly_price_position30` tinyint(5),
+  `yearly_price_position50` tinyint(5),
+  `yearly_price_position70` tinyint(5),
+  `ma_group_glue` tinyint(1),
+  `ema_group_glue` tinyint(1),
+  `ma_up_arrange51020` tinyint(1),
+  `ma_up_arrange5102030` tinyint(1),
+  `ma_up_arrange510203060` tinyint(1),
+  `ma_up_arrange203060` tinyint(1),
+  `ma_up_arrange2060120` tinyint(1),
+  `ema_up_arrange51020` tinyint(1),
+  `ema_up_arrange5102030` tinyint(1),
+  `ema_up_arrange510203060` tinyint(1),
+  `ema_up_arrange203060` tinyint(1),
+  `ema_up_arrange2055120` tinyint(1),
+  `stand_up_ma60` tinyint(1),
+  `stand_up_ema60` tinyint(1),
+  `stand_up_ma120` tinyint(1),
+  `stand_up_ema120` tinyint(1)
+);
+
 CREATE TABLE `analytic_signals` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `ts_code` varchar(255) NOT NULL COMMENT 'TS代码',
@@ -564,6 +596,10 @@ CREATE INDEX `weekly_candles_index_23` ON `weekly_candles` (`ts_code`);
 CREATE INDEX `weekly_candles_index_24` ON `weekly_candles` (`trade_date`);
 
 CREATE UNIQUE INDEX `weekly_candle_unique` ON `weekly_candles` (`ts_code`, `trade_date`);
+
+CREATE INDEX `stock_analytic_signals_index_1` ON `stock_analytic_signals` (`ts_code`);
+
+CREATE INDEX `stock_analytic_signals_index_2` ON `stock_analytic_signals` (`exchange`);
 
 CREATE INDEX `analytic_signals_index_26` ON `analytic_signals` (`ts_code`);
 

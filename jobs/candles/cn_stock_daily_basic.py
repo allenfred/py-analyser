@@ -1,37 +1,25 @@
 # -- coding: utf-8 -
+import os
+import sys
 
-import tushare as ts
-pro = ts.pro_api('4896a3e82b65867f1c7ff140dcefe5782b5db55507a5c16b61c24a08')
+path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(path)
 
-# 拉取数据
-df = pro.daily_basic(**{
-    "ts_code": "",
-    "trade_date": "",
-    "start_date": "",
-    "end_date": "",
-    "limit": "",
-    "offset": ""
-}, fields=[
-    "ts_code",
-    "trade_date",
-    "close",
-    "turnover_rate",
-    "turnover_rate_f",
-    "volume_ratio",
-    "pe",
-    "pe_ttm",
-    "pb",
-    "ps",
-    "ps_ttm",
-    "dv_ratio",
-    "dv_ttm",
-    "total_share",
-    "float_share",
-    "free_share",
-    "total_mv",
-    "circ_mv",
-    "limit_status"
-])
-print(df)
+from sqlalchemy import text
+import pandas as pd
+import time
+from datetime import datetime, date
+import numpy as np
 
-        
+from models.db import DBSession
+from models.stocks import StockDao
+from api.daily_basic import get_cn_daily_basic
+
+stockDao = StockDao()
+
+if __name__ == "__main__":
+
+    df = get_cn_daily_basic('20211122')
+    for index, row in df.iterrows():
+        stockDao.update(row.to_dict())
+    # print(df)

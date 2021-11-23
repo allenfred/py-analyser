@@ -6,12 +6,11 @@ import pandas as pd
 Base = declarative_base()
 
 
-class AnalyticSignal(Base):
-    __tablename__ = 'analytic_signals'
+class StockAnalyticSignal(Base):
+    __tablename__ = 'stock_analytic_signals'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     ts_code = Column(String)
-    trade_date = Column(Date)
     exchange = Column(String)  # 交易所 CN HK US
     ma60_support = Column(SmallInteger)
     ema60_support = Column(SmallInteger)
@@ -46,12 +45,10 @@ class AnalyticSignal(Base):
 
 
 def get_obj(signal):
-    signal = signal.to_dict()
     signal = {k: v if not pd.isna(v) else None for k, v in signal.items()}
 
-    return AnalyticSignal(
+    return StockAnalyticSignal(
         ts_code=signal.get('ts_code', None),
-        trade_date=signal.get('trade_date', None),
         exchange=signal.get('exchange', None),
         ma60_support=signal.get('ma60_support', None),
         ema60_support=signal.get('ema60_support', None),
@@ -85,21 +82,21 @@ def get_obj(signal):
     )
 
 
-class AnalyticSignalDao:
+class StockAnalyticSignalDao:
     def __init__(self):
         self.session = DBSession()
 
     def find_by_ts_code(self, ts_code):
-        s = text("select trade_date from analytic_signals where ts_code = :ts_code "
+        s = text("select * from stock_analytic_signals where ts_code = :ts_code "
                  "order by trade_date desc limit 0,500;")
         statement = self.session.execute(s.params(ts_code=ts_code))
-        df = pd.DataFrame(statement.fetchall(), columns=['trade_date'])
+        df = pd.DataFrame(statement.fetchall(), columns=['ts_code'])
         self.session.close()
 
         return df
 
     def find_all(self, ts_code):
-        statement = select(AnalyticSignal).filter_by(ts_code=ts_code)
+        statement = select(StockAnalyticSignal).filter_by(ts_code=ts_code)
         result = self.session.execute(statement).scalars().all()
 
         return result
@@ -116,7 +113,7 @@ class AnalyticSignalDao:
 
         try:
 
-            self.session.bulk_insert_mappings(AnalyticSignal, items)
+            self.session.bulk_insert_mappings(StockAnalyticSignal, items)
             self.session.commit()
         except Exception as e:
             print('Error:', e)
@@ -124,7 +121,7 @@ class AnalyticSignalDao:
             self.session.close()
 
     def reinsert(self, df, ts_code):
-        self.session.execute("delete from analytic_signals where ts_code = :ts_code", {"ts_code": ts_code})
+        self.session.execute("delete from stock_analytic_signals where ts_code = :ts_code", {"ts_code": ts_code})
         items = []
 
         for index, item in df.iterrows():
@@ -133,9 +130,78 @@ class AnalyticSignalDao:
             items.insert(index, item)
 
         try:
-            self.session.bulk_insert_mappings(AnalyticSignal, items)
+            self.session.bulk_insert_mappings(StockAnalyticSignal, items)
             self.session.commit()
         except Exception as e:
             print('Error:', e)
 
+        self.session.close()
+
+    def upsert(self, signal):
+        obj = get_obj(signal)
+
+        try:
+            row = self.session.query(StockAnalyticSignal). \
+                filter(StockAnalyticSignal.ts_code == signal['ts_code']).first()
+
+            if row is None:
+                self.session.add(obj)
+            else:
+                if obj.ma60_support is not None:
+                    row.ma60_support = obj.ma60_support
+                if obj.ema60_support is not None:
+                    row.ema60_support = obj.ema60_support
+                if obj.ma120_support is not None:
+                    row.ma120_support = obj.ma120_support
+                if obj.ema120_support is not None:
+                    row.ema120_support = obj.ema120_support
+                if obj.yearly_price_position is not None:
+                    row.yearly_price_position = obj.yearly_price_position
+                if obj.yearly_price_position10 is not None:
+                    row.yearly_price_position10 = obj.yearly_price_position10
+                if obj.yearly_price_position20 is not None:
+                    row.yearly_price_position20 = obj.yearly_price_position20
+                if obj.yearly_price_position30 is not None:
+                    row.yearly_price_position30 = obj.yearly_price_position30
+                if obj.yearly_price_position50 is not None:
+                    row.yearly_price_position50 = obj.yearly_price_position50
+                if obj.yearly_price_position70 is not None:
+                    row.yearly_price_position70 = obj.yearly_price_position70
+                if obj.ma_group_glue is not None:
+                    row.ma_group_glue = obj.ma_group_glue
+                if obj.ema_group_glue is not None:
+                    row.ema_group_glue = obj.ema_group_glue
+                if obj.ma_up_arrange51020 is not None:
+                    row.ma_up_arrange51020 = obj.ma_up_arrange51020
+                if obj.ma_up_arrange5102030 is not None:
+                    row.ma_up_arrange5102030 = obj.ma_up_arrange5102030
+                if obj.ma_up_arrange510203060 is not None:
+                    row.ma_up_arrange510203060 = obj.ma_up_arrange510203060
+                if obj.ma_up_arrange203060 is not None:
+                    row.ma_up_arrange203060 = obj.ma_up_arrange203060
+                if obj.ma_up_arrange2060120 is not None:
+                    row.ma_up_arrange2060120 = obj.ma_up_arrange2060120
+                if obj.ema_up_arrange51020 is not None:
+                    row.ema_up_arrange51020 = obj.ema_up_arrange51020
+                if obj.ema_up_arrange5102030 is not None:
+                    row.ema_up_arrange5102030 = obj.ema_up_arrange5102030
+                if obj.ema_up_arrange510203060 is not None:
+                    row.ema_up_arrange510203060 = obj.ema_up_arrange510203060
+                if obj.ema_up_arrange203060 is not None:
+                    row.ema_up_arrange203060 = obj.ema_up_arrange203060
+                if obj.ema_up_arrange2055120 is not None:
+                    row.ema_up_arrange2055120 = obj.ema_up_arrange2055120
+                if obj.stand_up_ma60 is not None:
+                    row.stand_up_ma60 = obj.stand_up_ma60
+                if obj.stand_up_ma120 is not None:
+                    row.stand_up_ma120 = obj.stand_up_ma120
+                if obj.stand_up_ema60 is not None:
+                    row.stand_up_ema60 = obj.stand_up_ema60
+                if obj.stand_up_ema120 is not None:
+                    row.stand_up_ema120 = obj.stand_up_ema120
+
+        except Exception as e:
+            print('Error:', e)
+
+        self.session.commit()
         self.session.close()
