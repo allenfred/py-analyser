@@ -31,18 +31,17 @@ dailyCandleDao = HKDailyCandleDao()
 
 
 def multi_scan(stocks):
-    if len(stocks) > 1:
-        pool_cnt = 8
+    if is_mac_os():
+        pool_cnt = 4
+        p = Pool(pool_cnt)
+
+        for i in range(len(stocks)):
+            p.apply_async(scan_daily_candles, args=(stocks[i][0], 'HK', scan_date,))
+
+        p.close()
+        p.join()
     else:
-        pool_cnt = 1
-
-    p = Pool(pool_cnt)
-
-    for i in range(len(stocks)):
-        p.apply_async(scan_daily_candles, args=(stocks[i][0], 'HK', scan_date,))
-
-    p.close()
-    p.join()
+        scan_daily_candles(stocks[0][0], 'HK', scan_date)
 
 
 if __name__ == "__main__":
