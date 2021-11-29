@@ -62,17 +62,17 @@ module.exports = {
     },
     {
       name: 'HKdaily-analysis',
-      script: 'jobs/analysis/daily/stock_szse.py',
+      script: 'jobs/analysis/daily/stock_hk.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '30 17 * * *', // 每个交易日下午 17:30
+      cron_restart: '30 18 * * *', // 每个交易日下午 18:30
       watch: false,
       autorestart: false,
     },
     {
       name: 'USdaily-analysis',
-      script: 'jobs/analysis/daily/stock_szse.py',
+      script: 'jobs/analysis/daily/stock_us.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
