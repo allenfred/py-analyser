@@ -447,24 +447,24 @@ def long_signals(df):
 
 
 def is_ma_glue(df, row, index):
-    # 最近9个交易日 0 <= ma20_slope <= 1
-    # 最近9个交易日 -1.5 < ma10_slope < 1.5
-    # 最近9个交易日 -1.5 < ma5_slope < 1.5
-    if df.ma20_slope[index - 8: index + 1].min() >= 0 and df.ma20_slope[index - 8: index + 1].max() <= 1 and \
-            df.ma5_slope[index - 8: index + 1].min() > -1.5 and df.ma5_slope[index - 8: index + 1].max() < 1.5 and \
-            df.ma10_slope[index - 8: index + 1].min() > -1.5 and df.ma10_slope[index - 8: index + 1].max() < 1.5:
+    # 最近9个交易日 0 < ma20_slope < 0.6
+    # 最近9个交易日 -0.5 < ma10_slope < 0.8
+    # 最近9个交易日 -0.5 < ma5_slope < 1
+    if df.ma20_slope[index - 8: index + 1].min() > 0 and df.ma20_slope[index - 8: index + 1].max() < 0.6 and \
+            df.ma10_slope[index - 8: index + 1].min() > -0.5 and df.ma10_slope[index - 8: index + 1].max() < 0.8 and \
+            df.ma5_slope[index - 8: index + 1].min() > -0.5 and df.ma5_slope[index - 8: index + 1].max() < 1:
         return True
     else:
         return False
 
 
 def is_ema_glue(df, row, index):
-    # 最近9个交易日 0 <= ema20_slope <= 1
-    # 最近9个交易日 -1.5 < ema10_slope < 1.5
-    # 最近9个交易日 -1.5 < ema5_slope < 1.5
-    if df.ema20_slope[index - 8: index + 1].min() >= 0 and df.ema20_slope[index - 8: index + 1].max() <= 1 and \
-            df.ema5_slope[index - 8: index + 1].min() > -1.5 and df.ema5_slope[index - 8: index + 1].max() < 1.5 and \
-            df.ema10_slope[index - 8: index + 1].min() > -1.5 and df.ema10_slope[index - 8: index + 1].max() < 1.5:
+    # 最近9个交易日 0 < ema20_slope < 0.6
+    # 最近9个交易日 -0.5 < ema10_slope < 0.8
+    # 最近9个交易日 -0.5 < ema5_slope < 1
+    if df.ema20_slope[index - 8: index + 1].min() > 0 and df.ema20_slope[index - 8: index + 1].max() < 0.6 and \
+            df.ema10_slope[index - 8: index + 1].min() > -0.5 and df.ema10_slope[index - 8: index + 1].max() < 0.8 and \
+            df.ema5_slope[index - 8: index + 1].min() > -0.5 and df.ema5_slope[index - 8: index + 1].max() < 1:
         return True
     else:
         return False

@@ -61,6 +61,16 @@ module.exports = {
       autorestart: false,
     },
     {
+      name: 'SZSEdaily-analysis2',
+      script: 'jobs/analysis/daily/stock_szse2.py',
+      interpreter: 'python3',
+      instances: 1,
+      exec_mode: 'fork',
+      cron_restart: '0 17 * * *', // 每个交易日下午 17:00
+      watch: false,
+      autorestart: false,
+    },
+    {
       name: 'HKdaily-analysis',
       script: 'jobs/analysis/daily/stock_hk.py',
       interpreter: 'python3',
