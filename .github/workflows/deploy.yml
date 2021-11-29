@@ -14,10 +14,6 @@ jobs:
         run: |
           cd /usr/local/workspace/py-crawler
           git pull
-      - name: Install Dependencies
-        run: |
-          cd /usr/local/workspace/py-crawler
-          pip install -r requirements.txt
       - name: Alright
         if: ${{ failure() }}
         run: |
