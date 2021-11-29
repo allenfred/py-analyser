@@ -5,11 +5,11 @@ import sys
 path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 sys.path.append(path)
 
-from jobs.scan.daily_candle import scan_daily_candles
+from jobs.scan.daily_candle2 import scan_daily_candles
 from multiprocessing import Pool
 import multiprocessing
 import threading
-from api.daily_candle2 import get_cn_candles
+from api.daily_candle import get_cn_candles
 import numpy as np
 from datetime import datetime, date
 import time
