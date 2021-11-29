@@ -71,11 +71,11 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
 
         try:
             df = wrap_technical_indicator(df)
-            dailyIndicatorDao.bulk_insert(df, ts_code)
+            # dailyIndicatorDao.bulk_insert(df, ts_code)
 
             # 会对 bias6/bias12/bias24/bias60/bias72/bias120 发生替换
-            long_signals(df)
-            analytic_signals(df)
+            # long_signals(df)
+            # analytic_signals(df)
             df_len = len(df)
 
             small_df = df.iloc[df_len - 60: df_len]
