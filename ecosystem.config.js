@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'stockCN-daily',
-      script: 'jobs/daily/cn_stock_daily.py',
+      script: 'jobs/candles/daily/cn_stock_daily.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
@@ -12,7 +12,7 @@ module.exports = {
     },
     {
       name: 'stockHK-daily',
-      script: 'jobs/daily/hk_stock_daily.py',
+      script: 'jobs/candles/daily/hk_stock_daily.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
@@ -22,7 +22,7 @@ module.exports = {
     },
     {
       name: 'stockUS-daily',
-      script: 'jobs/daily/us_stock_daily.py',
+      script: 'jobs/candles/daily/us_stock_daily.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
@@ -32,7 +32,7 @@ module.exports = {
     },
     {
       name: 'stockCN-basic',
-      script: 'dist/daily/cn_stock_daily_basic.py',
+      script: 'jobs/candles/daily/cn_stock_daily_basic.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
@@ -42,7 +42,7 @@ module.exports = {
     },
     {
       name: 'SSEdaily-analysis',
-      script: 'dist/crons/5min.js',
+      script: 'jobs/analysis/daily/stock_sse.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
@@ -52,7 +52,7 @@ module.exports = {
     },
     {
       name: 'SZSEdaily-analysis',
-      script: 'dist/crons/15min.js',
+      script: 'jobs/analysis/daily/stock_szse.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
@@ -62,7 +62,7 @@ module.exports = {
     },
     {
       name: 'HKdaily-analysis',
-      script: 'dist/crons/15min.js',
+      script: 'jobs/analysis/daily/stock_szse.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
@@ -72,7 +72,7 @@ module.exports = {
     },
     {
       name: 'USdaily-analysis',
-      script: 'dist/crons/30min.js',
+      script: 'jobs/analysis/daily/stock_szse.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
