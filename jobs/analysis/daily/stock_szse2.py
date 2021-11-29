@@ -9,7 +9,7 @@ from jobs.scan.daily_candle import scan_daily_candles
 from multiprocessing import Pool
 import multiprocessing
 import threading
-from api.daily_candle import get_cn_candles
+from api.daily_candle2 import get_cn_candles
 import numpy as np
 from datetime import datetime, date
 import time
