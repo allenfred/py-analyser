@@ -1,0 +1,24 @@
+name: Deploy workflow
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Enter workspace
+        run: |
+          cd /usr/local/workspace/py-crawler
+          git pull
+      - name: Install Dependencies
+        run: |
+          cd /usr/local/workspace/py-crawler
+          pip install -r requirements.txt
+      - name: Alright
+        if: ${{ failure() }}
+        run: |
+          echo "Alright, it doesn't matter !"

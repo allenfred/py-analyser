@@ -3,19 +3,19 @@
 import os
 import sys
 
-path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 sys.path.append(path)
 
 import pandas as pd
 from models.db import DBSession
-from models.us_daily_candles import USDailyCandleDao
+from models.cn_daily_candles import CNDailyCandleDao
 from models.stocks import StockDao
-
 from sqlalchemy import text
 from talib import SMA, EMA, MACD
 from lib.bias import bias
 from lib.ma_slope import slope
 from lib.magic_nine_turn import td
+from lib.util import wrap_technical_indicator, used_time_fmt, is_mac_os
 import time
 from datetime import datetime, date
 import numpy as np
@@ -25,10 +25,9 @@ import threading
 import multiprocessing
 from multiprocessing import Pool
 from jobs.scan.daily_candle import scan_daily_candles
-from lib.util import used_time_fmt, is_mac_os
 
 stockDao = StockDao()
-dailyCandleDao = USDailyCandleDao()
+dailyCandleDao = CNDailyCandleDao()
 
 
 def multi_scan(stocks):
@@ -40,7 +39,7 @@ def multi_scan(stocks):
     p = Pool(pool_cnt)
 
     for i in range(len(stocks)):
-        p.apply_async(scan_daily_candles, args=(stocks[i][0], 'US', scan_date,))
+        p.apply_async(scan_daily_candles, args=(stocks[i][0], 'CN', scan_date,))
 
     p.close()
     p.join()
@@ -67,15 +66,15 @@ if __name__ == "__main__":
             break
 
         stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
-                                                    " < :scan_date) and "
-                                                    "exchange = 'US' limit " + str(limit)).params(scan_date=scan_date))
+                                                    "< :scan_date) and exchange = 'SSE' limit "
+                                                    + str(limit)).params(scan_date=scan_date))
         stock_result = stock_stmts.fetchall()
         stockDao.session.commit()
 
         if len(stock_result) == 0:
-            print('没有需要扫描的股票')
+            print('SSE 没有需要扫描的股票')
             break
 
         multi_scan(stock_result)
         total_scan_cnt += len(stock_result)
-        print("当前已扫描股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))
+        print("当前已扫描 SSE 股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))

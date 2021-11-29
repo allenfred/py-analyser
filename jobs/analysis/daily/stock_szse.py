@@ -2,8 +2,7 @@
 import os
 import sys
 
-path = os.path.dirname(os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__))))
+path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 sys.path.append(path)
 
 from jobs.scan.daily_candle import scan_daily_candles

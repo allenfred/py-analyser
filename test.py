@@ -28,7 +28,9 @@ stockLongSignalDao = StockLongSignalDao()
 stockShortSignalDao = StockShortSignalDao()
 
 if __name__ == "__main__":
-    # print("platform.platform()=%s", platform.platform())
+    print("platform.platform()=%s", platform.platform())
     system_p = platform.platform()
     if "macOS" in system_p:
         print('is macos ', system_p)
+    else:
+        print('it is not macos.')

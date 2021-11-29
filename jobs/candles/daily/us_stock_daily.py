@@ -3,7 +3,7 @@
 import os
 import sys
 
-path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 sys.path.append(path)
 
 import tushare as ts
@@ -39,12 +39,12 @@ def ready_candles_by_date(start_time):
             circle_start = time.time()
 
             try:
-                df = get_us_candles({"trade_date": trade_dte, "limit": 3000, "offset": offset})
+                df = get_us_candles({"trade_date": trade_dte, "limit": 2000, "offset": offset})
                 df = df.sort_values(by='trade_date', ascending=False)
                 df['pct_chg'] = df['pct_change']
                 df['turnover_rate'] = df['turnover_ratio']
 
-                if len(df) < 3000:
+                if len(df) < 2000:
                     is_last_req = True
                 else:
                     offset += len(df)
@@ -58,9 +58,12 @@ def ready_candles_by_date(start_time):
             except Exception as e:
                 print('Error:', e)
 
-            print('已更新 US daily_candles ', item.cal_date, ': ', total_got_count, ' 条数据，用时 ',
-                  used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start_time, time.time()))
+        if total_got_count == 0:
+            print('未获取到行情数据')
+            break
 
+        print('已更新 US daily_candles ', item.cal_date, ': ', total_got_count, ' 条数据，用时 ',
+              used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start_time, time.time()))
         calendarDao.set_us_candle_ready(item.cal_date)
 
 

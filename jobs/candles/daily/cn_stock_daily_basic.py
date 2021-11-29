@@ -2,7 +2,7 @@
 import os
 import sys
 
-path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 sys.path.append(path)
 
 from sqlalchemy import text
@@ -18,8 +18,7 @@ from api.daily_basic import get_cn_daily_basic
 stockDao = StockDao()
 
 if __name__ == "__main__":
-
-    df = get_cn_daily_basic('20211122')
+    today = datetime.now().strftime("%Y%m%d")
+    df = get_cn_daily_basic(today)
     for index, row in df.iterrows():
         stockDao.update(row.to_dict())
-    # print(df)

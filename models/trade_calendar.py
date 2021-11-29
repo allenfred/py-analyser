@@ -124,8 +124,8 @@ class TradeCalendarDao:
                 trade_calendar.c.exchange == exchange,
                 trade_calendar.c.candle_ready != 1,
                 trade_calendar.c.is_open == 1,
-                trade_calendar.c.cal_date >= '2012-01-01',
-                trade_calendar.c.cal_date <= today).order_by(desc(trade_calendar.c.cal_date)).limit(1)
+                trade_calendar.c.cal_date >= '2015-01-01',
+                trade_calendar.c.cal_date <= today).order_by(trade_calendar.c.cal_date).limit(1)
 
             rows = conn.execute(stmts).fetchall()
 

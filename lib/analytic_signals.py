@@ -150,11 +150,13 @@ def item_apply(df, row):
     if index >= 260:
         high_price = df['high'][index - 259: index + 1].max()
         low_price = df['low'][index - 259: index + 1].min()
-        price_range = high_price - low_price
-        price_pct_position = round((row.close - low_price) * 100 / price_range, 1)
-        yearly_price_position.insert(index, price_pct_position)
     else:
-        yearly_price_position.insert(index, 0)
+        high_price = df['high'].max()
+        low_price = df['low'].min()
+
+    price_range = high_price - low_price
+    price_pct_position = round((row.close - low_price) * 100 / price_range, 1)
+    yearly_price_position.insert(index, price_pct_position)
 
     # yearly_price_position10
     if 10 >= yearly_price_position[index]:
@@ -344,97 +346,152 @@ def item_apply(df, row):
 
 
 def is_stand_up_ma60(df, row):
-    # 前55个交易日(除最近3个交易日外) ma60向下运行
+    if row.name < 60:
+        return False
+
+    # 前55个交易日(除最近2个交易日外) ma60向下运行
     index = row.name
-    small_set = df.iloc[index - 55: index - 2]
+    df1 = df.iloc[index - 55: index - 1]
     pre_row = df.iloc[index - 1]
-    before_pre_row = df.iloc[index - 2]
     ma60_down_still = True
+    close_down_still = True
     ma60_up_recently = False
 
-    if small_set['ma60_slope'].max() >= 0:
+    def close_judge(_row):
+        if _row.close < _row.ma60:
+            return 0
+        else:
+            return 1
+
+    close_sets = df1.apply(lambda _: close_judge(_), axis=1)
+    close_sets = close_sets.to_numpy()
+
+    if close_sets.max() > 0:
+        close_down_still = False
+
+    if df1['ma60_slope'].max() >= 0:
         ma60_down_still = False
 
-    # 最近3个交易日收盘价高于 ma60
-    # 最近3个交易日 ma60 开始向上
-    if row.close > row.ma60 and pre_row.close > pre_row.ma60 and before_pre_row.close > before_pre_row.ma60 \
-            and row.ma60_slope > 0 and pre_row.ma60_slope > 0 and before_pre_row.ma60_slope > 0:
+    # 最近2个交易日收盘价高于 ma60
+    # 最近2个交易日 ma60 开始向上
+    if row.close > row.ma60 and pre_row.close > pre_row.ma60 and row.ma60_slope > 0 and pre_row.ma60_slope > 0:
         ma60_up_recently = True
 
-    if len(df) > 81 and ma60_down_still and ma60_up_recently:
-        return 1
+    if len(df) > 81 and close_down_still and ma60_down_still and ma60_up_recently:
+        return True
     else:
-        return 0
+        return False
 
 
 def is_stand_up_ma120(df, row):
-    # 前89个交易日(除最近3个交易日外) ma120向下运行
+    if row.name < 130:
+        return 0
+
+    # 前89个交易日(除最近2个交易日外) ma120向下运行
     index = row.name
-    small_set = df.iloc[index - 89: index - 2]
+    df1 = df.iloc[index - 89: index - 1]
     pre_row = df.iloc[index - 1]
-    before_pre_row = df.iloc[index - 2]
     ma120_down_still = True
+    close_down_still = True
     ma120_up_recently = False
 
-    if small_set['ma120_slope'].max() >= 0:
+    def close_judge(_row):
+        if _row.close < _row.ma120:
+            return 0
+        else:
+            return 1
+
+    close_sets = df1.apply(lambda _: close_judge(_), axis=1)
+    close_sets = close_sets.to_numpy()
+
+    if close_sets.max() > 0:
+        close_down_still = False
+
+    if df1['ma120_slope'].max() >= 0:
         ma120_down_still = False
 
-    # 最近3个交易日收盘价高于 ma120
-    # 最近3个交易日 ma120 开始向上
-    if row.close > row.ma120 and pre_row.close > pre_row.ma120 and before_pre_row.close > before_pre_row.ma120 \
-            and row.ma120_slope > 0 and pre_row.ma120_slope > 0 and before_pre_row.ma120_slope > 0:
+    # 最近2个交易日收盘价高于 ma120
+    # 最近2个交易日 ma120 开始向上
+    if row.close > row.ma120 and pre_row.close > pre_row.ma120 and row.ma120_slope > 0 and pre_row.ma120_slope > 0:
         ma120_up_recently = True
 
-    if len(df) > 154 and ma120_down_still and ma120_up_recently:
+    if len(df) > 154 and close_down_still and ma120_down_still and ma120_up_recently:
         return True
     else:
         return False
 
 
 def is_stand_up_ema60(df, row):
+    if row.name < 60:
+        return 0
+
     # 前55个交易日(除最近3个交易日外) ema60 向下运行
     index = row.name
-    small_set = df.iloc[index - 55: index - 2]
+    df1 = df.iloc[index - 55: index - 1]
     pre_row = df.iloc[index - 1]
-    before_pre_row = df.iloc[index - 2]
     ma60_down_still = True
+    close_down_still = True
     ma60_up_recently = False
 
-    if small_set['ema60_slope'].max() >= 0:
+    def close_judge(_row):
+        if _row.close < _row.ema60:
+            return 0
+        else:
+            return 1
+
+    close_sets = df1.apply(lambda _: close_judge(_), axis=1)
+    close_sets = close_sets.to_numpy()
+
+    if close_sets.max() > 0:
+        close_down_still = False
+
+    if df1['ema60_slope'].max() >= 0:
         ma60_down_still = False
 
-    # 最近3个交易日收盘价高于 ema60
-    # 最近3个交易日 ema60 开始向上
-    if row.close > row.ema60 and pre_row.close > pre_row.ema60 and before_pre_row.close > before_pre_row.ema60 \
-            and row.ema60_slope > 0 and pre_row.ema60_slope > 0 and before_pre_row.ema60_slope > 0:
+    # 最近2个交易日收盘价高于 ema60
+    # 最近2个交易日 ema60 开始向上
+    if row.close > row.ema60 and pre_row.close > pre_row.ema60 and row.ema60_slope > 0 and pre_row.ema60_slope > 0:
         ma60_up_recently = True
 
-    if len(df) > 81 and ma60_down_still and ma60_up_recently:
+    if len(df) > 81 and close_down_still and ma60_down_still and ma60_up_recently:
         return True
     else:
         return False
 
 
 def is_stand_up_ema120(df, row):
-    # 前89个交易日(除最近3个交易日外) ma120向下运行
-    index = row.name
+    if row.name < 130:
+        return 0
 
-    small_set = df.iloc[index - 89: index - 2]
+    # 前89个交易日(除最近2个交易日外) ma120向下运行
+    index = row.name
+    df1 = df.iloc[index - 89: index - 1]
     pre_row = df.iloc[index - 1]
-    before_pre_row = df.iloc[index - 2]
     ma120_down_still = True
+    close_down_still = True
     ma120_up_recently = False
 
-    if small_set['ema120_slope'].max() >= 0:
+    def close_judge(_row):
+        if _row.close < _row.ema120:
+            return 0
+        else:
+            return 1
+
+    close_sets = df1.apply(lambda _: close_judge(_), axis=1)
+    close_sets = close_sets.to_numpy()
+
+    if close_sets.max() > 0:
+        close_down_still = False
+
+    if df1['ema120_slope'].max() >= 0:
         ma120_down_still = False
 
-    # 最近3个交易日收盘价高于 ma120
-    # 最近3个交易日 ma120 开始向上
-    if row.close > row.ema120 and pre_row.close > pre_row.ema120 and before_pre_row.close > before_pre_row.ema120 \
-            and row.ema120_slope > 0 and pre_row.ema120_slope > 0 and before_pre_row.ema120_slope > 0:
+    # 最近2个交易日收盘价高于 ma120
+    # 最近2个交易日 ma120 开始向上
+    if row.close > row.ema120 and pre_row.close > pre_row.ema120 and row.ema120_slope > 0 and pre_row.ema120_slope > 0:
         ma120_up_recently = True
 
-    if len(df) > 154 and ma120_down_still and ma120_up_recently:
+    if len(df) > 154 and close_down_still and ma120_down_still and ma120_up_recently:
         return True
     else:
         return False

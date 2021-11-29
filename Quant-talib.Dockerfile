@@ -1,6 +1,5 @@
 FROM centos:7
 
-COPY . /app
 WORKDIR /app
 
 RUN yum -y install sudo wget gcc gcc-c++ kernel-devel automake autoconf libtool make python3 python3-devel
@@ -10,10 +9,9 @@ RUN python3 -m pip install --no-cache-dir \
         SQLAlchemy==1.4.23 \
         tushare==1.2.64 -i https://mirrors.aliyun.com/pypi/simple/
 
+RUN wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
 RUN tar -xzf ta-lib-0.4.0-src.tar.gz
 WORKDIR /app/ta-lib
 RUN ./configure --prefix=/usr
 RUN make
 RUN sudo make install
-
-CMD ["python3", "test.py"]
