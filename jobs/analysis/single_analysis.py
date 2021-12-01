@@ -17,10 +17,8 @@ from models.daily_long_signals import DailyLongSignalDao
 from models.daily_short_signals import DailyShortSignalDao
 from models.stock_long_signals import StockLongSignalDao
 from models.stock_short_signals import StockShortSignalDao
-from models.analytic_signals import AnalyticSignalDao
 from models.stocks import StockDao
 
-from lib.signals import long_signals
 from lib.analytic_signals import analytic_signals
 from lib.util import wrap_technical_indicator, used_time_fmt
 from api.daily_candle import get_cn_candles
@@ -30,15 +28,11 @@ stockDao = StockDao()
 dailyCandleDao = CNDailyCandleDao()
 dailyIndicatorDao = DailyIndicatorDao()
 dailyLongSignalDao = DailyLongSignalDao()
-dailyShortSignalDao = DailyShortSignalDao()
 
 stockLongSignalDao = StockLongSignalDao()
-stockShortSignalDao = StockShortSignalDao()
-
-analyticDao = AnalyticSignalDao()
 
 if __name__ == "__main__":
-    ts_code = '600051.SH'
-    scan_daily_candles(ts_code, 'CN', '2021-11-22')
+    ts_code = '300692.SZ'
+    scan_daily_candles(ts_code, 'CN', '2021-11-30')
     print('扫描成功')
 

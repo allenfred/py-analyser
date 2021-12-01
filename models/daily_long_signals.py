@@ -67,6 +67,46 @@ class DailyLongSignal(Base):
     bias72 = Column(SmallInteger)
     bias120 = Column(SmallInteger)
 
+    ma60_support = Column(SmallInteger)
+    ema60_support = Column(SmallInteger)
+    ma120_support = Column(SmallInteger)
+    ema120_support = Column(SmallInteger)
+
+    yearly_price_position = Column(SmallInteger)
+    yearly_price_position10 = Column(SmallInteger)
+    yearly_price_position20 = Column(SmallInteger)
+    yearly_price_position30 = Column(SmallInteger)
+    yearly_price_position50 = Column(SmallInteger)
+    yearly_price_position70 = Column(SmallInteger)
+
+    ma_group_glue = Column(SmallInteger)
+    ema_group_glue = Column(SmallInteger)
+    ma_up_arrange51020 = Column(SmallInteger)
+    ma_up_arrange5102030 = Column(SmallInteger)
+    ma_up_arrange510203060 = Column(SmallInteger)
+    ma_up_arrange203060 = Column(SmallInteger)
+    ma_up_arrange2060120 = Column(SmallInteger)
+
+    ema_up_arrange51020 = Column(SmallInteger)
+    ema_up_arrange5102030 = Column(SmallInteger)
+    ema_up_arrange510203060 = Column(SmallInteger)
+    ema_up_arrange203060 = Column(SmallInteger)
+    ema_up_arrange2055120 = Column(SmallInteger)
+
+    stand_up_ma60 = Column(SmallInteger)
+    stand_up_ma120 = Column(SmallInteger)
+    stand_up_ema60 = Column(SmallInteger)
+    stand_up_ema120 = Column(SmallInteger)
+
+    hammer = Column(SmallInteger)
+    pour_hammer = Column(SmallInteger)
+    short_end = Column(SmallInteger)
+    swallow_up = Column(SmallInteger)
+    attack_short = Column(SmallInteger)
+    first_light = Column(SmallInteger)
+    sunrise = Column(SmallInteger)
+    flat_base = Column(SmallInteger)
+
 
 def get_obj(signal):
     signal = signal.to_dict()
@@ -130,6 +170,46 @@ def get_obj(signal):
         bias60=signal.get('bias60', None),
         bias72=signal.get('bias72', None),
         bias120=signal.get('bias120', None),
+
+        ma60_support=signal.get('ma60_support', None),
+        ema60_support=signal.get('ema60_support', None),
+        ma120_support=signal.get('ma120_support', None),
+        ema120_support=signal.get('ema120_support', None),
+
+        yearly_price_position=signal.get('yearly_price_position', None),
+        yearly_price_position10=signal.get('yearly_price_position10', None),
+        yearly_price_position20=signal.get('yearly_price_position20', None),
+        yearly_price_position30=signal.get('yearly_price_position30', None),
+        yearly_price_position50=signal.get('yearly_price_position50', None),
+        yearly_price_position70=signal.get('yearly_price_position70', None),
+
+        ma_group_glue=signal.get('ma_group_glue', None),
+        ema_group_glue=signal.get('ema_group_glue', None),
+        ma_up_arrange51020=signal.get('ma_up_arrange51020', None),
+        ma_up_arrange5102030=signal.get('ma_up_arrange5102030', None),
+        ma_up_arrange510203060=signal.get('ma_up_arrange510203060', None),
+        ma_up_arrange203060=signal.get('ma_up_arrange203060', None),
+        ma_up_arrange2060120=signal.get('ma_up_arrange2060120', None),
+        ema_up_arrange51020=signal.get('ema_up_arrange51020', None),
+        ema_up_arrange5102030=signal.get('ema_up_arrange5102030', None),
+        ema_up_arrange510203060=signal.get('ema_up_arrange510203060', None),
+        ema_up_arrange203060=signal.get('ema_up_arrange203060', None),
+        ema_up_arrange2055120=signal.get('ema_up_arrange2055120', None),
+
+        stand_up_ma60=signal.get('stand_up_ma60', None),
+        stand_up_ma120=signal.get('stand_up_ma120', None),
+        stand_up_ema60=signal.get('stand_up_ema60', None),
+        stand_up_ema120=signal.get('stand_up_ema120', None),
+
+        hammer=signal.get('hammer', None),
+        pour_hammer=signal.get('pour_hammer', None),
+        short_end=signal.get('short_end', None),
+        swallow_up=signal.get('swallow_up', None),
+        attack_short=signal.get('attack_short', None),
+        first_light=signal.get('first_light', None),
+        sunrise=signal.get('sunrise', None),
+        flat_base=signal.get('flat_base', None),
+
     )
 
 

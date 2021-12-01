@@ -66,6 +66,46 @@ class StockLongSignal(Base):
     bias72 = Column(SmallInteger)
     bias120 = Column(SmallInteger)
 
+    ma60_support = Column(SmallInteger)
+    ema60_support = Column(SmallInteger)
+    ma120_support = Column(SmallInteger)
+    ema120_support = Column(SmallInteger)
+
+    yearly_price_position = Column(SmallInteger)
+    yearly_price_position10 = Column(SmallInteger)
+    yearly_price_position20 = Column(SmallInteger)
+    yearly_price_position30 = Column(SmallInteger)
+    yearly_price_position50 = Column(SmallInteger)
+    yearly_price_position70 = Column(SmallInteger)
+
+    ma_group_glue = Column(SmallInteger)
+    ema_group_glue = Column(SmallInteger)
+    ma_up_arrange51020 = Column(SmallInteger)
+    ma_up_arrange5102030 = Column(SmallInteger)
+    ma_up_arrange510203060 = Column(SmallInteger)
+    ma_up_arrange203060 = Column(SmallInteger)
+    ma_up_arrange2060120 = Column(SmallInteger)
+
+    ema_up_arrange51020 = Column(SmallInteger)
+    ema_up_arrange5102030 = Column(SmallInteger)
+    ema_up_arrange510203060 = Column(SmallInteger)
+    ema_up_arrange203060 = Column(SmallInteger)
+    ema_up_arrange2055120 = Column(SmallInteger)
+
+    stand_up_ma60 = Column(SmallInteger)
+    stand_up_ma120 = Column(SmallInteger)
+    stand_up_ema60 = Column(SmallInteger)
+    stand_up_ema120 = Column(SmallInteger)
+
+    hammer = Column(SmallInteger)
+    pour_hammer = Column(SmallInteger)
+    short_end = Column(SmallInteger)
+    swallow_up = Column(SmallInteger)
+    attack_short = Column(SmallInteger)
+    first_light = Column(SmallInteger)
+    sunrise = Column(SmallInteger)
+    flat_base = Column(SmallInteger)
+
 
 def get_obj(signal):
     signal = {k: v if not pd.isna(v) else None for k, v in signal.items()}
@@ -126,6 +166,46 @@ def get_obj(signal):
         bias60=signal.get('bias60', None),
         bias72=signal.get('bias72', None),
         bias120=signal.get('bias120', None),
+
+        ma60_support=signal.get('ma60_support', None),
+        ema60_support=signal.get('ema60_support', None),
+        ma120_support=signal.get('ma120_support', None),
+        ema120_support=signal.get('ema120_support', None),
+
+        yearly_price_position=signal.get('yearly_price_position', None),
+        yearly_price_position10=signal.get('yearly_price_position10', None),
+        yearly_price_position20=signal.get('yearly_price_position20', None),
+        yearly_price_position30=signal.get('yearly_price_position30', None),
+        yearly_price_position50=signal.get('yearly_price_position50', None),
+        yearly_price_position70=signal.get('yearly_price_position70', None),
+
+        ma_group_glue=signal.get('ma_group_glue', None),
+        ema_group_glue=signal.get('ema_group_glue', None),
+        ma_up_arrange51020=signal.get('ma_up_arrange51020', None),
+        ma_up_arrange5102030=signal.get('ma_up_arrange5102030', None),
+        ma_up_arrange510203060=signal.get('ma_up_arrange510203060', None),
+        ma_up_arrange203060=signal.get('ma_up_arrange203060', None),
+        ma_up_arrange2060120=signal.get('ma_up_arrange2060120', None),
+        ema_up_arrange51020=signal.get('ema_up_arrange51020', None),
+        ema_up_arrange5102030=signal.get('ema_up_arrange5102030', None),
+        ema_up_arrange510203060=signal.get('ema_up_arrange510203060', None),
+        ema_up_arrange203060=signal.get('ema_up_arrange203060', None),
+        ema_up_arrange2055120=signal.get('ema_up_arrange2055120', None),
+
+        stand_up_ma60=signal.get('stand_up_ma60', None),
+        stand_up_ma120=signal.get('stand_up_ma120', None),
+        stand_up_ema60=signal.get('stand_up_ema60', None),
+        stand_up_ema120=signal.get('stand_up_ema120', None),
+
+
+        hammer=signal.get('hammer', None),
+        pour_hammer=signal.get('pour_hammer', None),
+        short_end=signal.get('short_end', None),
+        swallow_up=signal.get('swallow_up', None),
+        attack_short=signal.get('attack_short', None),
+        first_light=signal.get('first_light', None),
+        sunrise=signal.get('sunrise', None),
+        flat_base=signal.get('flat_base', None),
     )
 
 
@@ -250,6 +330,74 @@ class StockLongSignalDao:
                     row.bias72 = obj.bias72
                 if obj.bias120 is not None:
                     row.bias120 = obj.bias120
+                if obj.ma60_support is not None:
+                    row.ma60_support = obj.ma60_support
+                if obj.ema60_support is not None:
+                    row.ema60_support = obj.ema60_support
+                if obj.ma120_support is not None:
+                    row.ma120_support = obj.ma120_support
+                if obj.ema120_support is not None:
+                    row.ema120_support = obj.ema120_support
+                if obj.yearly_price_position is not None:
+                    row.yearly_price_position = obj.yearly_price_position
+                if obj.yearly_price_position10 is not None:
+                    row.yearly_price_position10 = obj.yearly_price_position10
+                if obj.yearly_price_position20 is not None:
+                    row.yearly_price_position20 = obj.yearly_price_position20
+                if obj.yearly_price_position30 is not None:
+                    row.yearly_price_position30 = obj.yearly_price_position30
+                if obj.yearly_price_position50 is not None:
+                    row.yearly_price_position50 = obj.yearly_price_position50
+                if obj.yearly_price_position70 is not None:
+                    row.yearly_price_position70 = obj.yearly_price_position70
+                if obj.ma_group_glue is not None:
+                    row.ma_group_glue = obj.ma_group_glue
+                if obj.ema_group_glue is not None:
+                    row.ema_group_glue = obj.ema_group_glue
+                if obj.ma_up_arrange51020 is not None:
+                    row.ma_up_arrange51020 = obj.ma_up_arrange51020
+                if obj.ma_up_arrange5102030 is not None:
+                    row.ma_up_arrange5102030 = obj.ma_up_arrange5102030
+                if obj.ma_up_arrange510203060 is not None:
+                    row.ma_up_arrange510203060 = obj.ma_up_arrange510203060
+                if obj.ma_up_arrange203060 is not None:
+                    row.ma_up_arrange203060 = obj.ma_up_arrange203060
+                if obj.ma_up_arrange2060120 is not None:
+                    row.ma_up_arrange2060120 = obj.ma_up_arrange2060120
+                if obj.ema_up_arrange51020 is not None:
+                    row.ema_up_arrange51020 = obj.ema_up_arrange51020
+                if obj.ema_up_arrange5102030 is not None:
+                    row.ema_up_arrange5102030 = obj.ema_up_arrange5102030
+                if obj.ema_up_arrange510203060 is not None:
+                    row.ema_up_arrange510203060 = obj.ema_up_arrange510203060
+                if obj.ema_up_arrange203060 is not None:
+                    row.ema_up_arrange203060 = obj.ema_up_arrange203060
+                if obj.ema_up_arrange2055120 is not None:
+                    row.ema_up_arrange2055120 = obj.ema_up_arrange2055120
+                if obj.stand_up_ma60 is not None:
+                    row.stand_up_ma60 = obj.stand_up_ma60
+                if obj.stand_up_ma120 is not None:
+                    row.stand_up_ma120 = obj.stand_up_ma120
+                if obj.stand_up_ema60 is not None:
+                    row.stand_up_ema60 = obj.stand_up_ema60
+                if obj.stand_up_ema120 is not None:
+                    row.stand_up_ema120 = obj.stand_up_ema120
+                if obj.hammer is not None:
+                    row.hammer = obj.hammer
+                if obj.pour_hammer is not None:
+                    row.pour_hammer = obj.pour_hammer
+                if obj.short_end is not None:
+                    row.short_end = obj.short_end
+                if obj.swallow_up is not None:
+                    row.swallow_up = obj.swallow_up
+                if obj.attack_short is not None:
+                    row.attack_short = obj.attack_short
+                if obj.first_light is not None:
+                    row.first_light = obj.first_light
+                if obj.sunrise is not None:
+                    row.sunrise = obj.sunrise
+                if obj.flat_base is not None:
+                    row.flat_base = obj.flat_base
 
         except Exception as e:
             print('Error:', e)
