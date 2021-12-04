@@ -20,7 +20,7 @@ from lib.bias import bias
 from lib.ma_slope import slope
 from lib.magic_nine_turn import td
 from lib.analytic_signals import analytic_signals
-from lib.util import wrap_technical_indicator, used_time_fmt
+from lib.util import wrap_quota, used_time_fmt
 import time
 from datetime import datetime, date
 import numpy as np
@@ -36,14 +36,14 @@ stockLongSignalDao = StockLongSignalDao()
 
 
 def scan_daily_candles(ts_code, exchange_type, scan_date):
+    start = time.time()
     table_name = 'cn_daily_candles'
     if exchange_type == 'HK':
         table_name = 'hk_daily_candles'
     if exchange_type == 'US':
         table_name = 'us_daily_candles'
 
-    start = time.time()
-    statement = dailyCandleDao.session.execute(text("select trade_date, open, close, high, low, pct_chg from "
+    statement = dailyCandleDao.session.execute(text("select trade_date, open, high, close, low, pct_chg from "
                                                     + table_name + " where ts_code = :ts_code "
                                                     + "and trade_date > '2015-01-01' and open is not null "
                                                       "and close is not null and high is not null and"
@@ -51,25 +51,23 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
                                                     + "order by trade_date desc "
                                                       "limit 360").params(ts_code=ts_code))
 
-    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg'])
+    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'high', 'close', 'low', 'pct_chg'])
 
     if len(df) > 60:
         df = df.sort_values(by='trade_date', ascending=True)
         df['num'] = df.index[::-1].to_numpy()
         df = df.set_index('num')
         df['ts_code'] = ts_code
-        df['exchange'] = exchange_type
 
         try:
-            df = wrap_technical_indicator(df)
+            df = wrap_quota(df)
             dailyIndicatorDao.bulk_insert(df, ts_code)
 
             # 会对 bias6/bias12/bias24/bias60/bias72/bias120 发生替换
-            analytic_signals(df)
-
+            df = analytic_signals(df)
             df_len = len(df)
 
-            small_df = df.iloc[df_len - 10: df_len]
+            small_df = df.iloc[df_len - 30: df_len]
             signal = df.iloc[df_len - 1].to_dict()
 
             dailyLongSignalDao.bulk_insert(small_df, ts_code)

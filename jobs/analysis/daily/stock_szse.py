@@ -76,4 +76,3 @@ if __name__ == "__main__":
         multi_scan(stock_result)
         total_scan_cnt += len(stock_result)
         print("当前已扫描 SZSE 股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))
-        time.sleep(1)

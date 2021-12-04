@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import numba
 from numba import jit, njit
+import cython
 import math
 from .candle import is_hammer, is_pour_hammer, is_short_end, is_swallow_up, \
     is_sunrise, is_first_light, is_attack_short, is_flat_base
@@ -42,9 +43,7 @@ def analytic_signals(org_df):
     ma_group_glue, ema_group_glue, ma_up_arrange51020, ma_up_arrange5102030, \
     ma_up_arrange510203060, ma_up_arrange203060, ma_up_arrange2060120, \
     ema_up_arrange51020, ema_up_arrange5102030, ema_up_arrange510203060, \
-    ema_up_arrange203060, ema_up_arrange2055120, \
-    hammer, pour_hammer, short_end, swallow_up, attack_short, \
-    first_light, sunrise, flat_base = analytic(candle, ma, ema, ma_slope, ema_slope, bias, td)
+    ema_up_arrange203060, ema_up_arrange2055120 = analytic(candle, ma, ema, ma_slope, ema_slope, bias, td)
 
     org_df['yearly_price_position'] = yearly_price_position
     org_df['yearly_price_position10'] = yearly_price_position10
@@ -142,16 +141,15 @@ def analytic_signals(org_df):
     org_df['ema_up_arrange510203060'] = ema_up_arrange510203060
     org_df['ema_up_arrange203060'] = ema_up_arrange203060
     org_df['ema_up_arrange2055120'] = ema_up_arrange2055120
-
-    org_df['hammer'] = hammer
-    org_df['pour_hammer'] = pour_hammer
-    org_df['short_end'] = short_end
-    org_df['swallow_up'] = swallow_up
-    org_df['attack_short'] = attack_short
-    org_df['first_light'] = first_light
-    org_df['sunrise'] = sunrise
-    org_df['flat_base'] = flat_base
-
+    #
+    # org_df['hammer'] = hammer
+    # org_df['pour_hammer'] = pour_hammer
+    # org_df['short_end'] = short_end
+    # org_df['swallow_up'] = swallow_up
+    # org_df['attack_short'] = attack_short
+    # org_df['first_light'] = first_light
+    # org_df['sunrise'] = sunrise
+    # org_df['flat_base'] = flat_base
     return org_df
 
 
@@ -294,15 +292,15 @@ def analytic(candle, ma, ema, ma_slope, ema_slope, bias, td):
     ema_up_arrange510203060 = []
     ema_up_arrange203060 = []
     ema_up_arrange2055120 = []
-
-    hammer = []
-    pour_hammer = []
-    short_end = []
-    swallow_up = []
-    attack_short = []
-    first_light = []
-    sunrise = []
-    flat_base = []
+    #
+    # hammer = []
+    # pour_hammer = []
+    # short_end = []
+    # swallow_up = []
+    # attack_short = []
+    # first_light = []
+    # sunrise = []
+    # flat_base = []
 
     # 连续两日K线在ma60上方止跌
     # 连续两日K线在ma120上方止跌
@@ -849,8 +847,7 @@ def analytic(candle, ma, ema, ma_slope, ema_slope, bias, td):
         # 最近9个交易日 0 < ema20_slope < 0.6
         # 最近9个交易日 -0.5 < ema10_slope < 0.8
         # 最近9个交易日 -0.5 < ema5_slope < 1
-        if index > 10 and min(ema20_slope[index - 8: index + 1]) > 0 and max(
-                ema20_slope[index - 8: index + 1]) < 0.6 and \
+        if index > 10 and min(ema20_slope[index - 8: index + 1]) > 0 and max(ema20_slope[index - 8: index + 1]) < 0.6 and \
                 min(ema10_slope[index - 8: index + 1]) > -0.5 and max(ema10_slope[index - 8: index + 1]) < 0.8 and \
                 min(ema5_slope[index - 8: index + 1]) > -0.5 and max(ema5_slope[index - 8: index + 1]) < 1:
             ema_glue.insert(index, 1)
@@ -1028,53 +1025,53 @@ def analytic(candle, ma, ema, ma_slope, ema_slope, bias, td):
         else:
             ema_up_arrange2055120.insert(index, 0)
 
-        # 锤子线
-        if is_hammer(index, open, high, low, close, pct_chg):
-            hammer.insert(index, 1)
-        else:
-            hammer.insert(index, 0)
-
-        # 倒锤子线
-        if is_pour_hammer(index, open, high, low, close, pct_chg):
-            pour_hammer.insert(index, 1)
-        else:
-            pour_hammer.insert(index, 0)
-
-        # 看涨尽头线
-        if is_short_end(index, open, high, low, close, pct_chg):
-            short_end.insert(index, 1)
-        else:
-            short_end.insert(index, 0)
-
-        # 看涨吞没
-        if is_swallow_up(index, open, high, low, close, pct_chg):
-            swallow_up.insert(index, 1)
-        else:
-            swallow_up.insert(index, 0)
-
-        # 好友反攻
-        if is_attack_short(index, open, high, low, close, pct_chg):
-            attack_short.insert(index, 1)
-        else:
-            attack_short.insert(index, 0)
-
-        # 曙光初现
-        if is_first_light(index, open, high, low, close, pct_chg):
-            first_light.insert(index, 1)
-        else:
-            first_light.insert(index, 0)
-
-        # 旭日东升
-        if is_sunrise(index, open, high, low, close, pct_chg):
-            sunrise.insert(index, 1)
-        else:
-            sunrise.insert(index, 0)
-
-        # 平底
-        if is_flat_base(index, open, high, low, close, pct_chg):
-            flat_base.insert(index, 1)
-        else:
-            flat_base.insert(index, 0)
+        # # 锤子线
+        # if is_hammer(df, row):
+        #     hammer.insert(index, 1)
+        # else:
+        #     hammer.insert(index, 0)
+        #
+        # # 倒锤子线
+        # if is_pour_hammer(df, row):
+        #     pour_hammer.insert(index, 1)
+        # else:
+        #     pour_hammer.insert(index, 0)
+        #
+        # # 看涨尽头线
+        # if is_short_end(df, row):
+        #     short_end.insert(index, 1)
+        # else:
+        #     short_end.insert(index, 0)
+        #
+        # # 看涨吞没
+        # if is_swallow_up(df, row):
+        #     swallow_up.insert(index, 1)
+        # else:
+        #     swallow_up.insert(index, 0)
+        #
+        # # 好友反攻
+        # if is_attack_short(df, row):
+        #     attack_short.insert(index, 1)
+        # else:
+        #     attack_short.insert(index, 0)
+        #
+        # # 曙光初现
+        # if is_first_light(df, row):
+        #     first_light.insert(index, 1)
+        # else:
+        #     first_light.insert(index, 0)
+        #
+        # # 旭日东升
+        # if is_sunrise(df, row):
+        #     sunrise.insert(index, 1)
+        # else:
+        #     sunrise.insert(index, 0)
+        #
+        # # 平底
+        # if is_flat_base(df, row):
+        #     flat_base.insert(index, 1)
+        # else:
+        #     flat_base.insert(index, 0)
 
     return yearly_price_position, yearly_price_position10, yearly_price_position20, \
            yearly_price_position30, yearly_price_position50, yearly_price_position70, \
@@ -1096,11 +1093,19 @@ def analytic(candle, ma, ema, ma_slope, ema_slope, bias, td):
            ma_up_arrange51020, ma_up_arrange5102030, ma_up_arrange510203060, \
            ma_up_arrange203060, ma_up_arrange2060120, \
            ema_up_arrange51020, ema_up_arrange5102030, ema_up_arrange510203060, \
-           ema_up_arrange203060, ema_up_arrange2055120, \
-           hammer, pour_hammer, short_end, swallow_up, attack_short, \
-           first_light, sunrise, flat_base
+           ema_up_arrange203060, ema_up_arrange2055120
+    #
+    # org_df['hammer'] = hammer
+    # org_df['pour_hammer'] = pour_hammer
+    # org_df['short_end'] = short_end
+    # org_df['swallow_up'] = swallow_up
+    # org_df['attack_short'] = attack_short
+    # org_df['first_light'] = first_light
+    # org_df['sunrise'] = sunrise
+    # org_df['flat_base'] = flat_base
 
 
+@jit(nopython=True)
 def stand_on_ma(open, high, low, close, ma, ma_slope):
     # K线收出下影线
     # K线收盘站稳ma
@@ -1126,6 +1131,7 @@ def stand_on_ma(open, high, low, close, ma, ma_slope):
         return False
 
 
+@jit(nopython=True)
 def stand_on_ema(open, high, low, close, ema, ema_slope):
     # K线收出下影线
     # K线收盘站稳ema
@@ -1152,13 +1158,14 @@ def stand_on_ema(open, high, low, close, ema, ema_slope):
 
 
 # ma20 下方支撑
-
+@jit(nopython=True)
 def ma_hold(ma5, ma10, ma20, ma5_slope, ma10_slope):
     if ma5 > ma20 and ma10 > ma20 and ma5_slope < 5 and ma10_slope < 5:
         return True
     return False
 
 
+@jit(nopython=True)
 def is_stand_up_ma60(index, open, close, ma60, ma60_slope):
     if index < 60:
         return False
@@ -1183,6 +1190,7 @@ def is_stand_up_ma60(index, open, close, ma60, ma60_slope):
         return False
 
 
+@jit(nopython=True)
 def is_stand_up_ma120(index, open, close, ma120, ma120_slope):
     if index < 130:
         return 0
@@ -1207,6 +1215,7 @@ def is_stand_up_ma120(index, open, close, ma120, ma120_slope):
         return False
 
 
+@jit(nopython=True)
 def is_stand_up_ema60(index, open, close, ema60, ema60_slope):
     if index < 60:
         return 0
@@ -1231,6 +1240,7 @@ def is_stand_up_ema60(index, open, close, ema60, ema60_slope):
         return False
 
 
+@jit(nopython=True)
 def is_stand_up_ema120(index, open, close, ema120, ema120_slope):
     if index < 130:
         return 0
@@ -1255,6 +1265,7 @@ def is_stand_up_ema120(index, open, close, ema120, ema120_slope):
         return 0
 
 
+@jit(nopython=True)
 def is_ma60_steady_up(index, ma60_slope):
     # 最近21个交易日 ma60 稳步向上
     if len(ma60_slope) > 81 and min(ma60_slope[index - 20: index + 1]) > 0:
@@ -1263,6 +1274,7 @@ def is_ma60_steady_up(index, ma60_slope):
         return 0
 
 
+@jit(nopython=True)
 def is_ma120_steady_up(index, ma120_slope):
     # 最近34个交易日 ma120 稳步向上
     if len(ma120_slope) > 81 and min(ma120_slope[index - 33: index + 1]) > 0:
@@ -1271,6 +1283,7 @@ def is_ma120_steady_up(index, ma120_slope):
         return 0
 
 
+@jit(nopython=True)
 def is_ema60_steady_up(index, ema60_slope):
     # 最近21个交易日 ema60 稳步向上
     if len(ema60_slope) > 81 and min(ema60_slope[index - 20: index + 1]) > 0:
@@ -1279,6 +1292,7 @@ def is_ema60_steady_up(index, ema60_slope):
         return 0
 
 
+@jit(nopython=True)
 def is_ema120_steady_up(index, ema120_slope):
     # 最近34个交易日 ma120 稳步向上
     if len(ema120_slope) > 81 and min(ema120_slope[index - 33: index + 1]) > 0:
@@ -1287,6 +1301,7 @@ def is_ema120_steady_up(index, ema120_slope):
         return 0
 
 
+@jit(nopython=True)
 def is_ma60_support(index, _open, _high, _low, _close, ma60, ma60_slope):
     # 连续两日K线在ma60上方收出下影线 / 或遇支撑
     if stand_on_ma(_open, _high, _low, _close, ma60[index], ma60_slope[index]) \
@@ -1296,6 +1311,7 @@ def is_ma60_support(index, _open, _high, _low, _close, ma60, ma60_slope):
         return 0
 
 
+@jit(nopython=True)
 def is_ma120_support(index, _open, _high, _low, _close, ma120, ma120_slope):
     # 连续两日K线在ma120上方收出下影线 / 或遇支撑
     if stand_on_ma(_open, _high, _low, _close, ma120[index], ma120_slope[index]) \
@@ -1305,6 +1321,7 @@ def is_ma120_support(index, _open, _high, _low, _close, ma120, ma120_slope):
         return 0
 
 
+@jit(nopython=True)
 def is_ema60_support(index, _open, _high, _low, _close, ema60, ema60_slope):
     # 连续两日K线在ema60上方收出下影线 / 或遇支撑
     if stand_on_ema(_open, _high, _low, _close, ema60[index], ema60_slope[index]) \
@@ -1314,6 +1331,7 @@ def is_ema60_support(index, _open, _high, _low, _close, ema60, ema60_slope):
         return 0
 
 
+@jit(nopython=True)
 def is_ema120_support(index, _open, _high, _low, _close, ema120, ema120_slope):
     # 连续两日K线在ema120上方收出下影线 / 或遇支撑
     if stand_on_ema(_open, _high, _low, _close, ema120[index], ema120_slope[index]) \
@@ -1323,6 +1341,7 @@ def is_ema120_support(index, _open, _high, _low, _close, ema120, ema120_slope):
         return 0
 
 
+@jit(nopython=True)
 def is_ma_group_glue(index, ma10_slope, ma20_slope, ma30_slope, ma60_slope):
     if index < 10:
         return False
@@ -1344,6 +1363,7 @@ def is_ma_group_glue(index, ma10_slope, ma20_slope, ma30_slope, ma60_slope):
         return False
 
 
+@jit(nopython=True)
 def is_ema_group_glue(index, ema10_slope, ema20_slope, ema30_slope, ema60_slope):
     if index < 10:
         return False
@@ -1365,6 +1385,7 @@ def is_ema_group_glue(index, ema10_slope, ema20_slope, ema30_slope, ema60_slope)
         return False
 
 
+@jit(nopython=True)
 def is_ma_up_arrange51020(index, ma5, ma10, ma20, ma5_slope, ma10_slope, ma20_slope):
     # ma5/ma10/ma20 出现多头排列
     if index < 1:
@@ -1383,6 +1404,7 @@ def is_ma_up_arrange51020(index, ma5, ma10, ma20, ma5_slope, ma10_slope, ma20_sl
         return False
 
 
+@jit(nopython=True)
 def is_ma_up_arrange5102030(index, ma5, ma10, ma20, ma30, ma5_slope, ma10_slope, ma20_slope, ma30_slope):
     # ma5/ma10/ma20/ma30 出现多头排列
     if index < 1:
@@ -1402,6 +1424,7 @@ def is_ma_up_arrange5102030(index, ma5, ma10, ma20, ma30, ma5_slope, ma10_slope,
         return False
 
 
+@jit(nopython=True)
 def is_ma_up_arrange510203060(index, ma5, ma10, ma20, ma30, ma60, ma5_slope, ma10_slope, ma20_slope,
                               ma30_slope, ma60_slope):
     # ma5/ma10/ma20/ma30/ma60 出现多头排列
@@ -1422,6 +1445,7 @@ def is_ma_up_arrange510203060(index, ma5, ma10, ma20, ma30, ma60, ma5_slope, ma1
         return False
 
 
+@jit(nopython=True)
 def is_ma_up_arrange203060(index, ma20, ma30, ma60, ma20_slope, ma30_slope, ma60_slope):
     # ma20/ma30/ma60 出现多头排列
     if index == 0:
@@ -1439,6 +1463,7 @@ def is_ma_up_arrange203060(index, ma20, ma30, ma60, ma20_slope, ma30_slope, ma60
         return False
 
 
+@jit(nopython=True)
 def is_ma_up_arrange2060120(index, ma20, ma60, ma120, ma20_slope, ma60_slope, ma120_slope):
     # ma20/ma60/ma120 出现多头排列
     if index < 1:
@@ -1456,6 +1481,7 @@ def is_ma_up_arrange2060120(index, ma20, ma60, ma120, ma20_slope, ma60_slope, ma
         return False
 
 
+@jit(nopython=True)
 def is_ema_up_arrange51020(index, ema5, ema10, ema20, ema5_slope, ema10_slope, ema20_slope):
     # ema5/ema10/ema20 出现多头排列
     if index < 1:
@@ -1473,6 +1499,7 @@ def is_ema_up_arrange51020(index, ema5, ema10, ema20, ema5_slope, ema10_slope, e
         return False
 
 
+@jit(nopython=True)
 def is_ema_up_arrange5102030(index, ema5, ema10, ema20, ema30, ema5_slope, ema10_slope, ema20_slope, ema30_slope):
     # ema5/ema10/ema20/ema30 出现多头排列
     if index < 1:
@@ -1492,6 +1519,7 @@ def is_ema_up_arrange5102030(index, ema5, ema10, ema20, ema30, ema5_slope, ema10
         return False
 
 
+@jit(nopython=True)
 def is_ema_up_arrange510203060(index, ema5, ema10, ema20, ema30, ema60, ema5_slope, ema10_slope, ema20_slope,
                                ema30_slope, ema60_slope):
     # ema5/ema10/ema20/ema30/ema60 出现多头排列
@@ -1513,6 +1541,7 @@ def is_ema_up_arrange510203060(index, ema5, ema10, ema20, ema30, ema60, ema5_slo
         return False
 
 
+@jit(nopython=True)
 def is_ema_up_arrange203060(index, ema20, ema30, ema60, ema20_slope, ema30_slope, ema60_slope):
     # ema20/ema30/ema60 出现多头排列
     if index < 1:
@@ -1529,6 +1558,7 @@ def is_ema_up_arrange203060(index, ema20, ema30, ema60, ema20_slope, ema30_slope
         return False
 
 
+@jit(nopython=True)
 def is_ema_up_arrange2055120(index, ema20, ema55, ema120, ema20_slope, ema55_slope, ema120_slope):
     # ema20/ema55/ema120 出现多头排列
     if index < 1:

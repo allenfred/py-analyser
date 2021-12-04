@@ -15,7 +15,7 @@ from talib import SMA, EMA, MACD
 from lib.bias import bias
 from lib.ma_slope import slope
 from lib.magic_nine_turn import td
-from lib.util import wrap_technical_indicator, used_time_fmt, is_mac_os
+from lib.util import used_time_fmt, is_mac_os
 import time
 from datetime import datetime, date
 import numpy as np
@@ -71,6 +71,5 @@ if __name__ == "__main__":
             break
 
         multi_scan(stock_result)
-        time.sleep(1)
         total_scan_cnt += len(stock_result)
         print("当前已扫描 SSE 股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))

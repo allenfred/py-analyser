@@ -20,10 +20,10 @@ def used_time_fmt(start, end):
                ' min ' + str(seconds % 60) + ' s'
     if 60 < seconds < 3600:
         return str(seconds // 60) + ' min ' + str(int(seconds % 60)) + ' s'
-    return str(seconds) + ' s'
+    return str(round(end - start, 1)) + ' s'
 
 
-def wrap_technical_indicator(df):
+def wrap_quota(df):
     close = df.close.to_numpy()
 
     df['ma5'] = SMA(close, 5)
@@ -88,5 +88,7 @@ def wrap_technical_indicator(df):
     high_td, low_td = td(close)
     df['high_td'] = high_td
     df['low_td'] = low_td
+
+    df = df.fillna(0)
 
     return df

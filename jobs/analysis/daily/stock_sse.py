@@ -75,6 +75,5 @@ if __name__ == "__main__":
             break
 
         multi_scan(stock_result)
-        time.sleep(1)
         total_scan_cnt += len(stock_result)
         print("当前已扫描 SSE 股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))
