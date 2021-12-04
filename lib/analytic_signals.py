@@ -1,8 +1,6 @@
 from talib import SMA
 import pandas as pd
 import numpy as np
-import numba
-from numba import jit, njit
 import math
 from .candle import is_hammer, is_pour_hammer, is_short_end, is_swallow_up, \
     is_sunrise, is_first_light, is_attack_short, is_flat_base

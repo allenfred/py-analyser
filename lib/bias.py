@@ -1,7 +1,5 @@
 from talib import SMA
 import numpy as np
-import numba
-from numba import jit
 
 """
  6 12 24 60 72
