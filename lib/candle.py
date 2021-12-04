@@ -15,7 +15,7 @@ return {*} Flag:boolean 是否符合
 
 
 def is_hammer(i, open, high, low, close, pct_chg):
-    if i < 21:
+    if i < 20:
         return False
 
     _open = open[i]
@@ -367,7 +367,7 @@ return {*} Flag:boolean 是否符合
 
 
 def is_flat_base(i, open, high, low, close, pct_chg):
-    if i < 14:
+    if i < 20:
         return False
 
     pre_low = low[i - 1]
