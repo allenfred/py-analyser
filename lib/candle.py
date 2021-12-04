@@ -15,7 +15,7 @@ return {*} Flag:boolean 是否符合
 
 
 def is_hammer(i, open, high, low, close, pct_chg):
-    if i < 13:
+    if i < 21:
         return False
 
     _open = open[i]
@@ -27,8 +27,8 @@ def is_hammer(i, open, high, low, close, pct_chg):
     up_shadow_len = math.fabs(_high - _close if _open < _close else _high - _open)
     up_one_third = _high - (k_len / 3)
 
-    # 最近13日最低价
-    lowest_low = min(low[i - 12: i + 1])
+    # 最近21日最低价
+    lowest_low = min(low[i - 20: i + 1])
 
     # 开盘价和收盘价都位于k线上方1/3处 (即：下影线长度占k线长度的2/3以上）
     # 上影线长度需小于柱体长度的1/5
@@ -53,7 +53,7 @@ return {*} Flag:boolean 是否符合
 
 
 def is_pour_hammer(i, open, high, low, close, pct_chg):
-    if i < 13:
+    if i < 20:
         return False
 
     _open = open[i]
@@ -65,8 +65,8 @@ def is_pour_hammer(i, open, high, low, close, pct_chg):
     bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
     bottom_one_third = _low + (k_len / 3)
 
-    # 最近13日最低价
-    lowest_low = min(low[i - 12: i + 1])
+    # 最近21日最低价
+    lowest_low = min(low[i - 20: i + 1])
 
     # 开盘价和收盘价都位于k线下方1/3处 (即：上影线长度占k线长度的2/3以上）
     # 下影线长度需小于柱体长度的1/5
@@ -91,7 +91,7 @@ return {*} Flag:boolean 是否符合
 
 
 def is_hang_neck(i, open, high, low, close, pct_chg):
-    if i < 13:
+    if i < 20:
         return False
 
     _open = open[i]
@@ -103,8 +103,8 @@ def is_hang_neck(i, open, high, low, close, pct_chg):
     up_shadow_len = math.fabs(_high - _close if _open < _close else _high - _open)
     up_one_third = _high - (k_len / 3)
 
-    # 最近13日最高价
-    highest_high = min(high[i - 12: i + 1])
+    # 最近21日最高价
+    highest_high = min(high[i - 20: i + 1])
 
     # 开盘价和收盘价都位于k线上方1/3处 (即：下影线长度占k线长度的2/3以上）
     # 上影线长度需小于柱体长度的1/5
@@ -129,7 +129,7 @@ return {*} Flag:boolean 是否符合
 
 
 def is_shooting(i, open, high, low, close, pct_chg):
-    if i < 13:
+    if i < 20:
         return False
 
     _open = open[i]
@@ -141,8 +141,8 @@ def is_shooting(i, open, high, low, close, pct_chg):
     bottom_shadow_len = math.fabs(open - low if open < close else close - low)
     bottom_one_third = low + (k_len / 3)
 
-    # 最近13日最高价
-    highest_high = min(high[i - 12: i + 1])
+    # 最近21日最高价
+    highest_high = min(high[i - 20: i + 1])
 
     # 开盘价和收盘价都位于k线下方1/3处 (即：上影线长度占k线长度的2/3以上）
     # 下影线长度需小于柱体长度的1/5
@@ -167,7 +167,7 @@ return {*} Flag:boolean 是否符合
 
 
 def is_short_end(i, open, high, low, close, pct_chg):
-    if i < 13:
+    if i < 20:
         return False
 
     _open = open[i]
@@ -181,8 +181,8 @@ def is_short_end(i, open, high, low, close, pct_chg):
     pre_bottom_shadow_high = (open[i - 1] if open[i - 1] < close[i - 1] else close[i - 1])
     pre_bottom_shadow_low = low[i - 1]
 
-    # 最近13日最低价
-    lowest_low = min(low[i - 12: i + 1])
+    # 最近21日最低价
+    lowest_low = min(low[i - 20: i + 1])
 
     # 下跌趋势中 前一根K线为中阴线或大阴线
     # 开盘价和收盘价都位于前一K线下影线内
@@ -212,7 +212,7 @@ return {*} Flag:boolean 是否符合
 
 
 def is_long_end(i, open, high, low, close, pct_chg):
-    if i < 13:
+    if i < 20:
         return False
 
     _open = open[i]
@@ -226,8 +226,8 @@ def is_long_end(i, open, high, low, close, pct_chg):
     pre_up_shadow_high = high[i - 1]
     pre_up_shadow_low = (close[i - 1] if open[i - 1] < close[i-1] else open[i-1])
 
-    # 最近13日最高价
-    highest_high = min(high[i - 12: i + 1])
+    # 最近21日最高价
+    highest_high = min(high[i - 20: i + 1])
 
     # 上涨趋势中 前一根K线为中阳线或大阳线
     # 开盘价和收盘价都位于前一K线下影线内
@@ -257,7 +257,7 @@ return {*} Flag:boolean 是否符合
 
 
 def is_attack_short(i, open, high, low, close, pct_chg):
-    if i < 13:
+    if i < 20:
         return False
 
     _open = open[i]
@@ -267,8 +267,8 @@ def is_attack_short(i, open, high, low, close, pct_chg):
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
 
-    # 最近13日最低价
-    lowest_low = min(low[i - 12: i + 1])
+    # 最近21日最低价
+    lowest_low = min(low[i - 20: i + 1])
 
     # 下跌趋势中 前一根K线为中阴线或大阴线 当日K线为跳空低开的中阳线或大阳线
     # 当日K线跳空低开
@@ -294,7 +294,7 @@ return {*} Flag:boolean 是否符合
 
 
 def is_first_light(i, open, high, low, close, pct_chg):
-    if i < 13:
+    if i < 20:
         return False
 
     _open = open[i]
@@ -304,8 +304,8 @@ def is_first_light(i, open, high, low, close, pct_chg):
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
 
-    # 最近13日最低价
-    lowest_low = min(low[i - 12: i + 1])
+    # 最近21日最低价
+    lowest_low = min(low[i - 20: i + 1])
 
     # 下跌趋势中 前一根K线为中阴线或大阴线 当日K线为跳空低开的中阳线或大阳线
     # 当日K线跳空低开
@@ -331,7 +331,7 @@ return {*} Flag:boolean 是否符合
 
 
 def is_sunrise(i, open, high, low, close, pct_chg):
-    if i < 13:
+    if i < 20:
         return False
 
     _open = open[i]
@@ -341,8 +341,8 @@ def is_sunrise(i, open, high, low, close, pct_chg):
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
 
-    # 最近13日最低价
-    lowest_low = min(low[i - 12: i + 1])
+    # 最近21日最低价
+    lowest_low = min(low[i - 20: i + 1])
 
     # 下跌趋势中 前一根K线为中阴线或大阴线 当日K线为高开的中阳线或大阳线
     # 当日K线收盘价插入前日K线实体的1/2 但没有超过前日K线的开盘价
@@ -373,10 +373,10 @@ def is_flat_base(i, open, high, low, close, pct_chg):
     pre_low = low[i - 1]
     before_pre_low = low[i - 2]
     # 比较最低价的偏差
-    deviation = low[i] / 100
+    deviation = low[i]*5 / 1000
 
-    # 最近15日最低价
-    lowest_low = min(low[i - 12: i + 1])
+    # 最近21日最低价
+    lowest_low = min(low[i - 20: i + 1])
 
     # 下跌趋势中 最近两根K线最低价位于同一水平 / 最近三根K线最低价位于同一水平
     if (lowest_low == low[i] or lowest_low == pre_low or lowest_low == before_pre_low) \
@@ -402,7 +402,7 @@ return {*} Flag:boolean 是否符合
 
 
 def is_swallow_up(i, open, high, low, close, pct_chg):
-    if i < 13:
+    if i < 20:
         return False
 
     _open = open[i]
@@ -416,10 +416,10 @@ def is_swallow_up(i, open, high, low, close, pct_chg):
     pre_close = close[i - 1]
     pre_low = low[i - 1]
 
-    # 最近13日最低价
-    lowest_low = min(low[i - 12: i + 1])
+    # 最近20日最低价
+    lowest_low = min(low[i - 20: i + 1])
 
-    # 今昨两日最低价为最近13日最低价 (最近13日呈下跌趋势)
+    # 今昨两日最低价为最近21日最低价 (最近20日呈下跌趋势)
     if (lowest_low == pre_low or lowest_low == _low) \
             and _open < pre_close < pre_open < _close:
         return True
@@ -442,7 +442,7 @@ return {*} Flag:boolean 是否看跌吞没
 
 
 def is_swallow_down(i, open, high, low, close, pct_chg):
-    if i < 13:
+    if i < 20:
         return False
 
     _open = open[i]
@@ -456,10 +456,10 @@ def is_swallow_down(i, open, high, low, close, pct_chg):
     pre_close = close[i - 1]
     pre_high = high[i - 1]
 
-    # 最近13日最高价
-    highest_high = min(high[i - 12: i + 1])
+    # 最近20日最高价
+    highest_high = min(high[i - 20: i + 1])
 
-    # 今昨两日最高价为最近13日最高价 (最近13日呈上涨趋势)
+    # 今昨两日最高价为最近21日最高价 (最近21日呈上涨趋势)
     if (highest_high == pre_high or highest_high == _high) \
             and _open > pre_close > pre_open > _close:
         return True
