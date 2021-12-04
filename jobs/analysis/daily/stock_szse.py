@@ -13,7 +13,7 @@ from api.daily_candle import get_cn_candles
 import numpy as np
 from datetime import datetime, date
 import time
-from lib.util import wrap_technical_indicator, used_time_fmt, is_mac_os
+from lib.util import used_time_fmt, is_mac_os
 from lib.magic_nine_turn import td
 from lib.ma_slope import slope
 from lib.bias import bias

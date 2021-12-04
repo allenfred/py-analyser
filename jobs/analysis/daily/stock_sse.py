@@ -15,7 +15,7 @@ from talib import SMA, EMA, MACD
 from lib.bias import bias
 from lib.ma_slope import slope
 from lib.magic_nine_turn import td
-from lib.util import wrap_technical_indicator, used_time_fmt, is_mac_os
+from lib.util import used_time_fmt, is_mac_os
 import time
 from datetime import datetime, date
 import numpy as np
