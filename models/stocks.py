@@ -1,4 +1,3 @@
-# 导入:
 from sqlalchemy import Table, MetaData, Column, Integer, String, Date, SmallInteger, Float, select, insert, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.mysql.dml import Insert
@@ -6,17 +5,14 @@ from .db import engine, DBSession
 import pandas as pd
 from datetime import datetime, date
 
-# 创建对象的基类:
 Base = declarative_base()
 conn = engine.connect()
 metadata_obj = MetaData()
 
 
 class Stock(Base):
-    # 表的名字:
     __tablename__ = 'stocks'
 
-    # 表的结构:
     id = Column(Integer, autoincrement=True, primary_key=True)
     ts_code = Column(String, unique=True)  # TS代码
     symbol = Column(String, unique=True)  # 股票代码
@@ -51,6 +47,7 @@ class Stock(Base):
     scan_date = Column(Date)  # 上一次扫描完成日期
     candle_date = Column(Date)  # 上一次获取candle完成日期
     indicator_date = Column(Date)  # 上一次计算indicator完成日期
+    weekly_date = Column(Date)  # 上一次计算weekly candle完成日期
 
 
 stocks = Table('stocks', metadata_obj,
@@ -87,6 +84,7 @@ stocks = Table('stocks', metadata_obj,
                Column('scan_date', Date),
                Column('candle_date', Date),
                Column('indicator_date', Date),
+               Column('weekly_date', Date),
                )
 
 
@@ -126,7 +124,8 @@ def get_obj(item):
         circ_mv=item.get('circ_mv', None),
         scan_date=item.get('scan_date', None),
         candle_date=item.get('candle_date', None),
-        indicator_date=item.get('indicator_date', None)
+        indicator_date=item.get('indicator_date', None),
+        weekly_date=item.get('weekly_date', None)
     )
 
 
@@ -145,6 +144,18 @@ class StockDao:
                                                 " < :candle_date) and "
                                                 + exchange_query + "  limit 1").params(
             candle_date=candle_date))
+        stock_result = stock_stmts.fetchone()
+        self.session.close()
+
+        if len(stock_result) > 0:
+            return stock_result[0]
+        else:
+            return None
+
+    def find_one_weekly_not_ready(self):
+        exchange_query = "(exchange = 'SSE' or exchange = 'SZSE')"
+        stock_stmts = self.session.execute(text("select ts_code from stocks where weekly_date is null and "
+                                                + exchange_query + "  limit 1"))
         stock_result = stock_stmts.fetchone()
         self.session.close()
 
@@ -361,4 +372,18 @@ class StockDao:
                 values(candle_date=dte). \
                 where(stocks.c.ts_code == ts_code)
 
+            conn.execute(stmts)
+
+    def set_weekly_ready(self, ts_code, dte):
+        with engine.connect() as conn:
+            stmts = stocks.update(). \
+                values(weekly_date=dte). \
+                where(stocks.c.ts_code == ts_code)
+
+            conn.execute(stmts)
+
+    def reset_weekly_ready(self):
+        with engine.connect() as conn:
+            stmts = stocks.update(). \
+                values(weekly_date=None)
             conn.execute(stmts)

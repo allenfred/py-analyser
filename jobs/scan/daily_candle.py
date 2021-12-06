@@ -15,10 +15,6 @@ from models.stock_long_signals import StockLongSignalDao
 
 from models.stocks import StockDao
 from sqlalchemy import text
-from talib import SMA, EMA, MACD
-from lib.bias import bias
-from lib.ma_slope import slope
-from lib.magic_nine_turn import td
 from lib.analytic_signals import analytic_signals
 from lib.util import wrap_quota, used_time_fmt
 import time
