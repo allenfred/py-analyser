@@ -1,5 +1,5 @@
 # 导入:
-from sqlalchemy import Table, MetaData, Column, Integer, String, Date, SmallInteger, select, or_, asc, desc
+from sqlalchemy import Table, MetaData, Column, Integer, String, Date, SmallInteger, select, or_, asc, desc, text
 from sqlalchemy.ext.declarative import declarative_base
 from .db import engine, DBSession
 from datetime import date, datetime, timedelta
@@ -51,6 +51,14 @@ class TradeCalendarDao:
     def __init__(self):
         self.session = DBSession()
 
+    def find_by_exchange(self, exchange):
+        s = text("select cal_date from trade_calendar where exchange = :exchange")
+        statement = self.session.execute(s.params(exchange=exchange))
+        df = pd.DataFrame(statement.fetchall(), columns=['cal_date'])
+        self.session.close()
+
+        return df
+
     def add_one(self, calendar):
         obj = get_obj(calendar)
 
@@ -100,15 +108,23 @@ class TradeCalendarDao:
         return df
 
     def bulk_insert(self, df):
+        exchange = df['exchange'][0]
+        db_df = self.find_by_exchange(exchange)
+        insert_needed_df = df.loc[~pd.to_datetime(df["cal_date"], format="%Y-%m-%d").isin(db_df["cal_date"].to_numpy())]
+
         items = []
-        for index, item in df.iterrows():
+        for index, item in insert_needed_df.iterrows():
             item = item.to_dict()
             item = {k: v if not pd.isna(v) else None for k, v in item.items()}
             items.insert(index, item)
 
-        self.session.bulk_insert_mappings(TradeCalendar, items)
-        self.session.commit()
-        self.session.close()
+        try:
+            self.session.bulk_insert_mappings(TradeCalendar, items)
+            self.session.commit()
+        except Exception as e:
+            print('Error:', e)
+        finally:
+            self.session.close()
 
     def find_one_candle_not_ready(self, exchange):
 
