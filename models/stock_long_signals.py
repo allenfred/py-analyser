@@ -51,8 +51,8 @@ class StockLongSignal(Base):
     ema_hold_moon = Column(SmallInteger)
     ma_over_gate = Column(SmallInteger)
     ema_over_gate = Column(SmallInteger)
-    ma_up_group = Column(SmallInteger)
-    ema_up_group = Column(SmallInteger)
+    ma_up_ground = Column(SmallInteger)
+    ema_up_ground = Column(SmallInteger)
     ma_spider = Column(SmallInteger)
     ma_spider2 = Column(SmallInteger)
     ema_spider = Column(SmallInteger)
@@ -152,8 +152,8 @@ def get_obj(signal):
         ema_hold_moon=signal.get('ema_hold_moon', None),
         ma_over_gate=signal.get('ma_over_gate', None),
         ema_over_gate=signal.get('ema_over_gate', None),
-        ma_up_group=signal.get('ma_up_group', None),
-        ema_up_group=signal.get('ema_up_group', None),
+        ma_up_ground=signal.get('ma_up_ground', None),
+        ema_up_ground=signal.get('ema_up_ground', None),
         ma_spider=signal.get('ma_spider', None),
         ma_spider2=signal.get('ma_spider2', None),
         ema_spider=signal.get('ema_spider', None),
@@ -302,10 +302,10 @@ class StockLongSignalDao:
                     row.ma_over_gate = obj.ma_over_gate
                 if obj.ema_over_gate is not None:
                     row.ema_over_gate = obj.ema_over_gate
-                if obj.ma_up_group is not None:
-                    row.ma_up_group = obj.ma_up_group
-                if obj.ema_up_group is not None:
-                    row.ema_up_group = obj.ema_up_group
+                if obj.ma_up_ground is not None:
+                    row.ma_up_ground = obj.ma_up_ground
+                if obj.ema_up_ground is not None:
+                    row.ema_up_ground = obj.ema_up_ground
                 if obj.ma_spider is not None:
                     row.ma_spider = obj.ma_spider
                 if obj.ma_spider2 is not None:

@@ -43,7 +43,8 @@ CREATE TABLE `stocks` (
   `scan_date` date COMMENT '扫描买卖信号日期',
   `candle_date` date COMMENT '更新日K日期',
   `indicator_date` date COMMENT '更新indicator日期',
-  `weekly_candle_date` date COMMENT '更新周K日期'
+  `weekly_candle_date` date COMMENT '更新周K日期',
+  `amount` float COMMENT '成交额'
 );
 
 CREATE TABLE `cn_daily_candles` (
@@ -237,8 +238,8 @@ CREATE TABLE `daily_long_signals` (
   `ema_hold_moon` tinyint(2) COMMENT 'EMA烘云托月(5/10/20)',
   `ma_over_gate` tinyint(2) COMMENT 'MA鱼跃龙门(5/10/20)',
   `ema_over_gate` tinyint(2) COMMENT 'EMA鱼跃龙门(5/10/20)',
-  `ma_up_group` tinyint(2) COMMENT 'MA旱地拔葱(5/10/20)',
-  `ema_up_group` tinyint(2) COMMENT 'EMA旱地拔葱(5/10/20)',
+  `ma_up_ground` tinyint(2) COMMENT 'MA旱地拔葱(5/10/20)',
+  `ema_up_ground` tinyint(2) COMMENT 'EMA旱地拔葱(5/10/20)',
   `ma_spider` tinyint(2) COMMENT 'MA金蜘蛛(5/10/20)',
   `ma_spider2` tinyint(2) COMMENT 'MA金蜘蛛(5/10/20/30)',
   `ema_spider` tinyint(2) COMMENT 'EMA金蜘蛛(5/10/20)',
@@ -390,8 +391,8 @@ CREATE TABLE `stock_long_signals` (
   `ema_hold_moon` tinyint(2) COMMENT 'EMA烘云托月(5/10/20)',
   `ma_over_gate` tinyint(2) COMMENT 'MA鱼跃龙门(5/10/20)',
   `ema_over_gate` tinyint(2) COMMENT 'EMA鱼跃龙门(5/10/20)',
-  `ma_up_group` tinyint(2) COMMENT 'MA旱地拔葱(5/10/20)',
-  `ema_up_group` tinyint(2) COMMENT 'EMA旱地拔葱(5/10/20)',
+  `ma_up_ground` tinyint(2) COMMENT 'MA旱地拔葱(5/10/20)',
+  `ema_up_ground` tinyint(2) COMMENT 'EMA旱地拔葱(5/10/20)',
   `ma_spider` tinyint(2) COMMENT 'MA金蜘蛛(5/10/20)',
   `ma_spider2` tinyint(2) COMMENT 'MA金蜘蛛(5/10/20/30)',
   `ema_spider` tinyint(2) COMMENT 'EMA金蜘蛛(5/10/20)',

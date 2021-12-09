@@ -62,7 +62,7 @@ if __name__ == "__main__":
     while True:
         stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
                                                     "< :scan_date) and (exchange = 'SSE' or exchange = 'SZSE') "
-                                                    "and amount > 10000000 limit "
+                                                    "and (amount is null or amount > 10000000) limit "
                                                     + str(limit)).params(scan_date=scan_date))
         stock_result = stock_stmts.fetchall()
         stockDao.session.commit()
