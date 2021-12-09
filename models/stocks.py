@@ -152,14 +152,15 @@ class StockDao:
         else:
             return None
 
-    def find_one_weekly_not_ready(self):
-        exchange_query = "(exchange = 'SSE' or exchange = 'SZSE')"
-        stock_stmts = self.session.execute(text("select ts_code from stocks where weekly_date is null and "
-                                                + exchange_query + "  limit 1"))
+    def find_one_weekly_not_ready(self, cur_date):
+        stock_stmts = self.session.execute(text("select ts_code from stocks where (weekly_date is null or weekly_date"
+                                                " < :cur_date) and "
+                                                "(exchange = 'SSE' or exchange = 'SZSE')  limit 1").params(
+            cur_date=cur_date))
         stock_result = stock_stmts.fetchone()
         self.session.close()
 
-        if len(stock_result) > 0:
+        if stock_result and len(stock_result) > 0:
             return stock_result[0]
         else:
             return None

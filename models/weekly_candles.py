@@ -59,7 +59,7 @@ class WeeklyCandleDao:
 
     def find_by_ts_code(self, ts_code):
         s = text("select trade_date, open, close, high, low from weekly_candles where ts_code = :ts_code "
-                 "order by trade_date desc limit 0,500;")
+                 "order by trade_date desc limit 0,600;")
         statement = self.session.execute(s.params(ts_code=ts_code))
         df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low'])
         self.session.close()
