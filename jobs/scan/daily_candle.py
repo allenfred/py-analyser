@@ -31,6 +31,13 @@ dailyLongSignalDao = DailyLongSignalDao()
 stockLongSignalDao = StockLongSignalDao()
 
 
+def get_amount(exchange, amount):
+    if exchange == 'HK' or exchange == 'US':
+        return amount
+    else:
+        return amount * 1000
+
+
 def scan_daily_candles(ts_code, exchange_type, scan_date):
     start = time.time()
     table_name = 'cn_daily_candles'
@@ -39,7 +46,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
     if exchange_type == 'US':
         table_name = 'us_daily_candles'
 
-    statement = dailyCandleDao.session.execute(text("select trade_date, open, high, close, low, pct_chg from "
+    statement = dailyCandleDao.session.execute(text("select trade_date, open, high, close, low, pct_chg, amount from "
                                                     + table_name + " where ts_code = :ts_code "
                                                     + "and trade_date > '2015-01-01' and open is not null "
                                                       "and close is not null and high is not null and"
@@ -47,7 +54,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
                                                     + "order by trade_date desc "
                                                       "limit 360").params(ts_code=ts_code))
 
-    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'high', 'close', 'low', 'pct_chg'])
+    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'high', 'close', 'low', 'pct_chg', 'amount'])
 
     if len(df) > 60:
         df = df.sort_values(by='trade_date', ascending=True)
@@ -69,7 +76,8 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
             dailyLongSignalDao.bulk_insert(small_df, ts_code)
             stockLongSignalDao.upsert(signal)
 
-            stockDao.update({'ts_code': ts_code, 'scan_date': scan_date})
+            stockDao.update({'ts_code': ts_code, 'scan_date': scan_date,
+                             'amount': get_amount(exchange_type, signal['amount'])})
 
             print_str = '扫描成功: ' + str(ts_code) + ', 最新K线时间: ' + str(scan_date) + \
                         ', 用时 ' + str(used_time_fmt(start, time.time()))

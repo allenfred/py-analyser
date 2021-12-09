@@ -48,6 +48,7 @@ class Stock(Base):
     candle_date = Column(Date)  # 上一次获取candle完成日期
     indicator_date = Column(Date)  # 上一次计算indicator完成日期
     weekly_date = Column(Date)  # 上一次计算weekly candle完成日期
+    amount = Column(Float)  # 最近一个交易日的成交额
 
 
 stocks = Table('stocks', metadata_obj,
@@ -85,6 +86,7 @@ stocks = Table('stocks', metadata_obj,
                Column('candle_date', Date),
                Column('indicator_date', Date),
                Column('weekly_date', Date),
+               Column('amount', Float)
                )
 
 
@@ -125,7 +127,8 @@ def get_obj(item):
         scan_date=item.get('scan_date', None),
         candle_date=item.get('candle_date', None),
         indicator_date=item.get('indicator_date', None),
-        weekly_date=item.get('weekly_date', None)
+        weekly_date=item.get('weekly_date', None),
+        amount=item.get('amount', None)  # 成交额
     )
 
 
@@ -273,6 +276,10 @@ class StockDao:
                     row.candle_date = obj.get('candle_date')
                 if obj.get('indicator_date') is not None:
                     row.indicator_date = obj.get('indicator_date')
+                if obj.get('weekly_date') is not None:
+                    row.weekly_date = obj.get('weekly_date')
+                if obj.get('amount') is not None:
+                    row.amount = obj.get('amount')
 
         except Exception as e:
             print('Error:', e)
@@ -358,6 +365,8 @@ class StockDao:
                         row.total_mv = obj.total_mv
                     if obj.circ_mv is not None:
                         row.circ_mv = obj.circ_mv
+                    if obj.amount is not None:
+                        row.amount = obj.amount
 
             except Exception as e:
                 print('Error:', e)
@@ -366,25 +375,3 @@ class StockDao:
         self.session.close()
 
         return df
-
-    def set_candle_ready(self, ts_code, dte):
-        with engine.connect() as conn:
-            stmts = stocks.update(). \
-                values(candle_date=dte). \
-                where(stocks.c.ts_code == ts_code)
-
-            conn.execute(stmts)
-
-    def set_weekly_ready(self, ts_code, dte):
-        with engine.connect() as conn:
-            stmts = stocks.update(). \
-                values(weekly_date=dte). \
-                where(stocks.c.ts_code == ts_code)
-
-            conn.execute(stmts)
-
-    def reset_weekly_ready(self):
-        with engine.connect() as conn:
-            stmts = stocks.update(). \
-                values(weekly_date=None)
-            conn.execute(stmts)

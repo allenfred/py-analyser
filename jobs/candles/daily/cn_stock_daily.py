@@ -91,12 +91,12 @@ def ready_candles_by_stock(start_time):
             new_df = df.loc[~pd.to_datetime(df["trade_date"], format='%Y-%m-%d').isin(db_df["trade_date"].to_numpy())]
 
             dailyCandleDao.bulk_insert(new_df)
-            stockDao.set_candle_ready(ts_code, today)
+            stockDao.update({'ts_code': ts_code, 'candle_date': today})
 
             print('已更新 CN daily_candles :', ts_code, ': ', len(new_df), ' 条数据，用时 ',
                   used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start_time, time.time()))
         except Exception as e:
-            stockDao.set_candle_ready(ts_code, today)
+            stockDao.update({'ts_code': ts_code, 'candle_date': today})
             print('Error:', e)
 
 

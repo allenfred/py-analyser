@@ -59,13 +59,13 @@ if __name__ == "__main__":
             df = analytic_signals(df)
             small_df = df.iloc[df_len - 30: df_len]
             weeklyLongSignalDao.bulk_insert(small_df, ts_code)
-            stockDao.set_weekly_ready(ts_code, today)
+            stockDao.update({'ts_code': ts_code, 'weekly_date': today})
 
             print('已更新 CN weekly_candles :', ts_code, ': ', len(new_df), ' 条数据，用时 ',
                   used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start, time.time()))
         except Exception as e:
             print('Error:', e)
             break
-            stockDao.set_weekly_ready(ts_code, today)
+            stockDao.update({'ts_code': ts_code, 'weekly_date': today})
 
     print('用时', used_time_fmt(start, time.time()))
