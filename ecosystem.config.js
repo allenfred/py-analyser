@@ -31,6 +31,16 @@ module.exports = {
       autorestart: false,
     },
     {
+      name: 'stockCN-weekly',
+      script: 'jobs/candles/weekly/cn_stock_weekly.py',
+      interpreter: 'python3',
+      instances: 1,
+      exec_mode: 'fork',
+      cron_restart: '30 20 * * 5', // 每周日下午 20:30
+      watch: false,
+      autorestart: false,
+    },
+    {
       name: 'stockCN-basic',
       script: 'jobs/candles/daily/cn_stock_daily_basic.py',
       interpreter: 'python3',
