@@ -60,13 +60,8 @@ if __name__ == "__main__":
     scan_date = candle['trade_date']
 
     while True:
-        used_time = round(time.time() - job_start, 0)
-        if used_time > 3600 * 5:
-            break
-
         stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
-                                                    " < :scan_date) and exchange='HK' "
-                                                    "and (amount is null or amount > 10000000) limit " + str(limit)
+                                                    " < :scan_date) and exchange='HK' limit " + str(limit)
                                                     ).params(scan_date=scan_date))
         stock_result = stock_stmts.fetchall()
         stockDao.session.commit()

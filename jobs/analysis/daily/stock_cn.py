@@ -61,16 +61,15 @@ if __name__ == "__main__":
 
     while True:
         stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
-                                                    "< :scan_date) and (exchange = 'SSE' or exchange = 'SZSE') "
-                                                    "and (amount is null or amount > 10000000) limit "
+                                                    "< :scan_date) and (exchange = 'SSE' or exchange = 'SZSE') limit "
                                                     + str(limit)).params(scan_date=scan_date))
         stock_result = stock_stmts.fetchall()
         stockDao.session.commit()
 
         if len(stock_result) == 0:
-            print('SSE 没有需要扫描的股票')
+            print('SSE & SZSE 没有需要扫描的股票')
             break
 
         multi_scan(stock_result)
         total_scan_cnt += len(stock_result)
-        print("当前已扫描 SSE 股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))
+        print("当前已扫描 SSE & SZSE 股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))

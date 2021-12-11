@@ -55,8 +55,9 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
                                                       "limit 360").params(ts_code=ts_code))
 
     df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'high', 'close', 'low', 'pct_chg', 'amount'])
+    last_amount = get_amount(exchange_type, df.iloc[len(df) - 1].amount)
 
-    if len(df) > 60:
+    if len(df) > 60 and last_amount > 10000000:
         df = df.sort_values(by='trade_date', ascending=True)
         df['num'] = df.index[::-1].to_numpy()
         df = df.set_index('num')
@@ -76,15 +77,14 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
             dailyLongSignalDao.bulk_insert(small_df, ts_code)
             stockLongSignalDao.upsert(signal)
 
-            stockDao.update({'ts_code': ts_code, 'scan_date': scan_date,
-                             'amount': get_amount(exchange_type, signal['amount'])})
+            stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount})
 
             print_str = '扫描成功: ' + str(ts_code) + ', 最新K线时间: ' + str(scan_date) + \
                         ', 用时 ' + str(used_time_fmt(start, time.time()))
             print(print_str)
         except Exception as e:
             print('更新 ', ts_code, 'Catch Error:', e)
-            stockDao.update({'ts_code': ts_code, 'scan_date': scan_date})
+            stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount})
     else:
-        stockDao.update({'ts_code': ts_code, 'scan_date': scan_date})
-        print('股票代码: ', ts_code, ' 没有足够行情数据')
+        stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount})
+        print('股票代码: ', ts_code, ' 成交量或行情数据不足')
