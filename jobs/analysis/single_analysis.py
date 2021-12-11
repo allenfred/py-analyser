@@ -31,7 +31,7 @@ dailyLongSignalDao = DailyLongSignalDao()
 stockLongSignalDao = StockLongSignalDao()
 
 if __name__ == "__main__":
-    ts_code = '300692.SZ'
+    ts_code = '002607.SZ'
     scan_daily_candles(ts_code, 'CN', '2021-12-10')
     print('扫描成功')
 
