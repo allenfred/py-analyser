@@ -33,9 +33,9 @@ stockLongSignalDao = StockLongSignalDao()
 
 def get_amount(exchange, amount):
     if exchange == 'HK' or exchange == 'US':
-        return amount
+        return int(amount) * 1
     else:
-        return amount * 1000
+        return int(amount) * 1000
 
 
 def scan_daily_candles(ts_code, exchange_type, scan_date):
