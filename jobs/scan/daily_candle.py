@@ -58,6 +58,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
                                                       "limit 360").params(ts_code=ts_code))
 
     df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'high', 'close', 'low', 'pct_chg', 'amount'])
+    df = df.fillna(0)
     last_amount = 0
     if len(df) > 1:
         last_amount = get_amount(exchange_type, df.iloc[len(df) - 1].amount)
