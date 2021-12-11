@@ -32,6 +32,9 @@ stockLongSignalDao = StockLongSignalDao()
 
 
 def get_amount(exchange, amount):
+    if not amount:
+        return 0
+
     if exchange == 'HK' or exchange == 'US':
         return int(amount) * 1
     else:
