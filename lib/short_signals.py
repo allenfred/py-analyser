@@ -2,9 +2,6 @@ from talib import SMA
 import pandas as pd
 import numpy as np
 import math
-from .candle import is_hammer, is_pour_hammer, is_short_end, is_swallow_down, \
-    is_sunrise, is_first_light, is_attack_short, is_flat_base
-
 
 def short_analytic(candle, ma, ema, ma_slope, ema_slope, bias, td):
     open = candle[:, 0]
@@ -355,26 +352,14 @@ def short_analytic(candle, ma, ema, ma_slope, ema_slope, bias, td):
         else:
             ema_dead_cross4.insert(index, 0)
 
-        # MA银山谷
+        # MA死亡谷
         if is_ma_dead_valley(index, ma_dead_cross1, ma_dead_cross2, ma_dead_cross3):
             ma_dead_valley.insert(index, 1)
         else:
             ma_dead_valley.insert(index, 0)
 
-        # EMA银山谷
+        # EMA死亡谷
         if is_ema_dead_valley(index, ema_dead_cross1, ema_dead_cross2, ema_dead_cross3):
-            ema_dead_valley.insert(index, 1)
-        else:
-            ema_dead_valley.insert(index, 0)
-
-        # MA金山谷
-        if is_ma_dead_valley(index, ma, ma_slope, ma_dead_valley):
-            ma_dead_valley.insert(index, 1)
-        else:
-            ma_dead_valley.insert(index, 0)
-
-        # EMA金山谷
-        if is_ema_dead_valley(index, ema, ema_slope, ema_dead_valley):
             ema_dead_valley.insert(index, 1)
         else:
             ema_dead_valley.insert(index, 0)
@@ -539,8 +524,39 @@ def short_analytic(candle, ma, ema, ma_slope, ema_slope, bias, td):
            ma_down_arrange51020, ma_down_arrange5102030, ma_down_arrange510203060, \
            ma_down_arrange203060, ma_down_arrange2060120, \
            ema_down_arrange51020, ema_down_arrange5102030, ema_down_arrange510203060, \
-           ema_down_arrange203060, ema_down_arrange2055120, \
-           hammer, pour_hammer, short_end, swallow_down, attack_short, \
-           first_light, sunrise, flat_base
+           ema_down_arrange203060, ema_down_arrange2055120
+
+
+def is_ma_dead_valley(index, ma_dead_cross1, ma_dead_cross2, ma_dead_cross3):
+    # MA死亡谷
+    if index >= 10 and (ma_dead_cross2[index] == 1 or ma_dead_cross3[index] == 1):
+        cross_cnt = 0
+        if max(ma_dead_cross1[index - 9: index + 1]) == 1:
+            cross_cnt += 1
+        if max(ma_dead_cross2[index - 9: index + 1]) == 1:
+            cross_cnt += 1
+        if max(ma_dead_cross3[index - 9: index + 1]) == 1:
+            cross_cnt += 1
+
+        if cross_cnt >= 2:
+            return True
+
+    return False
+
+
+def is_ema_dead_valley(index, ema_dead_cross1, ema_dead_cross2, ema_dead_cross3):
+    if index >= 10 and (ema_dead_cross2[index] == 1 or ema_dead_cross3[index] == 1):
+        cross_cnt = 0
+        if max(ema_dead_cross1[index - 9: index + 1]) == 1:
+            cross_cnt += 1
+        if max(ema_dead_cross2[index - 9: index + 1]) == 1:
+            cross_cnt += 1
+        if max(ema_dead_cross3[index - 9: index + 1]) == 1:
+            cross_cnt += 1
+
+        if cross_cnt >= 2:
+            return True
+
+    return False
 
 

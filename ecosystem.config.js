@@ -36,7 +36,7 @@ module.exports = {
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '30 20 * * 5', // 每周日下午 20:30
+      cron_restart: '30 22 * * 5', // 每周五下午 22:30
       watch: false,
       autorestart: false,
     },

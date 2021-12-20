@@ -171,7 +171,6 @@ class DailyIndicatorDao:
             items.insert(index, item)
 
         try:
-
             self.session.bulk_insert_mappings(DailyIndicator, items)
             self.session.commit()
         except Exception as e:
