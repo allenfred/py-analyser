@@ -18,7 +18,7 @@ from sqlalchemy import text
 from lib.analytic_signals import analytic_signals
 from lib.util import wrap_quota, used_time_fmt
 import time
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import numpy as np
 from api.daily_candle import get_cn_candles
 import time
@@ -44,6 +44,7 @@ def get_amount(exchange, amount):
 def scan_daily_candles(ts_code, exchange_type, scan_date):
     start = time.time()
     table_name = 'cn_daily_candles'
+    monthly_ago = date.today() - timedelta(days=20)
     if exchange_type == 'HK':
         table_name = 'hk_daily_candles'
     if exchange_type == 'US':
@@ -63,7 +64,14 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
     if len(df) > 1:
         last_amount = get_amount(exchange_type, df.iloc[len(df) - 1].amount)
 
-    if len(df) > 60 and last_amount > 10000000:
+    list_status = 'L'
+    last_trade_date = df.iloc[0].trade_date
+
+    # 剔除退市股
+    if last_trade_date < monthly_ago:
+        list_status = 'D'
+
+    if list_status == 'L' and len(df) > 60 and last_amount > 10000000:
         df = df.sort_values(by='trade_date', ascending=True)
         df['num'] = df.index[::-1].to_numpy()
         df = df.set_index('num')
@@ -91,5 +99,5 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
             print('更新 ', ts_code, 'Catch Error:', e)
             stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount})
     else:
-        stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount})
-        print('股票代码: ', ts_code, ' 成交量或行情数据不足')
+        stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount, 'list_status': list_status})
+        print('股票代码: ', ts_code, ' 不满足扫描条件')
