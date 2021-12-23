@@ -90,14 +90,14 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
             dailyLongSignalDao.bulk_insert(small_df, ts_code)
             stockLongSignalDao.upsert(signal)
 
-            stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount})
+            stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount, 'list_status': 'L'})
 
             print_str = '扫描成功: ' + str(ts_code) + ', 最新K线时间: ' + str(scan_date) + \
                         ', 用时 ' + str(used_time_fmt(start, time.time()))
             print(print_str)
         except Exception as e:
             print('更新 ', ts_code, 'Catch Error:', e)
-            stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount})
+            stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount, 'list_status': 'L'})
     else:
         stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount, 'list_status': list_status})
         print('股票代码: ', ts_code, ' 不满足扫描条件')
