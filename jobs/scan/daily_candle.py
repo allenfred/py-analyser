@@ -61,15 +61,14 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
     df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'high', 'close', 'low', 'pct_chg', 'amount'])
     df = df.fillna(0)
     last_amount = 0
+    list_status = 'L'
+
     if len(df) > 1:
         last_amount = get_amount(exchange_type, df.iloc[len(df) - 1].amount)
 
-    list_status = 'L'
-    last_trade_date = df.iloc[0].trade_date
-
-    # 剔除退市股
-    if last_trade_date < monthly_ago:
-        list_status = 'D'
+        # 剔除退市股
+        if df.iloc[0].trade_date < monthly_ago:
+            list_status = 'D'
 
     if list_status == 'L' and len(df) > 60 and last_amount > 10000000:
         df = df.sort_values(by='trade_date', ascending=True)
