@@ -49,6 +49,7 @@ if __name__ == "__main__":
     candle = dailyCandleDao.find_latest_candle()
     total_scan_cnt = 0
     limit = 1
+    today = date.today()
 
     if candle is None:
         print('没有K线数据')
@@ -72,4 +73,4 @@ if __name__ == "__main__":
 
         multi_scan(stock_result)
         total_scan_cnt += len(stock_result)
-        print("当前已扫描 SSE & SZSE 股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))
+        print(today, "当前已扫描 SSE & SZSE 股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))
