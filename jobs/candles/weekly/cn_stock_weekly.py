@@ -68,4 +68,4 @@ if __name__ == "__main__":
             break
             stockDao.update({'ts_code': ts_code, 'weekly_date': today})
 
-    print('用时', used_time_fmt(start, time.time()))
+    print(today, '用时', used_time_fmt(start, time.time()))

@@ -73,4 +73,4 @@ if __name__ == "__main__":
 
         multi_scan(stock_result)
         total_scan_cnt += len(stock_result)
-        print(today, "当前已扫描 SSE & SZSE 股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))
+        print(today, "当前已扫描股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))
