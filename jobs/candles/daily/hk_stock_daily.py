@@ -102,8 +102,9 @@ def ready_candles_by_stock(start_time):
 
 
 if __name__ == "__main__":
+    today = datetime.now().strftime("%Y-%m-%d")
     start = time.time()
     ready_candles_by_date(start)
     end = time.time()
 
-    print('用时', used_time_fmt(start, end))
+    print(today, '用时', used_time_fmt(start, end))

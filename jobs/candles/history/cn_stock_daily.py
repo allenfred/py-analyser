@@ -49,4 +49,4 @@ if __name__ == "__main__":
 
     end = time.time()
 
-    print('用时', used_time_fmt(start, end))
+    print(today, '用时', used_time_fmt(start, end))
