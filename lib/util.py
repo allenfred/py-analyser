@@ -99,5 +99,6 @@ def set_quota(df):
     df['low_td'] = low_td
 
     df = df.fillna(0)
+    df = df.round(2)
 
     return df

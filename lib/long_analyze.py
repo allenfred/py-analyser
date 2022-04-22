@@ -94,10 +94,9 @@ def long_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
     ema_silver_valley = []
     ma_gold_valley = []
     ema_gold_valley = []
+
     ma_spider = []
-    ma_spider2 = []
     ema_spider = []
-    ema_spider2 = []
 
     ma_out_sea = []
     ema_out_sea = []
@@ -489,35 +488,17 @@ def long_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
         else:
             ema_gold_valley.insert(index, 0)
 
-        is_ma_spider1, is_ma_spider2 = is_ma_spider(index, ma, ma_gold_cross1, ma_gold_cross2,
-                                                    ma_gold_cross3, ma_gold_cross4)
-
         # MA金蜘蛛
-        if is_ma_spider1:
+        if is_ma_spider(index, ma, ma_gold_cross1, ma_gold_cross2, ma_gold_cross3, ma_gold_cross4):
             ma_spider.insert(index, 1)
         else:
             ma_spider.insert(index, 0)
 
-        # MA金蜘蛛2
-        if is_ma_spider2:
-            ma_spider2.insert(index, 1)
-        else:
-            ma_spider2.insert(index, 0)
-
-        is_ema_spider1, is_ema_spider2 = is_ema_spider(index, ema, ema_gold_cross1, ema_gold_cross2,
-                                                       ema_gold_cross3, ema_gold_cross4)
-
         # EMA金蜘蛛
-        if is_ema_spider1:
+        if is_ema_spider(index, ema, ema_gold_cross1, ema_gold_cross2, ema_gold_cross3, ema_gold_cross4):
             ema_spider.insert(index, 1)
         else:
             ema_spider.insert(index, 0)
-
-        # EMA金蜘蛛2
-        if is_ema_spider2:
-            ema_spider2.insert(index, 1)
-        else:
-            ema_spider2.insert(index, 0)
 
         # MA蛟龙出海(5/10/20)
         # 大阳线 贯穿ma5/ma10/ma20
@@ -539,13 +520,13 @@ def long_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
             ema_out_sea.insert(index, 0)
 
         # MA烘云托月(5/10/20)
-        if is_ma_hold_moon(index, candle, bias, ma_slope):
+        if is_ma_hold_moon(index, candle, bias, ma, ma_slope):
             ma_hold_moon.insert(index, 1)
         else:
             ma_hold_moon.insert(index, 0)
 
         # EMA烘云托月(5/10/20)
-        if is_ema_hold_moon(index, candle, bias, ema_slope):
+        if is_ema_hold_moon(index, candle, bias, ema, ema_slope):
             ema_hold_moon.insert(index, 1)
         else:
             ema_hold_moon.insert(index, 0)
@@ -923,7 +904,7 @@ def long_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
            ma_gold_cross1, ma_gold_cross2, ma_gold_cross3, ma_gold_cross4, \
            ema_gold_cross1, ema_gold_cross2, ema_gold_cross3, ema_gold_cross4, \
            ma_silver_valley, ema_silver_valley, ma_gold_valley, ema_gold_valley, \
-           ma_spider, ma_spider2, ema_spider, ema_spider2, \
+           ma_spider, ema_spider, \
            ma_glue, ema_glue, ma_out_sea, ema_out_sea, ma_hold_moon, ema_hold_moon, \
            ma_over_gate, ema_over_gate, ma_up_ground, ema_up_ground, td8, td9, \
            bias6, bias12, bias24, bias60, bias72, bias120, \
@@ -1386,7 +1367,7 @@ def is_ema_up_arrange2055120(index, ema20, ema55, ema120, ema20_slope, ema55_slo
 
 def is_ma_spider(index, ma, ma_gold_cross1, ma_gold_cross2, ma_gold_cross3, ma_gold_cross4):
     # MA金蜘蛛
-    # 最近3个交易日ma5/ma10/ma20交叉于一点 (即出现至少2个金叉)
+    # 最近3个交易日ma5/ma10/ma20交叉于一点 (即出现至少1个金叉)
     # 今日ma5/ma10/ma20多头发散
     gold_cross_cnt = 0
     if max(ma_gold_cross1[index - 2: index + 1]) == 1:
@@ -1398,17 +1379,15 @@ def is_ma_spider(index, ma, ma_gold_cross1, ma_gold_cross2, ma_gold_cross3, ma_g
     if max(ma_gold_cross4[index - 2: index + 1]) == 1:
         gold_cross_cnt += 1
 
-    is_spider1 = False
-    is_spider2 = False
+    flag = False
 
-    if gold_cross_cnt > 1 and ma[index][0] > ma[index][1] > ma[index][2]:
-        is_spider1 = True
+    # MA金蜘蛛
+    if index > 20 and gold_cross_cnt > 0 and \
+     (ma[index - 1][0] == ma[index - 1][1] == ma[index - 1][2] or
+            ma[index - 1][0] == ma[index - 1][1] == ma[index - 1][3]) :
+        flag = True
 
-    # MA金蜘蛛2
-    if gold_cross_cnt > 2 and ma[index][0] > ma[index][1] > ma[index][2] > ma[index][3]:
-        is_spider2 = True
-
-    return is_spider1, is_spider2
+    return flag
 
 
 def is_ema_spider(index, ema, ema_gold_cross1, ema_gold_cross2, ema_gold_cross3, ema_gold_cross4):
@@ -1425,21 +1404,18 @@ def is_ema_spider(index, ema, ema_gold_cross1, ema_gold_cross2, ema_gold_cross3,
     if max(ema_gold_cross4[index - 2: index + 1]) == 1:
         ema_gold_cross_cnt += 1
 
-    is_spider1 = False
-    is_spider2 = False
+    is_spider = False
 
     # EMA金蜘蛛
-    if ema_gold_cross_cnt > 1 and ema[index][0] > ema[index][1] > ema[index][2]:
-        is_spider1 = True
+    if index > 20 and ema_gold_cross_cnt > 0 and \
+            (ema[index - 1][0] == ema[index - 1][1] == ema[index - 1][2] or
+             ema[index - 1][0] == ema[index - 1][1] == ema[index - 1][3]):
+        is_spider = True
 
-    # EMA金蜘蛛2
-    if ema_gold_cross_cnt > 2 and ema[index][0] > ema[index][1] > ema[index][2] > ema[index][3]:
-        is_spider2 = True
-
-    return is_spider1, is_spider2
+    return is_spider
 
 
-def is_ma_hold_moon(index, candles, bias, ma_slope):
+def is_ma_hold_moon(index, candles, bias, ma, ma_slope):
     # MA烘云托月(5/10/20)
 
     # 最近 7 个交易日
@@ -1450,7 +1426,7 @@ def is_ma_hold_moon(index, candles, bias, ma_slope):
     # 均线缓慢上行 ma10_slope < 1.5 / ma20_slope < 2 / ma30_slope < 2
 
     _count = 9 - 1
-
+    print(candles[:, 5][index],ma[index][0] ,ma[index][1] , ma[index][2],ma[index][3])
     if index > 50:
         min_bias6 = min(bias[:, 0][index - _count: index + 1])
         max_bias6 = max(bias[:, 0][index - _count: index + 1])
@@ -1463,8 +1439,6 @@ def is_ma_hold_moon(index, candles, bias, ma_slope):
         max_ma10_slope = max(ma_slope[:, 1][index - _count: index + 1])
         min_ma20_slope = min(ma_slope[:, 2][index - _count: index + 1])
         max_ma20_slope = max(ma_slope[:, 2][index - _count: index + 1])
-        min_ma30_slope = min(ma_slope[:, 3][index - _count: index + 1])
-        max_ma30_slope = max(ma_slope[:, 3][index - _count: index + 1])
 
     if index > 50 and min(candles[:, 4][index - _count: index + 1]) >= -4 and \
             max(candles[:, 4][index - _count: index + 1]) <= 4 \
@@ -1472,14 +1446,13 @@ def is_ma_hold_moon(index, candles, bias, ma_slope):
             and min_bias12 > -4.5 and max_bias12 < 5 \
             and min_bias24 > -7 and max_bias24 < 8 \
             and min_ma10_slope >= -1 and max_ma10_slope <= 2 \
-            and ((min_ma20_slope >= 0 and max_ma20_slope <= 2) or
-                 (min_ma30_slope >= 0 and max_ma30_slope <= 2)):
+            and min_ma20_slope >= 0.5 and max_ma20_slope <= 2:
         return True
     else:
         return False
 
 
-def is_ema_hold_moon(index, candles, bias, ma_slope):
+def is_ema_hold_moon(index, candles, bias, ema, ma_slope):
     # EMA烘云托月(5/10/20)
 
     # 最近 7 个交易日
@@ -1503,8 +1476,6 @@ def is_ema_hold_moon(index, candles, bias, ma_slope):
         max_ma10_slope = max(ma_slope[:, 1][index - _count: index + 1])
         min_ma20_slope = min(ma_slope[:, 2][index - _count: index + 1])
         max_ma20_slope = max(ma_slope[:, 2][index - _count: index + 1])
-        min_ma30_slope = min(ma_slope[:, 3][index - _count: index + 1])
-        max_ma30_slope = max(ma_slope[:, 3][index - _count: index + 1])
 
     if index > 50 and min(candles[:, 4][index - _count: index + 1]) >= -4 and \
             max(candles[:, 4][index - _count: index + 1]) <= 4 \
@@ -1512,8 +1483,7 @@ def is_ema_hold_moon(index, candles, bias, ma_slope):
             and min_bias12 > -4.5 and max_bias12 < 5 \
             and min_bias24 > -7 and max_bias24 < 8 \
             and min_ma10_slope >= -1 and max_ma10_slope <= 1.5 \
-            and ((min_ma20_slope >= 0 and max_ma20_slope <= 2) or
-                 (min_ma30_slope >= 0 and max_ma30_slope <= 2)):
+            and min_ma20_slope >= 0.5 and max_ma20_slope <= 2:
         return True
     else:
         return False

@@ -28,7 +28,7 @@ def analyze(org_df):
     ma_gold_cross1, ma_gold_cross2, ma_gold_cross3, ma_gold_cross4, \
     ema_gold_cross1, ema_gold_cross2, ema_gold_cross3, ema_gold_cross4, \
     ma_silver_valley, ema_silver_valley, ma_gold_valley, ema_gold_valley, \
-    ma_spider, ma_spider2, ema_spider, ema_spider2, \
+    ma_spider, ema_spider, \
     ma_glue, ema_glue, ma_out_sea, ema_out_sea, ma_hold_moon, ema_hold_moon, \
     ma_over_gate, ema_over_gate, ma_up_ground, ema_up_ground, \
     td8, td9, bias6, bias12, bias24, bias60, bias72, bias120, \
@@ -95,9 +95,7 @@ def analyze(org_df):
     org_df['ema_gold_valley'] = ema_gold_valley
 
     org_df['ma_spider'] = ma_spider
-    org_df['ma_spider2'] = ma_spider2
     org_df['ema_spider'] = ema_spider
-    org_df['ema_spider2'] = ema_spider2
 
     org_df['ma_glue'] = ma_glue
     org_df['ema_glue'] = ema_glue
