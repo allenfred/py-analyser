@@ -32,6 +32,10 @@ class DailyIndicator(Base):
     ema120 = Column(Float)
     ema144 = Column(Float)
     ema169 = Column(Float)
+    ema288 = Column(Float)
+    ema338 = Column(Float)
+    ema576 = Column(Float)
+    ema676 = Column(Float)
     ma5_slope = Column(Float)
     ma10_slope = Column(Float)
     ma20_slope = Column(Float)
@@ -52,6 +56,10 @@ class DailyIndicator(Base):
     ema120_slope = Column(Float)
     ema144_slope = Column(Float)
     ema169_slope = Column(Float)
+    ema288_slope = Column(Float)
+    ema338_slope = Column(Float)
+    ema576_slope = Column(Float)
+    ema676_slope = Column(Float)
     diff = Column(Float)
     dea = Column(Float)
     macd = Column(Float)
@@ -93,6 +101,10 @@ def get_obj(indicator):
         ema120=indicator.get('ema120', None),
         ema144=indicator.get('ema144', None),
         ema169=indicator.get('ema169', None),
+        ema288=indicator.get('ema288', None),
+        ema338=indicator.get('ema338', None),
+        ema576=indicator.get('ema576', None),
+        ema676=indicator.get('ema676', None),
         ma5_slope=indicator.get('ma5_slope', None),
         ma10_slope=indicator.get('ma10_slope', None),
         ma20_slope=indicator.get('ma20_slope', None),
@@ -113,6 +125,10 @@ def get_obj(indicator):
         ema120_slope=indicator.get('ema120_slope', None),
         ema144_slope=indicator.get('ema144_slope', None),
         ema169_slope=indicator.get('ema169_slope', None),
+        ema288_slope=indicator.get('ema288_slope', None),
+        ema338_slope=indicator.get('ema338_slope', None),
+        ema576_slope=indicator.get('ema576_slope', None),
+        ema676_slope=indicator.get('ema676_slope', None),
         diff=indicator.get('diff', None),
         dea=indicator.get('dea', None),
         macd=indicator.get('macd', None),

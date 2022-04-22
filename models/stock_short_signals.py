@@ -66,7 +66,6 @@ class StockShortSignal(Base):
 
 
 def get_obj(signal):
-    signal = signal.to_dict()
     signal = {k: v if not pd.isna(v) else None for k, v in signal.items()}
 
     return StockShortSignal(

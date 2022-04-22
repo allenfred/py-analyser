@@ -1,0 +1,41 @@
+CREATE TABLE `daily_ma_signals` (
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
+  `ts_code` varchar(255) NOT NULL COMMENT 'TS代码',
+  `trade_date` date NOT NULL COMMENT '交易日期',
+  `ma55_first` tinyint(1),
+  `ma55_second` tinyint(1),
+  `ma55_third` tinyint(1),
+  `ma55_fourth` tinyint(1),
+  `ma55_fifth` tinyint(1),
+  `ma55_sixth` tinyint(1),
+  `ma55_seventh` tinyint(1),
+  `ma55_eighth` tinyint(1),
+  `ema55_first` tinyint(1),
+  `ema55_second` tinyint(1),
+  `ema55_third` tinyint(1),
+  `ema55_fourth` tinyint(1),
+  `ema55_fifth` tinyint(1),
+  `ema55_sixth` tinyint(1),
+  `ema55_seventh` tinyint(1),
+  `ema55_eighth` tinyint(1),
+  `ma60_first` tinyint(1),
+  `ma60_second` tinyint(1),
+  `ma60_third` tinyint(1),
+  `ma60_fourth` tinyint(1),
+  `ma60_fifth` tinyint(1),
+  `ma60_sixth` tinyint(1),
+  `ma60_seventh` tinyint(1),
+  `ma60_eighth` tinyint(1),
+  `ema60_first` tinyint(1),
+  `ema60_second` tinyint(1),
+  `ema60_third` tinyint(1),
+  `ema60_fourth` tinyint(1),
+  `ema60_fifth` tinyint(1),
+  `ema60_sixth` tinyint(1),
+  `ema60_seventh` tinyint(1),
+  `ema60_eighth` tinyint(1)
+);
+
+CREATE INDEX `daily_ma_signals_index_ts_code` ON `daily_ma_signals` (`ts_code`);
+CREATE INDEX `daily_ma_signals_index_trade_date` ON `daily_ma_signals` (`trade_date`);
+CREATE UNIQUE INDEX `daily_ma_signals_unique` ON `daily_ma_signals` (`ts_code`, `trade_date`);

@@ -13,7 +13,7 @@ from models.weekly_candles import WeeklyCandleDao
 from models.weekly_indicators import WeeklyIndicatorDao
 from models.weekly_long_signals import WeeklyLongSignalDao
 from models.stocks import StockDao
-from lib.analytic_signals import analytic_signals
+from lib.analyze import analytic_signals
 from lib.util import wrap_quota, used_time_fmt
 import time
 from datetime import datetime

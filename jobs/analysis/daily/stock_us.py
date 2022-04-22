@@ -12,16 +12,11 @@ from models.us_daily_candles import USDailyCandleDao
 from models.stocks import StockDao
 
 from sqlalchemy import text
-from talib import SMA, EMA, MACD
-from lib.bias import bias
-from lib.ma_slope import slope
-from lib.magic_nine_turn import td
-import time
+from lib.quota.ma_slope import slope
 from datetime import datetime, date
 import numpy as np
 from api.daily_candle import get_cn_candles
 import time
-import threading
 import multiprocessing
 from multiprocessing import Pool
 from jobs.scan.daily_candle import scan_daily_candles

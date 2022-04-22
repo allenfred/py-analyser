@@ -1,24 +1,22 @@
-from talib import SMA
-import pandas as pd
-import numpy as np
-import math
-import time
-from .long_signals import long_analytic
+# -- coding: utf-8 -
+
+from .long_analyze import long_analyze
+from .short_analyze import short_analyze
 
 """
 df: indicators with signals (long signals or short signals)
 """
 
 
-def analytic_signals(org_df):
-    candle = org_df[['open', 'high', 'low', 'close', 'pct_chg']].to_numpy()
+def analyze(org_df):
+    candle = org_df[['open', 'high', 'low', 'close', 'pct_chg', 'trade_date']].to_numpy()
     ma = org_df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
     ema = org_df[['ema5', 'ema10', 'ema20', 'ema30', 'ema55', 'ema60', 'ema120']].to_numpy()
     ma_slope = org_df[['ma5_slope', 'ma10_slope', 'ma20_slope', 'ma30_slope', 'ma55_slope',
                        'ma60_slope', 'ma120_slope']].to_numpy()
     ema_slope = org_df[['ema5_slope', 'ema10_slope', 'ema20_slope', 'ema30_slope', 'ema55_slope',
                         'ema60_slope', 'ema120_slope']].to_numpy()
-    bias = org_df[['bias6', 'bias12', 'bias24', 'bias60', 'bias72', 'bias120']].to_numpy()
+    bias = org_df[['bias6', 'bias12', 'bias24', 'bias55', 'bias60', 'bias72', 'bias120']].to_numpy()
     td = org_df[['high_td', 'low_td']].to_numpy()
 
     yearly_price_position, yearly_price_position10, yearly_price_position20, \
@@ -40,8 +38,12 @@ def analytic_signals(org_df):
     ma_up_arrange510203060, ma_up_arrange203060, ma_up_arrange2060120, \
     ema_up_arrange51020, ema_up_arrange5102030, ema_up_arrange510203060, \
     ema_up_arrange203060, ema_up_arrange2055120, \
+    ma55_first, ma55_second, ma55_third, ma55_fourth, \
+    ma60_first, ma60_second, ma60_third, ma60_fourth, \
+    ema55_first, ema55_second, ema55_third, ema55_fourth, \
+    ema60_first, ema60_second, ema60_third, ema60_fourth, \
     hammer, pour_hammer, short_end, swallow_up, attack_short, \
-    first_light, sunrise, flat_base = long_analytic(candle, ma, ema, ma_slope, ema_slope, bias, td)
+    first_light, sunrise, flat_base, rise_line, down_screw = long_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td)
 
     org_df['yearly_price_position'] = yearly_price_position
     org_df['yearly_price_position10'] = yearly_price_position10
@@ -58,6 +60,7 @@ def analytic_signals(org_df):
     org_df['ema60_up'] = ema60_up
     org_df['ma120_up'] = ma120_up
     org_df['ema120_up'] = ema120_up
+
     org_df['ma_arrange'] = ma_arrange
     org_df['ema_arrange'] = ema_arrange
 
@@ -80,6 +83,7 @@ def analytic_signals(org_df):
     org_df['ma_gold_cross2'] = ma_gold_cross2
     org_df['ma_gold_cross3'] = ma_gold_cross3
     org_df['ma_gold_cross4'] = ma_gold_cross4
+
     org_df['ema_gold_cross1'] = ema_gold_cross1
     org_df['ema_gold_cross2'] = ema_gold_cross2
     org_df['ema_gold_cross3'] = ema_gold_cross3
@@ -89,6 +93,7 @@ def analytic_signals(org_df):
     org_df['ema_silver_valley'] = ema_silver_valley
     org_df['ma_gold_valley'] = ma_gold_valley
     org_df['ema_gold_valley'] = ema_gold_valley
+
     org_df['ma_spider'] = ma_spider
     org_df['ma_spider2'] = ma_spider2
     org_df['ema_spider'] = ema_spider
@@ -140,6 +145,26 @@ def analytic_signals(org_df):
     org_df['ema_up_arrange203060'] = ema_up_arrange203060
     org_df['ema_up_arrange2055120'] = ema_up_arrange2055120
 
+    org_df['ma55_first'] = ma55_first
+    org_df['ma55_second'] = ma55_second
+    org_df['ma55_third'] = ma55_third
+    org_df['ma55_fourth'] = ma55_fourth
+
+    org_df['ma60_first'] = ma60_first
+    org_df['ma60_second'] = ma60_second
+    org_df['ma60_third'] = ma60_third
+    org_df['ma60_fourth'] = ma60_fourth
+
+    org_df['ema55_first'] = ema55_first
+    org_df['ema55_second'] = ema55_second
+    org_df['ema55_third'] = ema55_third
+    org_df['ema55_fourth'] = ema55_fourth
+
+    org_df['ema60_first'] = ema60_first
+    org_df['ema60_second'] = ema60_second
+    org_df['ema60_third'] = ema60_third
+    org_df['ema60_fourth'] = ema60_fourth
+
     org_df['hammer'] = hammer
     org_df['pour_hammer'] = pour_hammer
     org_df['short_end'] = short_end
@@ -148,6 +173,8 @@ def analytic_signals(org_df):
     org_df['first_light'] = first_light
     org_df['sunrise'] = sunrise
     org_df['flat_base'] = flat_base
+    org_df['rise_line'] = rise_line
+    org_df['down_screw'] = down_screw
 
     return org_df
 

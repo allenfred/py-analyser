@@ -1,5 +1,5 @@
-# py-collector
+# Py-Digger
 
-#### A 股、港股、美股相关数据
+#### 定时获取 A 股、港股、美股相关数据
 
 #### 计算 MA、EMA、RSI、BIAS、MACD 等指标数据

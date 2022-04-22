@@ -12,6 +12,7 @@ def bias(close):
     ma6 = SMA(close, 6)
     ma12 = SMA(close, 12)
     ma24 = SMA(close, 24)
+    ma55 = SMA(close, 55)
     ma60 = SMA(close, 60)
     ma72 = SMA(close, 72)
     ma120 = SMA(close, 120)
@@ -19,6 +20,7 @@ def bias(close):
     bias6 = []
     bias12 = []
     bias24 = []
+    bias55 = []
     bias60 = []
     bias72 = []
     bias120 = []
@@ -39,6 +41,11 @@ def bias(close):
         else:
             bias_24 = round((value - ma24[index]) / ma24[index], 5)
 
+        if value == 0 or np.nan_to_num(ma55[index], nan=0) == 0:
+            bias_55 = 0
+        else:
+            bias_55 = round((value - ma55[index]) / ma55[index], 5)
+
         if value == 0 or np.nan_to_num(ma60[index], nan=0) == 0:
             bias_60 = 0
         else:
@@ -57,8 +64,9 @@ def bias(close):
         bias6.insert(index, round(bias_6 * 100, 2))
         bias12.insert(index, round(bias_12 * 100, 2))
         bias24.insert(index, round(bias_24 * 100, 2))
+        bias55.insert(index, round(bias_55 * 100, 2))
         bias60.insert(index, round(bias_60 * 100, 2))
         bias72.insert(index, round(bias_72 * 100, 2))
         bias120.insert(index, round(bias_120 * 100, 2))
 
-    return bias6, bias12, bias24, bias60, bias72, bias120
+    return bias6, bias12, bias24, bias_55, bias60, bias72, bias120

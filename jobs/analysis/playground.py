@@ -19,7 +19,6 @@ from models.stock_long_signals import StockLongSignalDao
 from models.stock_short_signals import StockShortSignalDao
 from models.stocks import StockDao
 
-from lib.analytic_signals import analytic_signals
 from api.daily_candle import get_cn_candles
 from jobs.scan.daily_candle import scan_daily_candles
 
@@ -31,7 +30,12 @@ dailyLongSignalDao = DailyLongSignalDao()
 stockLongSignalDao = StockLongSignalDao()
 
 if __name__ == "__main__":
-    ts_code = '002607.SZ'
-    scan_daily_candles(ts_code, 'CN', '2021-12-10')
+    ts_code = '002603.SZ'
+    # ts_code = '600129.SH'
+    # ts_code = '601699.SH'
+    # ts_code = '000933.SZ'
+    # ts_code = '601666.SH'
+    # ts_code = '003002.SZ'
+    scan_daily_candles(ts_code, 'CN', '2022-04-13')
     print('扫描成功')
 

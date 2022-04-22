@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, SmallInteger, select
+from sqlalchemy import Column, Integer, String, Date, SmallInteger, select, text
 from sqlalchemy.ext.declarative import declarative_base
 from .db import DBSession
 import pandas as pd
@@ -11,6 +11,7 @@ class DailyShortSignal(Base):
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     ts_code = Column(String)
+    trade_date = Column(Date)  # 交易日期
     ma20_down = Column(SmallInteger)
     ema20_down = Column(SmallInteger)
     ma30_down = Column(SmallInteger)
@@ -71,6 +72,7 @@ def get_obj(signal):
 
     return DailyShortSignal(
         ts_code=signal.get('ts_code', None),
+        trade_date=signal.get('trade_date', None),
         ma20_down=signal.get('ma20_down', None),
         ema20_down=signal.get('ema20_down', None),
         ma30_down=signal.get('ma30_down', None),
@@ -130,123 +132,49 @@ class DailyShortSignalDao:
     def __init__(self):
         self.session = DBSession()
 
-    def upsert(self, signal):
+    def find_by_ts_code(self, ts_code):
+        s = text("select trade_date from daily_short_signals where ts_code = :ts_code "
+                 "order by trade_date desc limit 0,500;")
+        statement = self.session.execute(s.params(ts_code=ts_code))
+        df = pd.DataFrame(statement.fetchall(), columns=['trade_date'])
+        self.session.close()
 
+        return df
+
+    def find_all(self, ts_code):
+        statement = select(DailyShortSignal).filter_by(ts_code=ts_code)
+        result = self.session.execute(statement).scalars().all()
+
+        return result
+
+    def add_one(self, signal):
         obj = get_obj(signal)
 
-        try:
-            row = self.session.query(DailyShortSignal).filter(DailyShortSignal.ts_code == signal['ts_code']).first()
+        rows = self.session.query(DailyShortSignal.id).filter(DailyShortSignal.ts_code == signal['ts_code']).filter(
+            DailyShortSignal.trade_date == signal['trade_date']).first()
 
-            if row is None:
-                self.session.add(obj)
-            else:
-                if obj.ma20_down is not None:
-                    row.ma20_down = obj.ma20_down
-                if obj.ema20_down is not None:
-                    row.ema20_down = obj.ema20_down
-                if obj.ma30_down is not None:
-                    row.ma30_down = obj.ma30_down
-                if obj.ema30_down is not None:
-                    row.ema30_down = obj.ema30_down
-                if obj.ma60_down is not None:
-                    row.ma60_down = obj.ma60_down
-                if obj.ema60_down is not None:
-                    row.ema60_down = obj.ema60_down
-                if obj.ma120_down is not None:
-                    row.ma120_down = obj.ma120_down
-                if obj.ema120_down is not None:
-                    row.ema120_down = obj.ema120_down
-                if obj.ma_arrange is not None:
-                    row.ma_arrange = obj.ma_arrange
-                if obj.ema_arrange is not None:
-                    row.ema_arrange = obj.ema_arrange
-                if obj.short_ma_arrange1 is not None:
-                    row.short_ma_arrange1 = obj.short_ma_arrange1
-                if obj.short_ma_arrange2 is not None:
-                    row.short_ma_arrange2 = obj.short_ma_arrange2
-                if obj.short_ema_arrange1 is not None:
-                    row.short_ema_arrange1 = obj.short_ema_arrange1
-                if obj.short_ema_arrange2 is not None:
-                    row.short_ema_arrange2 = obj.short_ema_arrange2
-                if obj.middle_ma_arrange1 is not None:
-                    row.middle_ma_arrange1 = obj.middle_ma_arrange1
-                if obj.middle_ma_arrange2 is not None:
-                    row.middle_ma_arrange2 = obj.middle_ma_arrange2
-                if obj.middle_ema_arrange1 is not None:
-                    row.middle_ema_arrange1 = obj.middle_ema_arrange1
-                if obj.middle_ema_arrange2 is not None:
-                    row.middle_ema_arrange2 = obj.middle_ema_arrange2
-                if obj.long_ma_arrange1 is not None:
-                    row.long_ma_arrange1 = obj.long_ma_arrange1
-                if obj.long_ma_arrange2 is not None:
-                    row.long_ma_arrange2 = obj.long_ma_arrange2
-                if obj.long_ema_arrange1 is not None:
-                    row.long_ema_arrange1 = obj.long_ema_arrange1
-                if obj.long_ema_arrange2 is not None:
-                    row.long_ema_arrange2 = obj.long_ema_arrange2
-                if obj.ma_dead_cross1 is not None:
-                    row.ma_dead_cross1 = obj.ma_dead_cross1
-                if obj.ma_dead_cross2 is not None:
-                    row.ma_dead_cross2 = obj.ma_dead_cross2
-                if obj.ma_dead_cross3 is not None:
-                    row.ma_dead_cross3 = obj.ma_dead_cross3
-                if obj.ema_dead_cross1 is not None:
-                    row.ema_dead_cross1 = obj.ema_dead_cross1
-                if obj.ema_dead_cross2 is not None:
-                    row.ema_dead_cross2 = obj.ema_dead_cross2
-                if obj.ema_dead_cross3 is not None:
-                    row.ema_dead_cross3 = obj.ema_dead_cross3
-                if obj.ma_dead_valley is not None:
-                    row.ma_dead_valley = obj.ma_dead_valley
-                if obj.ema_dead_valley is not None:
-                    row.ema_dead_valley = obj.ema_dead_valley
-                if obj.ma_knife is not None:
-                    row.ma_knife = obj.ma_knife
-                if obj.ema_knife is not None:
-                    row.ema_knife = obj.ema_knife
-                if obj.ma_dark_cloud is not None:
-                    row.ma_dark_cloud = obj.ma_dark_cloud
-                if obj.ema_dark_cloud is not None:
-                    row.ema_dark_cloud = obj.ema_dark_cloud
-                if obj.ma_set_sail is not None:
-                    row.ma_set_sail = obj.ma_set_sail
-                if obj.ema_set_sail is not None:
-                    row.ema_set_sail = obj.ema_set_sail
-                if obj.ma_supreme is not None:
-                    row.ma_supreme = obj.ma_supreme
-                if obj.ema_supreme is not None:
-                    row.ema_supreme = obj.ema_supreme
-                if obj.ma_dead_jump is not None:
-                    row.ma_dead_jump = obj.ma_dead_jump
-                if obj.ema_dead_jump is not None:
-                    row.ema_dead_jump = obj.ema_dead_jump
-                if obj.ma_spider is not None:
-                    row.ma_spider = obj.ma_spider
-                if obj.ma_spider2 is not None:
-                    row.ma_spider2 = obj.ma_spider2
-                if obj.ema_spider is not None:
-                    row.ema_spider = obj.ema_spider
-                if obj.ema_spider2 is not None:
-                    row.ema_spider2 = obj.ema_spider2
-                if obj.td8 is not None:
-                    row.td8 = obj.td8
-                if obj.td9 is not None:
-                    row.td9 = obj.td9
-                if obj.bias6 is not None:
-                    row.bias6 = obj.bias6
-                if obj.bias12 is not None:
-                    row.bias12 = obj.bias12
-                if obj.bias24 is not None:
-                    row.bias24 = obj.bias24
-                if obj.bias60 is not None:
-                    row.bias60 = obj.bias60
-                if obj.bias72 is not None:
-                    row.bias72 = obj.bias72
-                if obj.bias120 is not None:
-                    row.bias120 = obj.bias120
-
-        except Exception as e:
-            print('Error:', e)
+        if len(rows) == 0:
+            self.session.add(obj)
 
         self.session.commit()
         self.session.close()
+
+        return obj
+
+    def bulk_insert(self, df, ts_code):
+        db_df = self.find_by_ts_code(ts_code)
+        insert_needed_df = df.loc[~df["trade_date"].isin(db_df["trade_date"].to_numpy())]
+
+        items = []
+        for index, item in insert_needed_df.iterrows():
+            item = item.to_dict()
+            item = {k: v if not pd.isna(v) else None for k, v in item.items()}
+            items.insert(index, item)
+
+        try:
+            self.session.bulk_insert_mappings(DailyShortSignal, items)
+            self.session.commit()
+        except Exception as e:
+            print('Error:', e)
+        finally:
+            self.session.close()

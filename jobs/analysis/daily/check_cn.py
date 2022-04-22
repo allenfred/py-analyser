@@ -12,9 +12,9 @@ from models.cn_daily_candles import CNDailyCandleDao
 from models.stocks import StockDao
 from sqlalchemy import text
 from talib import SMA, EMA, MACD
-from lib.bias import bias
-from lib.ma_slope import slope
-from lib.magic_nine_turn import td
+from lib.quota.bias import bias
+from lib.quota.ma_slope import slope
+from lib.quota.magic_nine_turn import td
 from lib.util import used_time_fmt, is_mac_os
 import time
 from datetime import datetime, date, timedelta

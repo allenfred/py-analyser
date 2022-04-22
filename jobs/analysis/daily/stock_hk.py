@@ -11,12 +11,8 @@ from models.db import DBSession
 from models.hk_daily_candles import HKDailyCandleDao
 from models.stocks import StockDao
 from sqlalchemy import text
-from talib import SMA, EMA, MACD
-from lib.bias import bias
-from lib.ma_slope import slope
-from lib.magic_nine_turn import td
+from lib.quota.magic_nine_turn import td
 from lib.util import used_time_fmt, is_mac_os
-import time
 from datetime import datetime, date
 import numpy as np
 from api.daily_candle import get_cn_candles

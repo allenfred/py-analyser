@@ -10,25 +10,39 @@ import pandas as pd
 from models.db import DBSession
 from models.cn_daily_candles import CNDailyCandleDao
 from models.daily_indicators import DailyIndicatorDao
+
 from models.daily_long_signals import DailyLongSignalDao
+from models.daily_short_signals import DailyShortSignalDao
+
 from models.stock_long_signals import StockLongSignalDao
+from models.stock_short_signals import StockShortSignalDao
+
+from models.daily_ma_signals import DailyMaSignalDao
+from models.daily_kline_signals import DailyKlineSignalDao
 
 from models.stocks import StockDao
 from sqlalchemy import text
-from lib.analytic_signals import analytic_signals
-from lib.util import wrap_quota, used_time_fmt
+from lib.analyze import analyze
+from lib.short_analyze import short_analyze
+from lib.util import set_quota, used_time_fmt
 import time
 from datetime import datetime, date, timedelta
 import numpy as np
 from api.daily_candle import get_cn_candles
 import time
-import threading
 
 stockDao = StockDao()
 dailyCandleDao = CNDailyCandleDao()
 dailyIndicatorDao = DailyIndicatorDao()
+
 dailyLongSignalDao = DailyLongSignalDao()
 stockLongSignalDao = StockLongSignalDao()
+
+dailyShortSignalDao = DailyShortSignalDao()
+stockShortSignalDao = StockShortSignalDao()
+
+dailyMaSignalDao = DailyMaSignalDao()
+dailyKlineSignalDao = DailyKlineSignalDao()
 
 
 def get_amount(exchange, amount):
@@ -77,17 +91,27 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
         df['ts_code'] = ts_code
 
         try:
-            df = wrap_quota(df)
+            df = set_quota(df)
             dailyIndicatorDao.bulk_insert(df, ts_code)
-            # 会对 bias6/bias12/bias24/bias60/bias72/bias120 发生替换
-            df = analytic_signals(df)
             df_len = len(df)
 
-            small_df = df.iloc[df_len - 30: df_len]
+            # 会对 bias6/bias12/bias24/bias60/bias72/bias120 发生替换
+            df = analyze(df)
+            small_df = df.iloc[df_len - 10: df_len]
             signal = df.iloc[df_len - 1].to_dict()
 
             dailyLongSignalDao.bulk_insert(small_df, ts_code)
             stockLongSignalDao.upsert(signal)
+
+            df = short_analyze(df)
+            small_df = df.iloc[df_len - 10: df_len]
+            signal = df.iloc[df_len - 1].to_dict()
+
+            dailyShortSignalDao.bulk_insert(small_df, ts_code)
+            stockShortSignalDao.upsert(signal)
+
+            dailyMaSignalDao.bulk_insert(small_df, ts_code)
+            dailyKlineSignalDao.bulk_insert(small_df, ts_code)
 
             stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount, 'list_status': 'L'})
 

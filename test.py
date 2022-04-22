@@ -9,9 +9,9 @@ from models.stock_short_signals import StockShortSignalDao
 from models.stocks import StockDao
 from sqlalchemy import text
 from talib import SMA, EMA, MACD
-from lib.bias import bias
-from lib.ma_slope import slope
-from lib.magic_nine_turn import td
+from lib.quota.bias import bias
+from lib.quota.ma_slope import slope
+from lib.quota.magic_nine_turn import td
 import time
 from datetime import datetime, date
 import numpy as np

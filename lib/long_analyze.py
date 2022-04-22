@@ -1,12 +1,14 @@
-from talib import SMA
-import pandas as pd
-import numpy as np
-import math
-from .candle import is_hammer, is_pour_hammer, is_short_end, is_swallow_up, \
-    is_sunrise, is_first_light, is_attack_short, is_flat_base
+# -- coding: utf-8 -
+
+from .signal.stock.candle import is_hammer, is_pour_hammer, is_short_end, is_swallow_up, \
+    is_sunrise, is_first_light, is_attack_short, is_flat_base, is_rise_line, is_down_screw
+from .signal.stock.ma60 import is_ma60_first, is_ma60_second, is_ma60_third, is_ma60_fourth
+from .signal.stock.ma55 import is_ma55_first, is_ma55_second, is_ma55_third, is_ma55_fourth
+from .signal.stock.ema60 import is_ema60_first, is_ema60_second, is_ema60_third, is_ema60_fourth
+from .signal.stock.ema55 import is_ema55_first, is_ema55_second, is_ema55_third, is_ema55_fourth
 
 
-def long_analytic(candle, ma, ema, ma_slope, ema_slope, bias, td):
+def long_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
     open = candle[:, 0]
     high = candle[:, 1]
     low = candle[:, 2]
@@ -154,10 +156,32 @@ def long_analytic(candle, ma, ema, ma_slope, ema_slope, bias, td):
     first_light = []
     sunrise = []
     flat_base = []
+    rise_line = []
+    down_screw = []
 
-    # 连续两日K线在ma60上方止跌
+    ma55_first = []
+    ma55_second = []
+    ma55_third = []
+    ma55_fourth = []
+
+    ma60_first = []
+    ma60_second = []
+    ma60_third = []
+    ma60_fourth = []
+
+    ema55_first = []
+    ema55_second = []
+    ema55_third = []
+    ema55_fourth = []
+
+    ema60_first = []
+    ema60_second = []
+    ema60_third = []
+    ema60_fourth = []
+
     # 连续两日K线在ma120上方止跌
     # 最近20个交易日 沿着ma30上行 未曾跌破ma30
+
     for index in range(len(candle)):
         _open = open[index]
         _high = high[index]
@@ -515,13 +539,13 @@ def long_analytic(candle, ma, ema, ma_slope, ema_slope, bias, td):
             ema_out_sea.insert(index, 0)
 
         # MA烘云托月(5/10/20)
-        if is_ma_hold_moon(index, candle, ma, ma_slope, _ma5, _ma10, _ma20, _ma5_slope, _ma10_slope):
+        if is_ma_hold_moon(index, candle, bias, ma_slope):
             ma_hold_moon.insert(index, 1)
         else:
             ma_hold_moon.insert(index, 0)
 
         # EMA烘云托月(5/10/20)
-        if is_ema_hold_moon(index, candle, ema, ema_slope, _ema5, _ema10, _ema20, _ema5_slope, _ema10_slope):
+        if is_ema_hold_moon(index, candle, bias, ema_slope):
             ema_hold_moon.insert(index, 1)
         else:
             ema_hold_moon.insert(index, 0)
@@ -734,52 +758,160 @@ def long_analytic(candle, ma, ema, ma_slope, ema_slope, bias, td):
             ema_up_arrange2055120.insert(index, 0)
 
         # 锤子线
-        if is_hammer(index, open, high, low, close, pct_chg):
+        if is_hammer(index, candle):
             hammer.insert(index, 1)
         else:
             hammer.insert(index, 0)
 
         # 倒锤子线
-        if is_pour_hammer(index, open, high, low, close, pct_chg):
+        if is_pour_hammer(index, candle):
             pour_hammer.insert(index, 1)
         else:
             pour_hammer.insert(index, 0)
 
         # 看涨尽头线
-        if is_short_end(index, open, high, low, close, pct_chg):
+        if is_short_end(index, candle):
             short_end.insert(index, 1)
         else:
             short_end.insert(index, 0)
 
         # 看涨吞没
-        if is_swallow_up(index, open, high, low, close, pct_chg):
+        if is_swallow_up(index, candle):
             swallow_up.insert(index, 1)
         else:
             swallow_up.insert(index, 0)
 
         # 好友反攻
-        if is_attack_short(index, open, high, low, close, pct_chg):
+        if is_attack_short(index, candle):
             attack_short.insert(index, 1)
         else:
             attack_short.insert(index, 0)
 
         # 曙光初现
-        if is_first_light(index, open, high, low, close, pct_chg):
+        if is_first_light(index, candle):
             first_light.insert(index, 1)
         else:
             first_light.insert(index, 0)
 
         # 旭日东升
-        if is_sunrise(index, open, high, low, close, pct_chg):
+        if is_sunrise(index, candle):
             sunrise.insert(index, 1)
         else:
             sunrise.insert(index, 0)
 
         # 平底
-        if is_flat_base(index, open, high, low, close, pct_chg):
+        if is_flat_base(index, candle):
             flat_base.insert(index, 1)
         else:
             flat_base.insert(index, 0)
+
+        # 涨停一字板
+        if is_rise_line(index, candle):
+            rise_line.insert(index, 1)
+        else:
+            rise_line.insert(index, 0)
+
+        # 下跌螺旋桨
+        if is_down_screw(index, candle, ma_slope):
+            down_screw.insert(index, 1)
+        else:
+            down_screw.insert(index, 0)
+
+        # MA55 葛南维第一大法则
+        if is_ma55_first(index, candle, bias, ma, ma_slope):
+            ma55_first.insert(index, 1)
+        else:
+            ma55_first.insert(index, 0)
+
+        # MA55 葛南维第二大法则
+        if is_ma55_second(index, candle, bias, ma, ma_slope):
+            ma55_second.insert(index, 1)
+        else:
+            ma55_second.insert(index, 0)
+
+        # MA55 葛南维第三大法则
+        if is_ma55_third(index, candle, bias, ma, ma_slope):
+            ma55_third.insert(index, 1)
+        else:
+            ma55_third.insert(index, 0)
+
+        # MA55 葛南维第四大法则
+        if is_ma55_fourth(index, candle, bias, ma, ma_slope):
+            ma55_fourth.insert(index, 1)
+        else:
+            ma55_fourth.insert(index, 0)
+
+        # MA60 葛南维第一大法则
+        if is_ma60_first(index, candle, bias, ma, ma_slope):
+            ma60_first.insert(index, 1)
+        else:
+            ma60_first.insert(index, 0)
+
+        # MA60 葛南维第二大法则
+        if is_ma60_second(index, candle, bias, ma, ma_slope):
+            ma60_second.insert(index, 1)
+        else:
+            ma60_second.insert(index, 0)
+
+        # MA60 葛南维第三大法则
+        if is_ma60_third(index, candle, bias, ma, ma_slope):
+            ma60_third.insert(index, 1)
+        else:
+            ma60_third.insert(index, 0)
+
+        # MA60 葛南维第四大法则
+        if is_ma60_fourth(index, candle, bias, ma, ma_slope):
+            ma60_fourth.insert(index, 1)
+        else:
+            ma60_fourth.insert(index, 0)
+
+        # EMA55 葛南维第一大法则
+        if is_ema55_first(index, candle, bias, ema, ema_slope):
+            ema55_first.insert(index, 1)
+        else:
+            ema55_first.insert(index, 0)
+
+        # EMA55 葛南维第二大法则
+        if is_ema55_second(index, candle, bias, ema, ema_slope):
+            ema55_second.insert(index, 1)
+        else:
+            ema55_second.insert(index, 0)
+
+        # EMA55 葛南维第三大法则
+        if is_ema55_third(index, candle, bias, ema, ema_slope):
+            ema55_third.insert(index, 1)
+        else:
+            ema55_third.insert(index, 0)
+
+        # EMA55 葛南维第四大法则
+        if is_ema55_fourth(index, candle, bias, ema, ema_slope):
+            ema55_fourth.insert(index, 1)
+        else:
+            ema55_fourth.insert(index, 0)
+
+        # EMA60 葛南维第一大法则
+        if is_ema60_first(index, candle, bias, ema, ema_slope):
+            ema60_first.insert(index, 1)
+        else:
+            ema60_first.insert(index, 0)
+
+        # EMA60 葛南维第二大法则
+        if is_ema60_second(index, candle, bias, ema, ema_slope):
+            ema60_second.insert(index, 1)
+        else:
+            ema60_second.insert(index, 0)
+
+        # EMA60 葛南维第三大法则
+        if is_ema60_third(index, candle, bias, ema, ema_slope):
+            ema60_third.insert(index, 1)
+        else:
+            ema60_third.insert(index, 0)
+
+        # EMA60 葛南维第四大法则
+        if is_ema60_fourth(index, candle, bias, ema, ema_slope):
+            ema60_fourth.insert(index, 1)
+        else:
+            ema60_fourth.insert(index, 0)
 
     return yearly_price_position, yearly_price_position10, yearly_price_position20, \
            yearly_price_position30, yearly_price_position50, yearly_price_position70, \
@@ -802,8 +934,12 @@ def long_analytic(candle, ma, ema, ma_slope, ema_slope, bias, td):
            ma_up_arrange203060, ma_up_arrange2060120, \
            ema_up_arrange51020, ema_up_arrange5102030, ema_up_arrange510203060, \
            ema_up_arrange203060, ema_up_arrange2055120, \
+           ma55_first, ma55_second, ma55_third, ma55_fourth, \
+           ma60_first, ma60_second, ma60_third, ma60_fourth, \
+           ema55_first, ema55_second, ema55_third, ema55_fourth, \
+           ema60_first, ema60_second, ema60_third, ema60_fourth, \
            hammer, pour_hammer, short_end, swallow_up, attack_short, \
-           first_light, sunrise, flat_base
+           first_light, sunrise, flat_base, rise_line, down_screw
 
 
 def stand_on_ma(open, high, low, close, ma, ma_slope):
@@ -1303,67 +1439,81 @@ def is_ema_spider(index, ema, ema_gold_cross1, ema_gold_cross2, ema_gold_cross3,
     return is_spider1, is_spider2
 
 
-def is_ma_hold_moon(index, candle, ma, ma_slope, _ma5, _ma10, _ma20, _ma5_slope, _ma10_slope):
+def is_ma_hold_moon(index, candles, bias, ma_slope):
     # MA烘云托月(5/10/20)
-    # 过滤掉前20根K线
-    # 最近9个交易日不能有波动大于3%
-    # 最近9个交易日 ma20向上
-    # 最近9个交易日 ma5/ma10 在ma20之上
-    # ma5/ma10/ma20 某种程度上粘合
-    if index > 20 and min(candle[:, 4][index - 8: index + 1]) >= -3 and \
-            max(candle[:, 4][index - 8: index + 1]) <= 3 \
-            and min(ma_slope[:, 2][index - 8: index + 1]) > 0 \
-            and max(ma_slope[:, 2][index - 8: index + 1]) <= 3 \
-            and ma_hold(_ma5, _ma10, _ma20, _ma5_slope, _ma10_slope) \
-            and ma_hold(ma[index - 1][0], ma[index - 1][1], ma[index - 1][2],
-                        ma_slope[index - 1][0], ma_slope[index - 1][1]) \
-            and ma_hold(ma[index - 2][0], ma[index - 2][1], ma[index - 2][2],
-                        ma_slope[index - 2][0], ma_slope[index - 2][1]) \
-            and ma_hold(ma[index - 3][0], ma[index - 3][1], ma[index - 3][2],
-                        ma_slope[index - 3][0], ma_slope[index - 3][1]) \
-            and ma_hold(ma[index - 4][0], ma[index - 4][1], ma[index - 4][2],
-                        ma_slope[index - 4][0], ma_slope[index - 4][1]) \
-            and ma_hold(ma[index - 5][0], ma[index - 5][1], ma[index - 5][2],
-                        ma_slope[index - 5][0], ma_slope[index - 5][1]) \
-            and ma_hold(ma[index - 6][0], ma[index - 6][1], ma[index - 6][2],
-                        ma_slope[index - 6][0], ma_slope[index - 6][1]) \
-            and ma_hold(ma[index - 7][0], ma[index - 7][1], ma[index - 7][2],
-                        ma_slope[index - 7][0], ma_slope[index - 7][1]) \
-            and ma_hold(ma[index - 8][0], ma[index - 8][1], ma[index - 8][2],
-                        ma_slope[index - 8][0], ma_slope[index - 8][1]):
+
+    # 最近 7 个交易日
+    # 不能有波动大于4%
+    # ma20向上 / ma30向上
+    # ma5/ma10 在ma20之上
+    # 乖离率正常区间 bias12 < 5 / bias24 < 8
+    # 均线缓慢上行 ma10_slope < 1.5 / ma20_slope < 2 / ma30_slope < 2
+
+    _count = 9 - 1
+
+    if index > 50:
+        min_bias6 = min(bias[:, 0][index - _count: index + 1])
+        max_bias6 = max(bias[:, 0][index - _count: index + 1])
+        min_bias12 = min(bias[:, 1][index - _count: index + 1])
+        max_bias12 = max(bias[:, 1][index - _count: index + 1])
+        min_bias24 = min(bias[:, 2][index - _count: index + 1])
+        max_bias24 = max(bias[:, 2][index - _count: index + 1])
+
+        min_ma10_slope = min(ma_slope[:, 1][index - _count: index + 1])
+        max_ma10_slope = max(ma_slope[:, 1][index - _count: index + 1])
+        min_ma20_slope = min(ma_slope[:, 2][index - _count: index + 1])
+        max_ma20_slope = max(ma_slope[:, 2][index - _count: index + 1])
+        min_ma30_slope = min(ma_slope[:, 3][index - _count: index + 1])
+        max_ma30_slope = max(ma_slope[:, 3][index - _count: index + 1])
+
+    if index > 50 and min(candles[:, 4][index - _count: index + 1]) >= -4 and \
+            max(candles[:, 4][index - _count: index + 1]) <= 4 \
+            and min_bias6 > -3 and max_bias6 < 3.5 \
+            and min_bias12 > -4.5 and max_bias12 < 5 \
+            and min_bias24 > -7 and max_bias24 < 8 \
+            and min_ma10_slope >= -1 and max_ma10_slope <= 2 \
+            and ((min_ma20_slope >= 0 and max_ma20_slope <= 2) or
+                 (min_ma30_slope >= 0 and max_ma30_slope <= 2)):
         return True
     else:
         return False
 
 
-def is_ema_hold_moon(index, candle, ema, ema_slope, _ema5, _ema10, _ema20, _ema5_slope, _ema10_slope):
-    # MA烘云托月(5/10/20)
-    # 过滤掉前20根K线
-    # 最近9个交易日不能有波动大于3%
-    # 最近9个交易日 ma20向上
-    # 最近9个交易日 ma5/ma10 在ma20之上
-    # ma5/ma10/ma20 某种程度上粘合
-    if index > 20 and min(candle[:, 4][index - 8: index + 1]) >= -3 and \
-            max(candle[:, 4][index - 8: index + 1]) <= 3 \
-            and min(ema_slope[:, 2][index - 8: index + 1]) > 0 \
-            and max(ema_slope[:, 2][index - 8: index + 1]) <= 3 \
-            and ma_hold(_ema5, _ema10, _ema20, _ema5_slope, _ema10_slope) \
-            and ma_hold(ema[index - 1][0], ema[index - 1][1], ema[index - 1][2],
-                        ema_slope[index - 1][0], ema_slope[index - 1][1]) \
-            and ma_hold(ema[index - 2][0], ema[index - 2][1], ema[index - 2][2],
-                        ema_slope[index - 2][0], ema_slope[index - 2][1]) \
-            and ma_hold(ema[index - 3][0], ema[index - 3][1], ema[index - 3][2],
-                        ema_slope[index - 3][0], ema_slope[index - 3][1]) \
-            and ma_hold(ema[index - 4][0], ema[index - 4][1], ema[index - 4][2],
-                        ema_slope[index - 4][0], ema_slope[index - 4][1]) \
-            and ma_hold(ema[index - 5][0], ema[index - 5][1], ema[index - 5][2],
-                        ema_slope[index - 5][0], ema_slope[index - 5][1]) \
-            and ma_hold(ema[index - 6][0], ema[index - 6][1], ema[index - 6][2],
-                        ema_slope[index - 6][0], ema_slope[index - 6][1]) \
-            and ma_hold(ema[index - 7][0], ema[index - 7][1], ema[index - 7][2],
-                        ema_slope[index - 7][0], ema_slope[index - 7][1]) \
-            and ma_hold(ema[index - 8][0], ema[index - 8][1], ema[index - 8][2],
-                        ema_slope[index - 8][0], ema_slope[index - 8][1]):
+def is_ema_hold_moon(index, candles, bias, ma_slope):
+    # EMA烘云托月(5/10/20)
+
+    # 最近 7 个交易日
+    # 不能有波动大于4%
+    # ema20向上 / ema30向上
+    # ema5/ema10 在ema20之上
+    # 乖离率正常区间 bias12 < 5 / bias24 < 8
+    # 均线缓慢上行 ema10_slope < 1.5 / ema20_slope < 2 / ema30_slope < 2
+
+    _count = 9 - 1
+
+    if index > 50:
+        min_bias6 = min(bias[:, 0][index - _count: index + 1])
+        max_bias6 = max(bias[:, 0][index - _count: index + 1])
+        min_bias12 = min(bias[:, 1][index - _count: index + 1])
+        max_bias12 = max(bias[:, 1][index - _count: index + 1])
+        min_bias24 = min(bias[:, 2][index - _count: index + 1])
+        max_bias24 = max(bias[:, 2][index - _count: index + 1])
+
+        min_ma10_slope = min(ma_slope[:, 1][index - _count: index + 1])
+        max_ma10_slope = max(ma_slope[:, 1][index - _count: index + 1])
+        min_ma20_slope = min(ma_slope[:, 2][index - _count: index + 1])
+        max_ma20_slope = max(ma_slope[:, 2][index - _count: index + 1])
+        min_ma30_slope = min(ma_slope[:, 3][index - _count: index + 1])
+        max_ma30_slope = max(ma_slope[:, 3][index - _count: index + 1])
+
+    if index > 50 and min(candles[:, 4][index - _count: index + 1]) >= -4 and \
+            max(candles[:, 4][index - _count: index + 1]) <= 4 \
+            and min_bias6 > -3 and max_bias6 < 3.5 \
+            and min_bias12 > -4.5 and max_bias12 < 5 \
+            and min_bias24 > -7 and max_bias24 < 8 \
+            and min_ma10_slope >= -1 and max_ma10_slope <= 1.5 \
+            and ((min_ma20_slope >= 0 and max_ma20_slope <= 2) or
+                 (min_ma30_slope >= 0 and max_ma30_slope <= 2)):
         return True
     else:
         return False
@@ -1517,6 +1667,118 @@ def is_ema_gold_valley(index, ema, ema_slope, ema_silver_valley):
     if index >= 30 and max(ema_silver_valley[index - 29: index - 1]) == 1 and \
             ema_silver_valley[index] == 1 and ema[index - 30][2] < ema[index][2] and \
             ema_slope[index][2] > 0:
+        return True
+    else:
+        return False
+
+
+# 葛南维第一大法则
+def is_ma_first(index, candles, ma, ma_slope):
+    # MA60 开始拐头 (ma60_slope 连续3日 > 0)
+    # 收盘价位于MA60之上
+    # 最近21个交易日中前18个交易日 ma60_slope < 0
+
+    # 趋势反转信号
+    # ma60_slope 刚刚转正 / 连续3日转正
+
+    # 反转看涨增强信号
+    # ma60_slope 连续9日增大
+
+    candle = candles[index]
+    _close = candle[3]
+    ma60_slope = ma_slope[:, 5]
+    _ma60 = ma[:, 5][index]
+
+    if index > 90 and _close > _ma60 and max(ma60_slope[index - 21: index - 2]) <= 0 and \
+            0 < ma60_slope[index - 2] < ma60_slope[index - 1] < ma60_slope[index]:
+        return True
+    else:
+        return False
+
+
+# 葛南维第二大法则
+def is_ma_second(index, candles, bias, ma, ma_slope):
+    # MA60 向上 (ma60_slope 连续9日 > 0) slope > 1
+    # 收盘价连续9日在MA60之上
+    # 价格回落 未跌破MA60
+    # 过去21个交易日未曾跌破 MA60
+
+    candle = candles[index]
+    _low = candle[2]
+    _close = candle[3]
+    ma60_slope = ma_slope[:, 5]
+    _ma60 = ma[:, 5][index]
+    bias60 = bias[:, 3]
+
+    if index > 90 and _ma60 > 0:
+        _low_bias60 = (_low - _ma60) * 100 / _ma60
+
+    def steady_on_ma():
+        flag = True
+        for i in range(13):
+            if candles[index - i][3] < ma[:, 5][index - i]:
+                flag = False
+        return flag
+
+    if index > 90 and steady_on_ma() and min(ma60_slope[index - 8: index]) > 2 and \
+            min(bias60[index - 8: index]) > 0 and _low_bias60 < 2:
+        return True
+    else:
+        return False
+
+
+# 葛南维第三大法则
+def is_ma_third(index, candles, bias, ma, ma_slope):
+    # MA60 向上 (ma60_slope 连续9日 > 0)
+    # 跌破MA60之后收盘又站上MA60
+
+    candle = candles[index]
+    _low = candle[2]
+    _close = candle[3]
+    ma60_slope = ma_slope[:, 5]
+    _ma60 = ma[:, 5][index]
+    bias60 = bias[:, 3]
+
+    if index > 90 and _ma60 > 0:
+        _low_bias60 = (_low - _ma60) * 100 / _ma60
+
+    def steady_on_ma():
+        flag = 0
+        for i in range(13):
+            if candles[index - i][3] < ma[:, 5][index - i]:
+                flag += 1
+        return 0 < flag < 3
+
+    if index > 90 and _close > _ma60 and steady_on_ma() and min(ma60_slope[index - 8: index]) > 2 and \
+            candles[index - 1][3] < ma[:, 5][index - 1] and bias60[index] < 8 and _low_bias60 < 0:
+        return True
+    else:
+        return False
+
+
+# 葛南维第四大法则
+def is_ma_fourth(index, candles, bias, ma, ma_slope):
+    # MA60 下行 (ma60_slope 连续13日 < 0)
+    # 超卖 bias60 < -11%
+
+    candle = candles[index]
+    _low = candle[2]
+    _close = candle[3]
+    ma60_slope = ma_slope[:, 5]
+    _ma60 = ma[:, 5][index]
+    bias60 = bias[:, 3]
+
+    if index > 90 and _ma60 > 0:
+        _low_bias60 = (_low - _ma60) * 100 / _ma60
+
+    def steady_under_ma():
+        flag = True
+        for i in range(13):
+            if candles[index - i][3] > ma[:, 5][index - i]:
+                flag = False
+        return flag
+
+    if index > 90 and bias60[index] < -16 and steady_under_ma() and max(ma60_slope[index - 12: index]) < 0:
         return True
     else:
         return False
