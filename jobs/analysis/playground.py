@@ -11,23 +11,10 @@ from datetime import datetime, date
 import numpy as np
 
 from models.db import DBSession
-from models.cn_daily_candles import CNDailyCandleDao
-from models.daily_indicators import DailyIndicatorDao
-from models.daily_long_signals import DailyLongSignalDao
-from models.daily_short_signals import DailyShortSignalDao
-from models.stock_long_signals import StockLongSignalDao
-from models.stock_short_signals import StockShortSignalDao
-from models.stocks import StockDao
 
 from api.daily_candle import get_cn_candles
 from jobs.scan.daily_candle import scan_daily_candles
 
-stockDao = StockDao()
-dailyCandleDao = CNDailyCandleDao()
-dailyIndicatorDao = DailyIndicatorDao()
-dailyLongSignalDao = DailyLongSignalDao()
-
-stockLongSignalDao = StockLongSignalDao()
 
 if __name__ == "__main__":
     # ts_code = '002603.SZ'

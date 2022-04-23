@@ -4,7 +4,7 @@ from models.cn_daily_candles import CNDailyCandleDao
 from models.daily_indicators import DailyIndicatorDao
 from models.daily_long_signals import DailyLongSignalDao
 from models.daily_short_signals import DailyShortSignalDao
-from models.stock_long_signals import StockLongSignalDao
+from models.stock_daily_signals import StockLongSignalDao
 from models.stock_short_signals import StockShortSignalDao
 from models.stocks import StockDao
 from sqlalchemy import text

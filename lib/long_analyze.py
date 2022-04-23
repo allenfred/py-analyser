@@ -8,7 +8,17 @@ from .signal.stock.ema60 import is_ema60_first, is_ema60_second, is_ema60_third,
 from .signal.stock.ema55 import is_ema55_first, is_ema55_second, is_ema55_third, is_ema55_fourth
 
 
-def long_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
+def long_analyze(org_df):
+    candle = org_df[['open', 'high', 'low', 'close', 'pct_chg', 'trade_date']].to_numpy()
+    ma = org_df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+    ema = org_df[['ema5', 'ema10', 'ema20', 'ema30', 'ema55', 'ema60', 'ema120']].to_numpy()
+    ma_slope = org_df[['ma5_slope', 'ma10_slope', 'ma20_slope', 'ma30_slope', 'ma55_slope',
+                       'ma60_slope', 'ma120_slope']].to_numpy()
+    ema_slope = org_df[['ema5_slope', 'ema10_slope', 'ema20_slope', 'ema30_slope', 'ema55_slope',
+                        'ema60_slope', 'ema120_slope']].to_numpy()
+    bias = org_df[['bias6', 'bias12', 'bias24', 'bias55', 'bias60', 'bias72', 'bias120']].to_numpy()
+    td = org_df[['high_td', 'low_td']].to_numpy()
+
     open = candle[:, 0]
     high = candle[:, 1]
     low = candle[:, 2]
@@ -63,23 +73,23 @@ def long_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
     ma120_up = []
     ema120_up = []
 
-    ma_arrange = []
-    ema_arrange = []
+    up_ma_arrange = []
+    up_ema_arrange = []
 
-    short_ma_arrange1 = []
-    short_ma_arrange2 = []
-    short_ema_arrange1 = []
-    short_ema_arrange2 = []
+    up_short_ma_arrange1 = []
+    up_short_ma_arrange2 = []
+    up_short_ema_arrange1 = []
+    up_short_ema_arrange2 = []
 
-    middle_ma_arrange1 = []
-    middle_ma_arrange2 = []
-    middle_ema_arrange1 = []
-    middle_ema_arrange2 = []
+    up_middle_ma_arrange1 = []
+    up_middle_ma_arrange2 = []
+    up_middle_ema_arrange1 = []
+    up_middle_ema_arrange2 = []
 
-    long_ma_arrange1 = []
-    long_ma_arrange2 = []
-    long_ema_arrange1 = []
-    long_ema_arrange2 = []
+    up_long_ma_arrange1 = []
+    up_long_ma_arrange2 = []
+    up_long_ema_arrange1 = []
+    up_long_ema_arrange2 = []
 
     ma_gold_cross1 = []
     ma_gold_cross2 = []
@@ -95,8 +105,8 @@ def long_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
     ma_gold_valley = []
     ema_gold_valley = []
 
-    ma_spider = []
-    ema_spider = []
+    up_ma_spider = []
+    up_ema_spider = []
 
     ma_out_sea = []
     ema_out_sea = []
@@ -113,15 +123,15 @@ def long_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
     ma_glue = []
     ema_glue = []
 
-    td8 = []
-    td9 = []
+    down_td8 = []
+    down_td9 = []
 
-    bias6 = []
-    bias12 = []
-    bias24 = []
-    bias60 = []
-    bias72 = []
-    bias120 = []
+    down_bias6 = []
+    down_bias12 = []
+    down_bias24 = []
+    down_bias60 = []
+    down_bias72 = []
+    down_bias120 = []
 
     ma60_support = []
     ema60_support = []
@@ -313,100 +323,100 @@ def long_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
         # MA多头排列（5/10/20/60）
         if _ma5_slope > 0 and _ma10_slope > 0 and _ma20_slope > 0 and _ma60_slope > 0 \
                 and _ma5 > _ma10 > _ma20 > _ma60:
-            ma_arrange.insert(index, 1)
+            up_ma_arrange.insert(index, 1)
         else:
-            ma_arrange.insert(index, 0)
+            up_ma_arrange.insert(index, 0)
 
         # EMA多头排列（5/10/20/60）
         if _ema5_slope > 0 and _ema10_slope > 0 and _ema20_slope > 0 and _ema60_slope > 0 \
                 and _ema5 > _ema10 > _ema20 > _ema60:
-            ema_arrange.insert(index, 1)
+            up_ema_arrange.insert(index, 1)
         else:
-            ema_arrange.insert(index, 0)
+            up_ema_arrange.insert(index, 0)
 
         # MA短期组合多头排列（5/10/20）
         if _ma5_slope > 0 and _ma10_slope > 0 and _ma20_slope > 0 \
                 and _ma5 > _ma10 > _ma20:
-            short_ma_arrange1.insert(index, 1)
+            up_short_ma_arrange1.insert(index, 1)
         else:
-            short_ma_arrange1.insert(index, 0)
+            up_short_ma_arrange1.insert(index, 0)
 
         # MA短期组合多头排列（5/10/30）
         if _ma5_slope > 0 and _ma10_slope > 0 and _ma30_slope > 0 \
                 and _ma5 > _ma10 > _ma30:
-            short_ma_arrange2.insert(index, 1)
+            up_short_ma_arrange2.insert(index, 1)
         else:
-            short_ma_arrange2.insert(index, 0)
+            up_short_ma_arrange2.insert(index, 0)
 
         # EMA短期组合多头排列（5/10/20）
         if _ema5_slope > 0 and _ema10_slope > 0 and _ema20_slope > 0 \
                 and _ema5 > _ema10 > _ema20:
-            short_ema_arrange1.insert(index, 1)
+            up_short_ema_arrange1.insert(index, 1)
         else:
-            short_ema_arrange1.insert(index, 0)
+            up_short_ema_arrange1.insert(index, 0)
 
         # EMA短期组合多头排列（5/10/30）
         if _ema5_slope > 0 and _ema10_slope > 0 and _ema30_slope > 0 \
                 and _ema5 > _ema10 > _ema30:
-            short_ema_arrange2.insert(index, 1)
+            up_short_ema_arrange2.insert(index, 1)
         else:
-            short_ema_arrange2.insert(index, 0)
+            up_short_ema_arrange2.insert(index, 0)
 
         # MA中期组合多头排列（10/20/60）
         if _ma10_slope > 0 and _ma20_slope > 0 and _ma60_slope > 0 \
                 and _ma10 > _ma20 > _ma60:
-            middle_ma_arrange1.insert(index, 1)
+            up_middle_ma_arrange1.insert(index, 1)
         else:
-            middle_ma_arrange1.insert(index, 0)
+            up_middle_ma_arrange1.insert(index, 0)
 
         # MA中期组合多头排列（10/20/55）
         if _ma10_slope > 0 and _ma20_slope > 0 and _ma55_slope > 0 \
                 and _ma10 > _ma20 > _ma55:
-            middle_ma_arrange2.insert(index, 1)
+            up_middle_ma_arrange2.insert(index, 1)
         else:
-            middle_ma_arrange2.insert(index, 0)
+            up_middle_ma_arrange2.insert(index, 0)
 
         # EMA中期组合多头排列（10/20/60）
         if _ema10_slope > 0 and _ema20_slope > 0 and _ema60_slope > 0 \
                 and _ema10 > _ema20 > _ema60:
-            middle_ema_arrange1.insert(index, 1)
+            up_middle_ema_arrange1.insert(index, 1)
         else:
-            middle_ema_arrange1.insert(index, 0)
+            up_middle_ema_arrange1.insert(index, 0)
 
         # EMA中期组合多头排列（10/20/55）
         if _ema10_slope > 0 and _ema20_slope > 0 and _ema55_slope > 0 \
                 and _ema10 > _ema20 > _ema55:
-            middle_ema_arrange2.insert(index, 1)
+            up_middle_ema_arrange2.insert(index, 1)
         else:
-            middle_ema_arrange2.insert(index, 0)
+            up_middle_ema_arrange2.insert(index, 0)
 
         # MA长期组合多头排列（20/55/120）
         if _ma20_slope > 0 and _ma55_slope > 0 and _ma120_slope > 0 \
                 and _ma20 > _ma55 > _ma120:
-            long_ma_arrange1.insert(index, 1)
+            up_long_ma_arrange1.insert(index, 1)
         else:
-            long_ma_arrange1.insert(index, 0)
+            up_long_ma_arrange1.insert(index, 0)
 
         # MA长期组合多头排列（30/60/120）
         if _ma30_slope > 0 and _ma60_slope > 0 and _ma120_slope > 0 \
                 and _ma30 > _ma60 > _ma120:
-            long_ma_arrange2.insert(index, 1)
+            up_long_ma_arrange2.insert(index, 1)
         else:
-            long_ma_arrange2.insert(index, 0)
+            up_long_ma_arrange2.insert(index, 0)
 
         # EMA长期组合多头排列（20/55/120）
         if _ema20_slope > 0 and _ema55_slope > 0 and _ema120_slope > 0 \
                 and _ema20 > _ema55 > _ema120:
-            long_ema_arrange1.insert(index, 1)
+            up_long_ema_arrange1.insert(index, 1)
         else:
-            long_ema_arrange1.insert(index, 0)
+            up_long_ema_arrange1.insert(index, 0)
 
         # EMA长期组合多头排列（30/60/120）
         if _ema30_slope > 0 and _ema60_slope > 0 and _ema120_slope > 0 \
                 and _ema30 > _ema60 > _ema120:
-            long_ema_arrange2.insert(index, 1)
+            up_long_ema_arrange2.insert(index, 1)
         else:
-            long_ema_arrange2.insert(index, 0)
+            up_long_ema_arrange2.insert(index, 0)
 
         # MA黄金交叉（5/10）
         if ma[index][0] > ma[index][1] and ma[index - 1][0] < ma[index - 1][1] and \
@@ -490,15 +500,15 @@ def long_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
 
         # MA金蜘蛛
         if is_ma_spider(index, ma, ma_gold_cross1, ma_gold_cross2, ma_gold_cross3, ma_gold_cross4):
-            ma_spider.insert(index, 1)
+            up_ma_spider.insert(index, 1)
         else:
-            ma_spider.insert(index, 0)
+            up_ma_spider.insert(index, 0)
 
         # EMA金蜘蛛
         if is_ema_spider(index, ema, ema_gold_cross1, ema_gold_cross2, ema_gold_cross3, ema_gold_cross4):
-            ema_spider.insert(index, 1)
+            up_ema_spider.insert(index, 1)
         else:
-            ema_spider.insert(index, 0)
+            up_ema_spider.insert(index, 0)
 
         # MA蛟龙出海(5/10/20)
         # 大阳线 贯穿ma5/ma10/ma20
@@ -569,51 +579,51 @@ def long_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
 
         # TD_8
         if td[index][1] == 8:
-            td8.insert(index, 1)
+            down_td8.insert(index, 1)
         else:
-            td8.insert(index, 0)
+            down_td8.insert(index, 0)
 
         # TD_9
         if td[index][1] == 9:
-            td9.insert(index, 1)
+            down_td9.insert(index, 1)
         else:
-            td9.insert(index, 0)
+            down_td9.insert(index, 0)
 
         # bias6
         if bias[index][0] < -3:
-            bias6.insert(index, 1)
+            down_bias6.insert(index, 1)
         else:
-            bias6.insert(index, 0)
+            down_bias6.insert(index, 0)
 
         # bias12
         if bias[index][1] < -4.5:
-            bias12.insert(index, 1)
+            down_bias12.insert(index, 1)
         else:
-            bias12.insert(index, 0)
+            down_bias12.insert(index, 0)
 
         # bias24
         if bias[index][2] < -7:
-            bias24.insert(index, 1)
+            down_bias24.insert(index, 1)
         else:
-            bias24.insert(index, 0)
+            down_bias24.insert(index, 0)
 
         # bias72
         if bias[index][4] < -11:
-            bias72.insert(index, 1)
+            down_bias72.insert(index, 1)
         else:
-            bias72.insert(index, 0)
+            down_bias72.insert(index, 0)
 
         # bias60 不作为单独信号 需结合趋势判断上涨回踩形态
         if 1.5 >= bias[index][3] >= -1.5:
-            bias60.insert(index, 1)
+            down_bias60.insert(index, 1)
         else:
-            bias60.insert(index, 0)
+            down_bias60.insert(index, 0)
 
         # bias120 不作为单独信号 需结合趋势判断上涨回踩形态
         if 1 >= bias[index][5] >= -1:
-            bias120.insert(index, 1)
+            down_bias120.insert(index, 1)
         else:
-            bias120.insert(index, 0)
+            down_bias120.insert(index, 0)
 
         # 最近3个交易日站上 ma60/ma120 ema60/ema120
         if is_stand_up_ma60(index, open, close, ma60, ma60_slope):
@@ -894,33 +904,136 @@ def long_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
         else:
             ema60_fourth.insert(index, 0)
 
-    return yearly_price_position, yearly_price_position10, yearly_price_position20, \
-           yearly_price_position30, yearly_price_position50, yearly_price_position70, \
-           ma20_up, ema20_up, ma30_up, ema30_up, ma60_up, ema60_up, ma120_up, ema120_up, \
-           ma_arrange, ema_arrange, \
-           short_ma_arrange1, short_ma_arrange2, short_ema_arrange1, short_ema_arrange2, \
-           middle_ma_arrange1, middle_ma_arrange2, middle_ema_arrange1, middle_ema_arrange2, \
-           long_ma_arrange1, long_ma_arrange2, long_ema_arrange1, long_ema_arrange2, \
-           ma_gold_cross1, ma_gold_cross2, ma_gold_cross3, ma_gold_cross4, \
-           ema_gold_cross1, ema_gold_cross2, ema_gold_cross3, ema_gold_cross4, \
-           ma_silver_valley, ema_silver_valley, ma_gold_valley, ema_gold_valley, \
-           ma_spider, ema_spider, \
-           ma_glue, ema_glue, ma_out_sea, ema_out_sea, ma_hold_moon, ema_hold_moon, \
-           ma_over_gate, ema_over_gate, ma_up_ground, ema_up_ground, td8, td9, \
-           bias6, bias12, bias24, bias60, bias72, bias120, \
-           stand_up_ma60, stand_up_ma120, stand_up_ema60, stand_up_ema120, \
-           ma60_support, ema60_support, ma120_support, ema120_support, \
-           ma_group_glue, ema_group_glue, \
-           ma_up_arrange51020, ma_up_arrange5102030, ma_up_arrange510203060, \
-           ma_up_arrange203060, ma_up_arrange2060120, \
-           ema_up_arrange51020, ema_up_arrange5102030, ema_up_arrange510203060, \
-           ema_up_arrange203060, ema_up_arrange2055120, \
-           ma55_first, ma55_second, ma55_third, ma55_fourth, \
-           ma60_first, ma60_second, ma60_third, ma60_fourth, \
-           ema55_first, ema55_second, ema55_third, ema55_fourth, \
-           ema60_first, ema60_second, ema60_third, ema60_fourth, \
-           hammer, pour_hammer, short_end, swallow_up, attack_short, \
-           first_light, sunrise, flat_base, rise_line, down_screw
+    org_df['yearly_price_position'] = yearly_price_position
+    org_df['yearly_price_position10'] = yearly_price_position10
+    org_df['yearly_price_position20'] = yearly_price_position20
+    org_df['yearly_price_position30'] = yearly_price_position30
+    org_df['yearly_price_position50'] = yearly_price_position50
+    org_df['yearly_price_position70'] = yearly_price_position70
+
+    org_df['ma20_up'] = ma20_up
+    org_df['ema20_up'] = ema20_up
+    org_df['ma30_up'] = ma30_up
+    org_df['ema30_up'] = ema30_up
+    org_df['ma60_up'] = ma60_up
+    org_df['ema60_up'] = ema60_up
+    org_df['ma120_up'] = ma120_up
+    org_df['ema120_up'] = ema120_up
+
+    org_df['up_ma_arrange'] = up_ma_arrange
+    org_df['up_ema_arrange'] = up_ema_arrange
+
+    org_df['up_short_ma_arrange1'] = up_short_ma_arrange1
+    org_df['up_short_ma_arrange2'] = up_short_ma_arrange2
+    org_df['up_short_ema_arrange1'] = up_short_ema_arrange1
+    org_df['up_short_ema_arrange2'] = up_short_ema_arrange2
+
+    org_df['up_middle_ma_arrange1'] = up_middle_ma_arrange1
+    org_df['up_middle_ma_arrange2'] = up_middle_ma_arrange2
+    org_df['up_middle_ema_arrange1'] = up_middle_ema_arrange1
+    org_df['up_middle_ema_arrange2'] = up_middle_ema_arrange2
+
+    org_df['up_long_ma_arrange1'] = up_long_ma_arrange1
+    org_df['up_long_ma_arrange2'] = up_long_ma_arrange2
+    org_df['up_long_ema_arrange1'] = up_long_ema_arrange1
+    org_df['up_long_ema_arrange2'] = up_long_ema_arrange2
+
+    org_df['ma_gold_cross1'] = ma_gold_cross1
+    org_df['ma_gold_cross2'] = ma_gold_cross2
+    org_df['ma_gold_cross3'] = ma_gold_cross3
+    org_df['ma_gold_cross4'] = ma_gold_cross4
+
+    org_df['ema_gold_cross1'] = ema_gold_cross1
+    org_df['ema_gold_cross2'] = ema_gold_cross2
+    org_df['ema_gold_cross3'] = ema_gold_cross3
+    org_df['ema_gold_cross4'] = ema_gold_cross4
+
+    org_df['ma_silver_valley'] = ma_silver_valley
+    org_df['ema_silver_valley'] = ema_silver_valley
+    org_df['ma_gold_valley'] = ma_gold_valley
+    org_df['ema_gold_valley'] = ema_gold_valley
+
+    org_df['up_ma_spider'] = up_ma_spider
+    org_df['up_ema_spider'] = up_ema_spider
+
+    org_df['ma_glue'] = ma_glue
+    org_df['ema_glue'] = ema_glue
+    org_df['ma_out_sea'] = ma_out_sea
+    org_df['ema_out_sea'] = ema_out_sea
+    org_df['ma_hold_moon'] = ma_hold_moon
+    org_df['ema_hold_moon'] = ema_hold_moon
+    org_df['ma_over_gate'] = ma_over_gate
+    org_df['ema_over_gate'] = ema_over_gate
+    org_df['ma_up_ground'] = ma_up_ground
+    org_df['ema_up_ground'] = ema_up_ground
+
+    org_df['down_td8'] = down_td8
+    org_df['down_td9'] = down_td9
+
+    org_df['down_bias6'] = down_bias6
+    org_df['down_bias12'] = down_bias12
+    org_df['down_bias24'] = down_bias24
+    org_df['down_bias60'] = down_bias60
+    org_df['down_bias72'] = down_bias72
+    org_df['down_bias120'] = down_bias120
+
+    org_df['stand_up_ma60'] = stand_up_ma60
+    org_df['stand_up_ma120'] = stand_up_ma120
+    org_df['stand_up_ema60'] = stand_up_ema60
+    org_df['stand_up_ema120'] = stand_up_ema120
+
+    org_df['ma60_support'] = ma60_support
+    org_df['ema60_support'] = ema60_support
+    org_df['ma120_support'] = ma120_support
+    org_df['ema120_support'] = ema120_support
+
+    org_df['ma_group_glue'] = ma_group_glue
+    org_df['ema_group_glue'] = ema_group_glue
+
+    org_df['ma_up_arrange51020'] = ma_up_arrange51020
+    org_df['ma_up_arrange5102030'] = ma_up_arrange5102030
+    org_df['ma_up_arrange510203060'] = ma_up_arrange510203060
+    org_df['ma_up_arrange203060'] = ma_up_arrange203060
+    org_df['ma_up_arrange2060120'] = ma_up_arrange2060120
+
+    org_df['ema_up_arrange51020'] = ema_up_arrange51020
+    org_df['ema_up_arrange5102030'] = ema_up_arrange5102030
+    org_df['ema_up_arrange510203060'] = ema_up_arrange510203060
+    org_df['ema_up_arrange203060'] = ema_up_arrange203060
+    org_df['ema_up_arrange2055120'] = ema_up_arrange2055120
+
+    org_df['ma55_first'] = ma55_first
+    org_df['ma55_second'] = ma55_second
+    org_df['ma55_third'] = ma55_third
+    org_df['ma55_fourth'] = ma55_fourth
+
+    org_df['ma60_first'] = ma60_first
+    org_df['ma60_second'] = ma60_second
+    org_df['ma60_third'] = ma60_third
+    org_df['ma60_fourth'] = ma60_fourth
+
+    org_df['ema55_first'] = ema55_first
+    org_df['ema55_second'] = ema55_second
+    org_df['ema55_third'] = ema55_third
+    org_df['ema55_fourth'] = ema55_fourth
+
+    org_df['ema60_first'] = ema60_first
+    org_df['ema60_second'] = ema60_second
+    org_df['ema60_third'] = ema60_third
+    org_df['ema60_fourth'] = ema60_fourth
+
+    org_df['hammer'] = hammer
+    org_df['pour_hammer'] = pour_hammer
+    org_df['short_end'] = short_end
+    org_df['swallow_up'] = swallow_up
+    org_df['attack_short'] = attack_short
+    org_df['first_light'] = first_light
+    org_df['sunrise'] = sunrise
+    org_df['flat_base'] = flat_base
+    org_df['rise_line'] = rise_line
+    org_df['down_screw'] = down_screw
+
+    return org_df
 
 
 def stand_on_ma(open, high, low, close, ma, ma_slope):
@@ -1426,7 +1539,7 @@ def is_ma_hold_moon(index, candles, bias, ma, ma_slope):
     # 均线缓慢上行 ma10_slope < 1.5 / ma20_slope < 2 / ma30_slope < 2
 
     _count = 9 - 1
-    print(candles[:, 5][index],ma[index][0] ,ma[index][1] , ma[index][2],ma[index][3])
+
     if index > 50:
         min_bias6 = min(bias[:, 0][index - _count: index + 1])
         max_bias6 = max(bias[:, 0][index - _count: index + 1])
