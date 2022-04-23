@@ -105,8 +105,6 @@ def is_ma60_third(index, candles, bias, ma, ma_slope):
 
     if index > 90 and _close > _ma60 and steady_on_ma() and min(ma60_slope[index - 8: index]) > 2 and \
             candles[index - 1][3] < ma[:, 5][index - 1] and bias60[index] < 8 and _low_bias60 < 0:
-        print(candles[:, 5][index], 'third')
-
         return True
     else:
         return False
