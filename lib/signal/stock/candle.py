@@ -3,7 +3,6 @@ import os
 import sys
 
 
-#
 # path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # sys.path.append(path)
 
@@ -127,7 +126,7 @@ def is_hang_neck(i, candles):
     up_one_third = _high - (k_len / 3)
 
     # 最近21日最高价
-    highest_high = min(high[i - 20: i + 1])
+    highest_high = max(high[i - 20: i + 1])
 
     # 开盘价和收盘价都位于k线上方1/3处 (即：下影线长度占k线长度的2/3以上）
     # 上影线长度需小于柱体长度的1/5
@@ -484,7 +483,7 @@ def is_swallow_up(i, candles):
     # 今昨两日最低价为最近21日最低价 (最近20日呈下跌趋势)
     if (lowest_low == pre_low or lowest_low == _low) \
             and _open < pre_close < pre_open < _close and \
-            bar_len > k_len * 2 / 3 and candles[:, 4][i] >= 3:
+            bar_len > k_len / 2 and candles[:, 4][i] >= 3:
         return True
 
     return False
@@ -525,7 +524,7 @@ def is_swallow_down(i, candles):
     # 今昨两日最高价为最近21日最高价 (最近21日呈上涨趋势)
     if (highest_high == pre_high or highest_high == _high) \
             and _open > pre_close > pre_open > _close \
-            and bar_len > k_len * 2 / 3 and candles[:, 4][i] <= -3:
+            and bar_len > k_len / 2 and candles[:, 4][i] <= -3:
         return True
 
     return False

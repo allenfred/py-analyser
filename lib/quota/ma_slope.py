@@ -2,11 +2,20 @@ from talib import SMA, EMA
 import numpy as np
 import math
 
-rad2degree = 180 / 3.14159265359  # pi
-i_bars_back = 5
-
 
 def slope(close, ma_type, ima):
+    """
+    description:
+
+    :param close:
+    :param ma_type:
+    :param ima:
+    :return:
+    """
+
+    rad2degree = 180 / 3.14159265359  # pi
+    i_bars_back = 5
+
     ma = []
     if ma_type == 'SMA':
         ma = SMA(close, ima)

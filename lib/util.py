@@ -25,6 +25,12 @@ def used_time_fmt(start, end):
 
 def set_quota(df):
     close = df.close.to_numpy()
+    vol = df.vol.to_numpy()
+
+    df['vol5'] = SMA(vol, 5)
+    df['vol10'] = SMA(vol, 10)
+    df['vol20'] = SMA(vol, 20)
+    df['vol30'] = SMA(vol, 30)
 
     df['ma5'] = SMA(close, 5)
     df['ma10'] = SMA(close, 10)
@@ -99,6 +105,6 @@ def set_quota(df):
     df['low_td'] = low_td
 
     df = df.fillna(0)
-    df = df.round(2)
+    df = df.round(3)
 
     return df

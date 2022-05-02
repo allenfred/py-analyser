@@ -52,7 +52,8 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
     if exchange_type == 'US':
         table_name = 'us_daily_candles'
 
-    statement = dailyCandleDao.session.execute(text("select trade_date, open, high, close, low, pct_chg, amount from "
+    statement = dailyCandleDao.session.execute(text("select trade_date, open, high, close, low, pct_chg, vol, amount "
+                                                    "from "
                                                     + table_name + " where ts_code = :ts_code "
                                                     + "and trade_date > '2015-01-01' and open is not null "
                                                       "and close is not null and high is not null and"
@@ -60,7 +61,8 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
                                                     + "order by trade_date desc "
                                                       "limit 360").params(ts_code=ts_code))
 
-    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'high', 'close', 'low', 'pct_chg', 'amount'])
+    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'high', 'close',
+                                                     'low', 'pct_chg', 'vol', 'amount'])
     df = df.fillna(0)
     last_amount = 0
     list_status = 'L'
