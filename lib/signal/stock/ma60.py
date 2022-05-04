@@ -110,13 +110,6 @@ def is_ma60_third(index, candles, bias, ma, ma_slope):
     if index > 90 and _ma60 > 0:
         _low_bias60 = (_low - _ma60) * 100 / _ma60
 
-    def steady_on_ma():
-        flag = 0
-        for i in range(13):
-            if candles[index - i][3] < ma60[index - i]:
-                flag += 1
-        return 0 < flag < 3
-
     def ma_rise_steady():
         flag = True
         for i in range(13):
@@ -125,7 +118,7 @@ def is_ma60_third(index, candles, bias, ma, ma_slope):
                 flag = False
         return flag
 
-    if index > 90 and _close > _ma60 and steady_on_ma() and ma_rise_steady() and \
+    if index > 90 and _close > _ma60 and ma_rise_steady() and \
             min(ma60_slope[index - 12: index]) > 0 and \
             candles[index - 1][3] < ma60[index - 1] and \
             _bias60 < 8 and _low_bias60 < 0:
@@ -137,7 +130,7 @@ def is_ma60_third(index, candles, bias, ma, ma_slope):
 def is_ma60_fourth(index, candles, bias, ma, ma_slope):
     """
     葛南维第四大法则 (均线修复)
-    1. 连续13个交易日 收盘价在MA60之下 / MA60下行 / ma60_slope < 0
+    1. 均线持续下行 - 连续13个交易日 收盘价在MA60之下 / MA60下行 / ma60_slope < 0
     2. 乖离率出现超卖 bias60 < -16
     3. K线出现止跌支撑信号 (看涨吞没/看涨锤头线/看涨螺旋桨/看涨孕线)
 
@@ -316,8 +309,8 @@ def is_ma60_seventh(index, candles, bias, ma, ma_slope):
 def is_ma60_eighth(index, candles, bias, ma, ma_slope):
     """
     葛南维第八大法则 (均线服从和死亡交叉)
-    1. 连续21个交易日 MA60下行 (ma60_slope < 0)
-    2. 前几个交易日反弹站上MA60之后 又继续下行
+    1. 均线持续下行 - 连续21个交易日 MA60下行 (ma60_slope < 0)
+    2. 反弹短暂站上MA60之后 又继续下行
     3. 出现死亡交叉 (5/10 5/20 10/20 5/60 10/60)
 
     :param index:

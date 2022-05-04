@@ -117,13 +117,6 @@ def is_ema60_third(index, candles, bias, ema, ema_slope):
     if index > 90 and _ema60 > 0:
         _low_bias60 = (_low - _ema60) * 100 / _ema60
 
-    def steady_on_ema():
-        flag = 0
-        for i in range(13):
-            if candles[index - i][3] < ema60[index - i]:
-                flag += 1
-        return 0 < flag < 3
-
     def ema_rise_steady():
         flag = True
         for i in range(13):
@@ -132,7 +125,7 @@ def is_ema60_third(index, candles, bias, ema, ema_slope):
                 flag = False
         return flag
 
-    if index > 90 and _close > _ema60 and steady_on_ema() and ema_rise_steady() and \
+    if index > 90 and _close > _ema60 and ema_rise_steady() and \
             min(ema60_slope[index - 12: index]) > 2 and \
             candles[index - 1][3] < ema60[index - 1] and _bias60 < 8 and \
             _low_bias60 < 0:
@@ -347,13 +340,6 @@ def is_ema60_eighth(index, candles, bias, ema, ema_slope):
     if index > 90 and _ema60 > 0:
         _low_bias60 = (_low - _ema60) * 100 / _ema60
 
-    def stand_on_ema_temp():
-        tag = 0
-        for i in range(13):
-            if candles[index - i - 1][3] > ema60[index - i - 1]:
-                tag += 1
-        return tag <= 3
-
     def ema_down_steady():
         flag = True
         for i in range(21):
@@ -362,7 +348,7 @@ def is_ema60_eighth(index, candles, bias, ema, ema_slope):
                 flag = False
         return flag
 
-    if index > 90 and -2 < _bias60 < 0 and stand_on_ema_temp() and ema_down_steady():
+    if index > 90 and -2 < _bias60 < 0 and ema_down_steady():
         return True
     else:
         return False

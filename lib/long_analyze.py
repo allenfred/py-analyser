@@ -273,49 +273,49 @@ def long_analyze(org_df):
             yearly_price_position70.insert(index, 0)
 
         # MA20上行
-        if _ma20_slope > 0:
+        if index > 60 and min(ma20_slope[index - 4: index]) > 0:
             ma20_up.insert(index, 1)
         else:
             ma20_up.insert(index, 0)
 
         # EMA20上行
-        if _ema20_slope > 0:
+        if index > 60 and min(ema20_slope[index - 4: index]) > 0:
             ema20_up.insert(index, 1)
         else:
             ema20_up.insert(index, 0)
 
         # MA30上行
-        if _ma30_slope > 0:
+        if index > 60 and min(ma30_slope[index - 4: index]) > 0:
             ma30_up.insert(index, 1)
         else:
             ma30_up.insert(index, 0)
 
         # EMA30上行
-        if _ema30_slope > 0:
+        if index > 60 and min(ema30_slope[index - 4: index]) > 0:
             ema30_up.insert(index, 1)
         else:
             ema30_up.insert(index, 0)
 
         # MA60上行
-        if _ma60_slope > 0:
+        if index > 90 and min(ma60_slope[index - 6: index]) > 0:
             ma60_up.insert(index, 1)
         else:
             ma60_up.insert(index, 0)
 
         # EMA60上行
-        if _ema60_slope > 0:
+        if index > 90 and min(ema60_slope[index - 6: index]) > 0:
             ema60_up.insert(index, 1)
         else:
             ema60_up.insert(index, 0)
 
         # MA120上行
-        if _ma120_slope > 0:
+        if index > 150 and min(ma120_slope[index - 13: index]) > 0:
             ma120_up.insert(index, 1)
         else:
             ma120_up.insert(index, 0)
 
         # EMA120上行
-        if _ema120_slope > 0:
+        if index > 150 and min(ema120_slope[index - 13: index]) > 0:
             ema120_up.insert(index, 1)
         else:
             ema120_up.insert(index, 0)

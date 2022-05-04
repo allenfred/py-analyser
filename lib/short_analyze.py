@@ -214,49 +214,49 @@ def short_analyze(org_df):
         _ema120_slope = ema120_slope[index]
 
         # MA20下行
-        if _ma20_slope < 0:
+        if index > 60 and max(ma20_slope[index - 4: index]) < 0:
             ma20_down.insert(index, 1)
         else:
             ma20_down.insert(index, 0)
 
         # EMA20下行
-        if _ema20_slope < 0:
+        if index > 60 and max(ema20_slope[index - 4: index]) < 0:
             ema20_down.insert(index, 1)
         else:
             ema20_down.insert(index, 0)
 
         # MA30下行
-        if _ma30_slope < 0:
+        if index > 60 and max(ma30_slope[index - 4: index]) < 0:
             ma30_down.insert(index, 1)
         else:
             ma30_down.insert(index, 0)
 
         # EMA30下行
-        if _ema30_slope < 0:
+        if index > 60 and max(ema30_slope[index - 4: index]) < 0:
             ema30_down.insert(index, 1)
         else:
             ema30_down.insert(index, 0)
 
         # MA60下行
-        if _ma60_slope < 0:
+        if index > 90 and max(ma60_slope[index - 6: index]) < 0:
             ma60_down.insert(index, 1)
         else:
             ma60_down.insert(index, 0)
 
         # EMA60下行
-        if _ema60_slope < 0:
+        if index > 90 and max(ema60_slope[index - 6: index]) < 0:
             ema60_down.insert(index, 1)
         else:
             ema60_down.insert(index, 0)
 
         # MA120下行
-        if _ma120_slope < 0:
+        if index > 150 and max(ma120_slope[index - 13: index]) < 0:
             ma120_down.insert(index, 1)
         else:
             ma120_down.insert(index, 0)
 
         # EMA120下行
-        if _ema120_slope < 0:
+        if index > 150 and max(ema120_slope[index - 13: index]) < 0:
             ema120_down.insert(index, 1)
         else:
             ema120_down.insert(index, 0)
