@@ -7,6 +7,8 @@ from .signal.stock.ma55 import is_ma55_first, is_ma55_second, is_ma55_third, is_
 from .signal.stock.ema60 import is_ema60_first, is_ema60_second, is_ema60_third, is_ema60_fourth
 from .signal.stock.ema55 import is_ema55_first, is_ema55_second, is_ema55_third, is_ema55_fourth
 
+from .signal.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma120_rise, \
+    is_ema20_rise, is_ema30_rise, is_ema60_rise, is_ema120_rise
 
 def long_analyze(org_df):
     candle = org_df[['open', 'high', 'low', 'close', 'pct_chg', 'trade_date']].to_numpy()
@@ -273,49 +275,49 @@ def long_analyze(org_df):
             yearly_price_position70.insert(index, 0)
 
         # MA20上行
-        if index > 60 and min(ma20_slope[index - 4: index]) > 0:
+        if is_ma20_rise(index, ma):
             ma20_up.insert(index, 1)
         else:
             ma20_up.insert(index, 0)
 
         # EMA20上行
-        if index > 60 and min(ema20_slope[index - 4: index]) > 0:
+        if is_ma20_rise(index, ema):
             ema20_up.insert(index, 1)
         else:
             ema20_up.insert(index, 0)
 
         # MA30上行
-        if index > 60 and min(ma30_slope[index - 4: index]) > 0:
+        if is_ma30_rise(index, ma):
             ma30_up.insert(index, 1)
         else:
             ma30_up.insert(index, 0)
 
         # EMA30上行
-        if index > 60 and min(ema30_slope[index - 4: index]) > 0:
+        if is_ma30_rise(index, ema):
             ema30_up.insert(index, 1)
         else:
             ema30_up.insert(index, 0)
 
         # MA60上行
-        if index > 90 and min(ma60_slope[index - 6: index]) > 0:
+        if is_ma60_rise(index, ma):
             ma60_up.insert(index, 1)
         else:
             ma60_up.insert(index, 0)
 
         # EMA60上行
-        if index > 90 and min(ema60_slope[index - 6: index]) > 0:
+        if is_ma60_rise(index, ema):
             ema60_up.insert(index, 1)
         else:
             ema60_up.insert(index, 0)
 
         # MA120上行
-        if index > 150 and min(ma120_slope[index - 13: index]) > 0:
+        if is_ma120_rise(index, ma):
             ma120_up.insert(index, 1)
         else:
             ma120_up.insert(index, 0)
 
         # EMA120上行
-        if index > 150 and min(ema120_slope[index - 13: index]) > 0:
+        if is_ma120_rise(index, ema):
             ema120_up.insert(index, 1)
         else:
             ema120_up.insert(index, 0)
@@ -1750,118 +1752,6 @@ def is_ema_gold_valley(index, ema, ema_slope, ema_silver_valley):
     if index >= 30 and max(ema_silver_valley[index - 29: index - 1]) == 1 and \
             ema_silver_valley[index] == 1 and ema[index - 30][2] < ema[index][2] and \
             ema_slope[index][2] > 0:
-        return True
-    else:
-        return False
-
-
-# 葛南维第一大法则
-def is_ma_first(index, candles, ma, ma_slope):
-    # MA60 开始拐头 (ma60_slope 连续3日 > 0)
-    # 收盘价位于MA60之上
-    # 最近21个交易日中前18个交易日 ma60_slope < 0
-
-    # 趋势反转信号
-    # ma60_slope 刚刚转正 / 连续3日转正
-
-    # 反转看涨增强信号
-    # ma60_slope 连续9日增大
-
-    candle = candles[index]
-    _close = candle[3]
-    ma60_slope = ma_slope[:, 5]
-    _ma60 = ma[:, 5][index]
-
-    if index > 90 and _close > _ma60 and max(ma60_slope[index - 21: index - 2]) <= 0 and \
-            0 < ma60_slope[index - 2] < ma60_slope[index - 1] < ma60_slope[index]:
-        return True
-    else:
-        return False
-
-
-# 葛南维第二大法则
-def is_ma_second(index, candles, bias, ma, ma_slope):
-    # MA60 向上 (ma60_slope 连续9日 > 0) slope > 1
-    # 收盘价连续9日在MA60之上
-    # 价格回落 未跌破MA60
-    # 过去21个交易日未曾跌破 MA60
-
-    candle = candles[index]
-    _low = candle[2]
-    _close = candle[3]
-    ma60_slope = ma_slope[:, 5]
-    _ma60 = ma[:, 5][index]
-    bias60 = bias[:, 3]
-
-    if index > 90 and _ma60 > 0:
-        _low_bias60 = (_low - _ma60) * 100 / _ma60
-
-    def steady_on_ma():
-        flag = True
-        for i in range(13):
-            if candles[index - i][3] < ma[:, 5][index - i]:
-                flag = False
-        return flag
-
-    if index > 90 and steady_on_ma() and min(ma60_slope[index - 8: index]) > 2 and \
-            min(bias60[index - 8: index]) > 0 and _low_bias60 < 2:
-        return True
-    else:
-        return False
-
-
-# 葛南维第三大法则
-def is_ma_third(index, candles, bias, ma, ma_slope):
-    # MA60 向上 (ma60_slope 连续9日 > 0)
-    # 跌破MA60之后收盘又站上MA60
-
-    candle = candles[index]
-    _low = candle[2]
-    _close = candle[3]
-    ma60_slope = ma_slope[:, 5]
-    _ma60 = ma[:, 5][index]
-    bias60 = bias[:, 3]
-
-    if index > 90 and _ma60 > 0:
-        _low_bias60 = (_low - _ma60) * 100 / _ma60
-
-    def steady_on_ma():
-        flag = 0
-        for i in range(13):
-            if candles[index - i][3] < ma[:, 5][index - i]:
-                flag += 1
-        return 0 < flag < 3
-
-    if index > 90 and _close > _ma60 and steady_on_ma() and min(ma60_slope[index - 8: index]) > 2 and \
-            candles[index - 1][3] < ma[:, 5][index - 1] and bias60[index] < 8 and _low_bias60 < 0:
-        return True
-    else:
-        return False
-
-
-# 葛南维第四大法则
-def is_ma_fourth(index, candles, bias, ma, ma_slope):
-    # MA60 下行 (ma60_slope 连续13日 < 0)
-    # 超卖 bias60 < -11%
-
-    candle = candles[index]
-    _low = candle[2]
-    _close = candle[3]
-    ma60_slope = ma_slope[:, 5]
-    _ma60 = ma[:, 5][index]
-    bias60 = bias[:, 3]
-
-    if index > 90 and _ma60 > 0:
-        _low_bias60 = (_low - _ma60) * 100 / _ma60
-
-    def steady_under_ma():
-        flag = True
-        for i in range(13):
-            if candles[index - i][3] > ma[:, 5][index - i]:
-                flag = False
-        return flag
-
-    if index > 90 and bias60[index] < -16 and steady_under_ma() and max(ma60_slope[index - 12: index]) < 0:
         return True
     else:
         return False
