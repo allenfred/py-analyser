@@ -9,6 +9,14 @@ def pattern_analyze(df):
     close = df.close.to_numpy()
 
     """
+    +200 bullish pattern with confirmation
+    +100 bullish pattern (most cases)
+    0 none
+    -100 bearish pattern
+    -200 bearish pattern with confirmation
+    """
+
+    """
     一日K线模式
     """
 
