@@ -110,39 +110,6 @@ def set_quota(df):
 
     df['atr'] = ATR(high, low, close, timeperiod=14)
 
-    # 捉腰带线 预示价格上涨
-    df['belt_hold'] = lib.CDLBELTHOLD(open, high, low, close)
-    # 蜻蜓十字/T形十字 预示趋势反转
-    df['dragonfly_doji'] = lib.CDLDRAGONFLYDOJI(open, high, low, close)
-
-    """
-    看涨信号
-    """
-    # 奇特三川
-    df['three_river'] = lib.CDLUNIQUE3RIVER(open, high, low, close)
-    # 孕线
-    df['harami'] = lib.CDLHARAMI(open, high, low, close)
-    # 家鸽
-    df['homing_pigeon'] = lib.CDLHOMINGPIGEON(open, high, low, close)
-    # 十字孕线
-    df['harami_cross'] = lib.CDLHARAMICROSS(open, high, low, close)
-    # 早晨之星
-    df['morning_star'] = lib.CDLMORNINGSTAR(open, high, low, close)
-    # 早晨十字星
-    df['morning_doji_star'] = lib.CDLMORNINGDOJISTAR(open, high, low, close)
-
-    """
-    看跌信号
-    """
-    # 两只乌鸦
-    df['two_crows'] = lib.CDL2CROWS(open, high, low, close)
-    # 三只乌鸦
-    df['three_crows'] = lib.CDL3BLACKCROWS(open, high, low, close)
-    # 黄昏之星
-    df['evening_star'] = lib.CDLEVENINGSTAR(open, high, low, close)
-    # 黄昏十字星
-    df['evening_doji_star'] = lib.CDLEVENINGDOJISTAR(open, high, low, close)
-
     df = df.fillna(0)
     df = df.round(3)
 

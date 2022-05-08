@@ -12,6 +12,7 @@ from models.cn_daily_candles import CNDailyCandleDao
 from models.daily_indicators import DailyIndicatorDao
 
 from models.stock_daily_signals import StockDailySignalDao
+from models.daily_pattern_signals import DailyPatternSignalDao
 from models.stock_signals import StockSignalDao
 
 from models.stocks import StockDao
@@ -30,6 +31,7 @@ dailyCandleDao = CNDailyCandleDao()
 dailyIndicatorDao = DailyIndicatorDao()
 
 stockDailySignalDao = StockDailySignalDao()
+dailyPatternSignalDao = DailyPatternSignalDao()
 stockSignalDao = StockSignalDao()
 
 
@@ -91,6 +93,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
             signal = df.iloc[df_len - 1].to_dict()
 
             stockDailySignalDao.bulk_insert(small_df, ts_code)
+            dailyPatternSignalDao.bulk_insert(small_df, ts_code)
             stockSignalDao.upsert(signal)
 
             stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount, 'list_status': 'L'})

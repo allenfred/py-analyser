@@ -586,7 +586,8 @@ def is_up_screw(i, candles, ma_slope):
     """
 
     _open = candles[:, 0][i]
-    _high = candles[:, 1][i]
+    high = candles[:, 1]
+    _high = high[i]
     _low = candles[:, 2][i]
     _close = candles[:, 3][i]
     ma10_slope = ma_slope[:, 1]
@@ -597,7 +598,7 @@ def is_up_screw(i, candles, ma_slope):
     up_shadow_len = math.fabs(_open - _high if _open < _close else _close - _high)
     bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
 
-    if i > 30 and min(ma10_slope[i - 9: i - 1]) > 5 and \
+    if i > 30 and max(high[i - 9: i - 1]) < _high and \
             up_shadow_len > k_len / 3 and bottom_shadow_len > k_len / 3 and \
             _open * 1.03 < _high and _open * 0.93 > _low:
         return True
@@ -620,8 +621,10 @@ def is_down_screw(i, candles, ma_slope):
     """
 
     _open = candles[:, 0][i]
-    _high = candles[:, 1][i]
-    _low = candles[:, 2][i]
+    high = candles[:, 1]
+    low = candles[:, 2]
+    _high = high[i]
+    _low = low[i]
     _close = candles[:, 3][i]
     ma10_slope = ma_slope[:, 1]
 
@@ -631,7 +634,7 @@ def is_down_screw(i, candles, ma_slope):
     up_shadow_len = math.fabs(_open - _high if _open < _close else _close - _high)
     bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
 
-    if i > 30 and max(ma10_slope[i - 8: i - 1]) < 0 and \
+    if i > 30 and min(low[i - 9: i - 1]) > _low and \
             up_shadow_len > k_len / 3 and bottom_shadow_len > k_len / 3 and \
             _open * 1.03 < _high and _open * 0.93 > _low:
         return True

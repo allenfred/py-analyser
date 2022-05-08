@@ -38,7 +38,7 @@ def is_ema60_first(index, candles, bias, ema, ema_slope):
         return flag
 
     if index > 90 and _close > _ema60 and start_up_ema() and \
-            max(ema60_slope[index - 21: index - 2]) <= 0 and \
+            max(ema60_slope[index - 27: index - 2]) <= 0 and \
             0 < ema60_slope[index - 2] < ema60_slope[index - 1] < ema60_slope[index] and \
             _bias60 < 8:
         return True

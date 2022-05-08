@@ -292,7 +292,8 @@ class StockDao:
         for index, item in df.iterrows():
             item = item.to_dict()
             item = {k: v if not pd.isna(v) else None for k, v in item.items()}
-            items.insert(index, item)
+            if item.get('exchange') != 'BSE':
+                items.insert(index, item)
 
         self.session.bulk_insert_mappings(Stock, items)
         self.session.commit()
@@ -304,7 +305,7 @@ class StockDao:
             obj = get_obj(item)
 
             try:
-                row = self.session.query(Stock).filter(Stock.ts_code == obj.get('ts_code')).first()
+                row = self.session.query(Stock).filter(Stock.ts_code == obj.ts_code).first()
 
                 if row is None:
                     self.session.add(obj)
@@ -314,7 +315,7 @@ class StockDao:
                     if obj.name is not None:
                         row.name = obj.name
                     if obj.area is not None:
-                        row.name = obj.area
+                        row.area = obj.area
                     if obj.industry is not None:
                         row.industry = obj.industry
                     if obj.fullname is not None:

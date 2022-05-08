@@ -71,6 +71,11 @@ class DailyIndicator(Base):
     bias120 = Column(Float)
     high_td = Column(Float)
     low_td = Column(Float)
+    vol5 = Column(Float)
+    vol10 = Column(Float)
+    vol20 = Column(Float)
+    vol30 = Column(Float)
+    atr = Column(Float)
 
 
 def get_obj(indicator):
@@ -140,6 +145,11 @@ def get_obj(indicator):
         bias120=indicator.get('bias120', None),
         high_td=indicator.get('high_td', None),
         low_td=indicator.get('low_td', None),
+        vol5=indicator.get('vol5', None),
+        vol10=indicator.get('vol10', None),
+        vol20=indicator.get('vol20', None),
+        vol30=indicator.get('vol30', None),
+        atr=indicator.get('atr', None),
     )
 
 

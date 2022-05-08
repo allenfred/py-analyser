@@ -5,7 +5,7 @@ def is_ma60_first(index, candles, bias, ma, ma_slope):
     葛南维第一大法则 (均线扭转)
     1.收盘价位于MA60之上
     2.MA60 开始拐头 (ma60_slope 连续3日 > 0)
-    3.最近21个交易日中前18个交易日 ma60_slope < 0
+    3.最近21个交易日中前34个交易日 ma60_slope < 0
     4.最近3个交易日 slope 呈上升趋势
     5.乖离率正常 不存在超买
 
@@ -35,7 +35,7 @@ def is_ma60_first(index, candles, bias, ma, ma_slope):
         return flag
 
     if index > 90 and _close > _ma60 and start_up_ma() and \
-            max(ma60_slope[index - 21: index - 2]) <= 0 and \
+            max(ma60_slope[index - 34: index - 2]) <= 0 and \
             0 < ma60_slope[index - 2] < ma60_slope[index - 1] < ma60_slope[index] and \
             _bias60 < 8:
         return True
@@ -220,7 +220,7 @@ def is_ma60_fifth(index, candles, bias, ma, ma_slope):
 def is_ma60_sixth(index, candles, bias, ma, ma_slope):
     """
     葛南维第六大法则 (均线扭转)
-    1. MA60开始由上行逐渐走平: 连续18个交易日 MA60上行
+    1. 趋势异态 - MA60开始由上行逐渐走平: 连续18个交易日 MA60上行
     2. 最近3日 MA60开始拐头向下 ma60_slope < 1
     2. bias60 正常
     3. K线出现短期见顶信号 (看跌吞没/看跌锤头线/看跌螺旋桨/看跌孕线/看跌尽头线)
@@ -270,7 +270,7 @@ def is_ma60_sixth(index, candles, bias, ma, ma_slope):
 def is_ma60_seventh(index, candles, bias, ma, ma_slope):
     """
     葛南维第七大法则 (均线服从)
-    1. 连续13个交易日: MA60下行 (ma60_slope < 0)
+    1. 均线持续下行 - 连续13个交易日: MA60下行 (ma60_slope < 0)
     2. 反弹时未站上MA60之后 继续下行
 
     :param index:

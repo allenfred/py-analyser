@@ -60,7 +60,12 @@ CREATE TABLE `daily_indicators` (
   `bias72` float,
   `bias120` float,
   `high_td` tinyint(2),
-  `low_td` tinyint(2)
+  `low_td` tinyint(2),
+  `vol5` float,
+  `vol10` float,
+  `vol20` float,
+  `vol30` float,
+  `atr` float
 );
 
 CREATE INDEX `daily_indicators_index_ts_code` ON `daily_indicators` (`ts_code`);
