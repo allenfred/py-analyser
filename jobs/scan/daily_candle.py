@@ -61,7 +61,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
                                                       "and close is not null and high is not null and"
                                                     + " low is not null "
                                                     + "order by trade_date desc "
-                                                      "limit 360").params(ts_code=ts_code))
+                                                      "limit 300").params(ts_code=ts_code))
 
     df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'high', 'close',
                                                      'low', 'pct_chg', 'vol', 'amount'])
@@ -70,7 +70,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
     list_status = 'L'
 
     if len(df) > 1:
-        last_amount = get_amount(exchange_type, df.iloc[len(df) - 1].amount)
+        last_amount = get_amount(exchange_type, df.iloc[0].amount)
 
         # 剔除退市股
         if df.iloc[0].trade_date < monthly_ago:
@@ -85,16 +85,17 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
 
         try:
             df = set_quota(df)
-            dailyIndicatorDao.bulk_insert(df, ts_code)
             df_len = len(df)
 
             df = analyze(df)
+
             small_df = df.iloc[df_len - 10: df_len]
             signal = df.iloc[df_len - 1].to_dict()
 
+            dailyIndicatorDao.bulk_insert(df, ts_code)
+            stockSignalDao.upsert(signal)
             stockDailySignalDao.bulk_insert(small_df, ts_code)
             dailyPatternSignalDao.bulk_insert(small_df, ts_code)
-            stockSignalDao.upsert(signal)
 
             stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount, 'list_status': 'L'})
 
