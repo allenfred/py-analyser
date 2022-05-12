@@ -60,25 +60,25 @@ module.exports = {
       watch: false,
       autorestart: false,
     },
-//    {
-//      name: 'HKdaily-analysis',
-//      script: 'jobs/analysis/daily/stock_hk.py',
-//      interpreter: 'python3',
-//      instances: 1,
-//      exec_mode: 'fork',
-//      cron_restart: '30 18 * * *', // 每个交易日下午 18:30
-//      watch: false,
-//      autorestart: false,
-//    },
-//    {
-//      name: 'USdaily-analysis',
-//      script: 'jobs/analysis/daily/stock_us.py',
-//      interpreter: 'python3',
-//      instances: 1,
-//      exec_mode: 'fork',
-//      cron_restart: '0 11 * * *', // 每天上午 11:00
-//      watch: false,
-//      autorestart: false,
-//    },
+    {
+      name: 'HKdaily-analysis',
+      script: 'jobs/analysis/daily/stock_hk.py',
+      interpreter: 'python3',
+      instances: 1,
+      exec_mode: 'fork',
+      cron_restart: '30 20 * * *', // 每个交易日下午 20:30
+      watch: false,
+      autorestart: false,
+    },
+    {
+      name: 'USdaily-analysis',
+      script: 'jobs/analysis/daily/stock_us.py',
+      interpreter: 'python3',
+      instances: 1,
+      exec_mode: 'fork',
+      cron_restart: '0 11 * * *', // 每天上午 11:00
+      watch: false,
+      autorestart: false,
+    },
   ],
 };
