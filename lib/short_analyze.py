@@ -4,8 +4,6 @@ from .signal.stock.candle import is_long_end, is_swallow_down, \
     is_hang_neck, is_shooting, is_jump_line, is_up_screw
 from .signal.stock.ma60 import is_ma60_fifth, is_ma60_sixth, is_ma60_seventh, is_ma60_eighth
 from .signal.stock.ma55 import is_ma55_fifth, is_ma55_sixth, is_ma55_seventh, is_ma55_eighth
-from .signal.stock.ema60 import is_ema60_fifth, is_ema60_sixth, is_ema60_seventh, is_ema60_eighth
-from .signal.stock.ema55 import is_ema55_fifth, is_ema55_sixth, is_ema55_seventh, is_ema55_eighth
 
 
 # def short_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
@@ -81,11 +79,6 @@ def short_analyze(org_df):
     ma_down_arrange510203060 = []
     ma_down_arrange203060 = []
     ma_down_arrange2060120 = []
-    ema_down_arrange51020 = []
-    ema_down_arrange5102030 = []
-    ema_down_arrange510203060 = []
-    ema_down_arrange203060 = []
-    ema_down_arrange2055120 = []
 
     down_short_ma_arrange1 = []
     down_short_ma_arrange2 = []
@@ -387,45 +380,11 @@ def short_analyze(org_df):
         else:
             ma_dead_cross4.insert(index, 0)
 
-        # EMA死亡交叉（5/10）
-        if ema[index][0] < ema[index][1] and ema[index - 1][0] > ema[index - 1][1] and \
-                ema_slope[index][0] < 0 and ema_slope[index][1] < 0:
-            ema_dead_cross1.insert(index, 1)
-        else:
-            ema_dead_cross1.insert(index, 0)
-
-        # EMA死亡交叉（5/20）
-        if ema[index][0] < ema[index][2] and ema[index - 1][0] > ema[index - 1][2] and \
-                ema_slope[index][0] < 0 and ema_slope[index][2] < 0:
-            ema_dead_cross2.insert(index, 1)
-        else:
-            ema_dead_cross2.insert(index, 0)
-
-        # EMA死亡交叉（10/20）
-        if ema[index][1] < ma[index][2] and ema[index - 1][1] > ema[index - 1][2] and \
-                ema_slope[index][1] < 0 and ema_slope[index][2] < 0:
-            ema_dead_cross3.insert(index, 1)
-        else:
-            ema_dead_cross3.insert(index, 0)
-
-        # EMA死亡交叉（10/30）
-        if ema[index][1] < ma[index][3] and ema[index - 1][1] > ema[index - 1][3] and \
-                ema_slope[index][1] < 0 and ema_slope[index][3] < 0:
-            ema_dead_cross4.insert(index, 1)
-        else:
-            ema_dead_cross4.insert(index, 0)
-
         # MA死亡谷
         if is_ma_dead_valley(index, ma_dead_cross1, ma_dead_cross2, ma_dead_cross3):
             ma_dead_valley.insert(index, 1)
         else:
             ma_dead_valley.insert(index, 0)
-
-        # EMA死亡谷
-        if is_ema_dead_valley(index, ema_dead_cross1, ema_dead_cross2, ema_dead_cross3):
-            ema_dead_valley.insert(index, 1)
-        else:
-            ema_dead_valley.insert(index, 0)
 
         # MA毒蜘蛛
         if is_ma_spider(index, ma, ma_dead_cross1, ma_dead_cross2, ma_dead_cross3, ma_dead_cross4):
@@ -433,35 +392,17 @@ def short_analyze(org_df):
         else:
             down_ma_spider.insert(index, 0)
 
-        # EMA毒蜘蛛
-        if is_ema_spider(index, ema, ema_dead_cross1, ema_dead_cross2, ema_dead_cross3, ema_dead_cross4):
-            down_ema_spider.insert(index, 1)
-        else:
-            down_ema_spider.insert(index, 0)
-
         # MA断头铡刀
         if is_ma_knife(index, candle, ma, ma_slope):
             ma_knife.insert(index, 1)
         else:
             ma_knife.insert(index, 0)
 
-        # EMA断头铡刀
-        if is_ema_knife(index, candle, ema, ema_slope):
-            ema_knife.insert(index, 1)
-        else:
-            ema_knife.insert(index, 0)
-
         # MA乌云密布
         if is_ma_dark_cloud(index, ma_slope):
             ma_dark_cloud.insert(index, 1)
         else:
             ma_dark_cloud.insert(index, 0)
-
-        # EMA乌云密布
-        if is_ema_dark_cloud(index, ema_slope):
-            ema_dark_cloud.insert(index, 1)
-        else:
-            ema_dark_cloud.insert(index, 0)
 
         # TD_8
         if td[index][0] == 8:
@@ -542,38 +483,6 @@ def short_analyze(org_df):
             ma_down_arrange2060120.insert(index, 1)
         else:
             ma_down_arrange2060120.insert(index, 0)
-
-        # ema5/ema10/ema20 出现空头排列
-        if is_ema_down_arrange51020(index, ema5, ema10, ema20, ema5_slope, ema10_slope, ema20_slope):
-            ema_down_arrange51020.insert(index, 1)
-        else:
-            ema_down_arrange51020.insert(index, 0)
-
-        # ema5/ema10/ema20/ema30 出现空头排列
-        if is_ema_down_arrange5102030(index, ema5, ema10, ema20, ema30, ema5_slope, ema10_slope, ema20_slope,
-                                      ema30_slope):
-            ema_down_arrange5102030.insert(index, 1)
-        else:
-            ema_down_arrange5102030.insert(index, 0)
-
-        # ema5/ema10/ema20/ema30/ema60 出现空头排列
-        if is_ema_down_arrange510203060(index, ema5, ema10, ema20, ema30, ema60, ema5_slope, ema10_slope, ema20_slope,
-                                        ema30_slope, ema60_slope):
-            ema_down_arrange510203060.insert(index, 1)
-        else:
-            ema_down_arrange510203060.insert(index, 0)
-
-        # ema20/ema30/ema60 出现空头排列
-        if is_ema_down_arrange203060(index, ema20, ema30, ema60, ema20_slope, ema30_slope, ema60_slope):
-            ema_down_arrange203060.insert(index, 1)
-        else:
-            ema_down_arrange203060.insert(index, 0)
-
-        # ema20/ema60/ema120 出现空头排列
-        if is_ema_down_arrange2055120(index, ema20, ema55, ema120, ema20_slope, ema55_slope, ema120_slope):
-            ema_down_arrange2055120.insert(index, 1)
-        else:
-            ema_down_arrange2055120.insert(index, 0)
 
         # 看跌尽头线
         if is_long_end(index, candle):
@@ -659,53 +568,6 @@ def short_analyze(org_df):
         else:
             ma60_eighth.insert(index, 0)
 
-        # EMA55 葛南维第5大法则
-        if is_ema55_fifth(index, candle, bias, ema, ema_slope):
-            ema55_fifth.insert(index, 1)
-        else:
-            ema55_fifth.insert(index, 0)
-
-        # EMA55 葛南维第6大法则
-        if is_ema55_sixth(index, candle, bias, ema, ema_slope):
-            ema55_sixth.insert(index, 1)
-        else:
-            ema55_sixth.insert(index, 0)
-
-        # EMA55 葛南维第7大法则
-        if is_ema55_seventh(index, candle, bias, ema, ema_slope):
-            ema55_seventh.insert(index, 1)
-        else:
-            ema55_seventh.insert(index, 0)
-
-        # EMA55 葛南维第8大法则
-        if is_ema55_eighth(index, candle, bias, ema, ema_slope):
-            ema55_eighth.insert(index, 1)
-        else:
-            ema55_eighth.insert(index, 0)
-
-        # EMA60 葛南维第5大法则
-        if is_ema60_fifth(index, candle, bias, ema, ema_slope):
-            ema60_fifth.insert(index, 1)
-        else:
-            ema60_fifth.insert(index, 0)
-
-        # EMA60 葛南维第6大法则
-        if is_ema60_sixth(index, candle, bias, ema, ema_slope):
-            ema60_sixth.insert(index, 1)
-        else:
-            ema60_sixth.insert(index, 0)
-
-        # EMA60 葛南维第7大法则
-        if is_ema60_seventh(index, candle, bias, ema, ema_slope):
-            ema60_seventh.insert(index, 1)
-        else:
-            ema60_seventh.insert(index, 0)
-
-        # EMA60 葛南维第8大法则
-        if is_ema60_eighth(index, candle, bias, ema, ema_slope):
-            ema60_eighth.insert(index, 1)
-        else:
-            ema60_eighth.insert(index, 0)
 
     org_df['ma20_down'] = ma20_down
     org_df['ema20_down'] = ema20_down
@@ -749,21 +611,10 @@ def short_analyze(org_df):
     org_df['ma_dead_cross3'] = ma_dead_cross3
     org_df['ma_dead_cross4'] = ma_dead_cross4
 
-    org_df['ema_dead_cross1'] = ema_dead_cross1
-    org_df['ema_dead_cross2'] = ema_dead_cross2
-    org_df['ema_dead_cross3'] = ema_dead_cross3
-    org_df['ema_dead_cross4'] = ema_dead_cross4
-
     org_df['ma_dead_valley'] = ma_dead_valley
-    org_df['ema_dead_valley'] = ema_dead_valley
-
     org_df['down_ma_spider'] = down_ma_spider
-    org_df['down_ema_spider'] = down_ema_spider
-
     org_df['ma_knife'] = ma_knife
-    org_df['ema_knife'] = ema_knife
     org_df['ma_dark_cloud'] = ma_dark_cloud
-    org_df['ema_dark_cloud'] = ema_dark_cloud
 
     # org_df['ma_set_sail'] = ma_set_sail
     # org_df['ema_set_sail'] = ema_set_sail
@@ -788,12 +639,6 @@ def short_analyze(org_df):
     org_df['ma_down_arrange203060'] = ma_down_arrange203060
     org_df['ma_down_arrange2060120'] = ma_down_arrange2060120
 
-    org_df['ema_down_arrange51020'] = ema_down_arrange51020
-    org_df['ema_down_arrange5102030'] = ema_down_arrange5102030
-    org_df['ema_down_arrange510203060'] = ema_down_arrange510203060
-    org_df['ema_down_arrange203060'] = ema_down_arrange203060
-    org_df['ema_down_arrange2055120'] = ema_down_arrange2055120
-
     org_df['ma55_fifth'] = ma55_fifth
     org_df['ma55_sixth'] = ma55_sixth
     org_df['ma55_seventh'] = ma55_seventh
@@ -803,16 +648,6 @@ def short_analyze(org_df):
     org_df['ma60_sixth'] = ma60_sixth
     org_df['ma60_seventh'] = ma60_seventh
     org_df['ma60_eighth'] = ma60_eighth
-
-    org_df['ema55_fifth'] = ema55_fifth
-    org_df['ema55_sixth'] = ema55_sixth
-    org_df['ema55_seventh'] = ema55_seventh
-    org_df['ema55_eighth'] = ema55_eighth
-
-    org_df['ema60_fifth'] = ema60_fifth
-    org_df['ema60_sixth'] = ema60_sixth
-    org_df['ema60_seventh'] = ema60_seventh
-    org_df['ema60_eighth'] = ema60_eighth
 
     org_df['long_end'] = long_end
     org_df['swallow_down'] = swallow_down
@@ -915,95 +750,6 @@ def is_ma_down_arrange2060120(index, ma20, ma60, ma120, ma20_slope, ma60_slope, 
         return False
 
 
-def is_ema_down_arrange51020(index, ema5, ema10, ema20, ema5_slope, ema10_slope, ema20_slope):
-    # ema5/ema10/ema20 出现空头排列
-    if index < 1:
-        return False
-
-    pre_index = index - 1
-    # 前一交易日 未形成空头排列
-    # 当前交易日 形成空头排列
-    if (not (ema5[pre_index] > ema10[pre_index] > ema20[pre_index] and
-             ema5_slope[pre_index] > 0 and ema10_slope[pre_index] > 0 and ema20_slope[pre_index] > 0)) \
-            and ema5[index] > ema10[index] > ema20[index] \
-            and ema5_slope[index] > 0 and ema10_slope[index] > 0 and ema20_slope[index] > 0:
-        return True
-    else:
-        return False
-
-
-def is_ema_down_arrange5102030(index, ema5, ema10, ema20, ema30, ema5_slope, ema10_slope, ema20_slope, ema30_slope):
-    # ema5/ema10/ema20/ema30 出现空头排列
-    if index < 1:
-        return False
-
-    pre_index = index - 1
-
-    # 前一交易日 未形成空头排列
-    # 当前交易日 形成空头排列
-    if (not (ema5[pre_index] > ema10[pre_index] > ema20[pre_index] > ema30[pre_index] and
-             (ema5_slope[pre_index] > 0 and ema10_slope[pre_index] > 0 and
-              ema20_slope[pre_index] > 0 and ema30_slope[pre_index] > 0))) \
-            and ema5[index] > ema10[index] > ema20[index] > ema30[index] and \
-            ema5_slope[index] > 0 and ema10_slope[index] > 0 and ema20_slope[index] > 0 and ema30_slope[index] > 0:
-        return True
-    else:
-        return False
-
-
-def is_ema_down_arrange510203060(index, ema5, ema10, ema20, ema30, ema60, ema5_slope, ema10_slope, ema20_slope,
-                                 ema30_slope, ema60_slope):
-    # ema5/ema10/ema20/ema30/ema60 出现空头排列
-    if index < 1:
-        return False
-
-    pre_index = index - 1
-
-    # 前一交易日 未形成空头排列
-    # 当前交易日 形成空头排列
-    if (not (ema5[pre_index] > ema10[pre_index] > ema20[pre_index] > ema30[pre_index] > ema60[pre_index] and
-             ema5_slope[pre_index] > 0 and ema10_slope[pre_index] > 0 and
-             ema20_slope[pre_index] > 0 and ema30_slope[pre_index] > 0 and ema60_slope[pre_index] > 0)) \
-            and ema5[index] > ema10[index] > ema20[index] > ema30[index] > ema60[index] \
-            and ema5_slope[index] > 0 and ema10_slope[index] > 0 and ema20_slope[index] > 0 \
-            and ema30_slope[index] > 0 and ema60_slope[index] > 0:
-        return True
-    else:
-        return False
-
-
-def is_ema_down_arrange203060(index, ema20, ema30, ema60, ema20_slope, ema30_slope, ema60_slope):
-    # ema20/ema30/ema60 出现空头排列
-    if index < 1:
-        return False
-
-    # 前一交易日 未形成空头排列
-    # 当前交易日 形成空头排列
-    if (not (ema20[index - 1] > ema30[index - 1] > ema60[index - 1] and
-             ema20_slope[index - 1] > 0 and ema30_slope[index - 1] > 0 and ema60_slope[index - 1] > 0)) \
-            and ema20[index] > ema30[index] > ema60[index] \
-            and ema20_slope[index] > 0 and ema30_slope[index] > 0 and ema60_slope[index] > 0:
-        return True
-    else:
-        return False
-
-
-def is_ema_down_arrange2055120(index, ema20, ema55, ema120, ema20_slope, ema55_slope, ema120_slope):
-    # ema20/ema55/ema120 出现空头排列
-    if index < 1:
-        return False
-
-    # 前一交易日 未形成空头排列
-    # 当前交易日 形成空头排列
-    if (not (ema20[index - 1] > ema55[index - 1] > ema120[index - 1] and
-             ema20_slope[index - 1] > 0 and ema55_slope[index - 1] > 0 and ema120_slope[index - 1] > 0)) \
-            and ema20[index] > ema55[index] > ema120[index] \
-            and ema20_slope[index] > 0 and ema55_slope[index] > 0 and ema120_slope[index] > 0:
-        return True
-    else:
-        return False
-
-
 def is_ma_spider(index, ma, ma_gold_cross1, ma_gold_cross2, ma_gold_cross3, ma_gold_cross4):
     # MA毒蜘蛛
     # 最近3个交易日ma5/ma10/ma20交叉于一点 (即出现至少2个死叉)
@@ -1031,34 +777,6 @@ def is_ma_spider(index, ma, ma_gold_cross1, ma_gold_cross2, ma_gold_cross3, ma_g
     return is_spider1, is_spider2
 
 
-def is_ema_spider(index, ema, ema_gold_cross1, ema_gold_cross2, ema_gold_cross3, ema_gold_cross4):
-    # EMA毒蜘蛛
-    # 最近3个交易日ema5/ema10/ema20交叉于一点 (即出现至少2个死叉)
-    # 今日ema5/ema10/ema20空头发散
-    ema_gold_cross_cnt = 0
-    if max(ema_gold_cross1[index - 2: index + 1]) == 1:
-        ema_gold_cross_cnt += 1
-    if max(ema_gold_cross2[index - 2: index + 1]) == 1:
-        ema_gold_cross_cnt += 1
-    if max(ema_gold_cross3[index - 2: index + 1]) == 1:
-        ema_gold_cross_cnt += 1
-    if max(ema_gold_cross4[index - 2: index + 1]) == 1:
-        ema_gold_cross_cnt += 1
-
-    is_spider1 = False
-    is_spider2 = False
-
-    # EMA金蜘蛛
-    if ema_gold_cross_cnt > 1 and ema[index][0] > ema[index][1] > ema[index][2]:
-        is_spider1 = True
-
-    # EMA金蜘蛛2
-    if ema_gold_cross_cnt > 2 and ema[index][0] > ema[index][1] > ema[index][2] > ema[index][3]:
-        is_spider2 = True
-
-    return is_spider1, is_spider2
-
-
 def is_ma_dead_valley(index, ma_dead_cross1, ma_dead_cross2, ma_dead_cross3):
     # MA死亡谷
     if index >= 10 and (ma_dead_cross2[index] == 1 or ma_dead_cross3[index] == 1):
@@ -1068,22 +786,6 @@ def is_ma_dead_valley(index, ma_dead_cross1, ma_dead_cross2, ma_dead_cross3):
         if max(ma_dead_cross2[index - 9: index + 1]) == 1:
             cross_cnt += 1
         if max(ma_dead_cross3[index - 9: index + 1]) == 1:
-            cross_cnt += 1
-
-        if cross_cnt >= 2:
-            return True
-
-    return False
-
-
-def is_ema_dead_valley(index, ema_dead_cross1, ema_dead_cross2, ema_dead_cross3):
-    if index >= 10 and (ema_dead_cross2[index] == 1 or ema_dead_cross3[index] == 1):
-        cross_cnt = 0
-        if max(ema_dead_cross1[index - 9: index + 1]) == 1:
-            cross_cnt += 1
-        if max(ema_dead_cross2[index - 9: index + 1]) == 1:
-            cross_cnt += 1
-        if max(ema_dead_cross3[index - 9: index + 1]) == 1:
             cross_cnt += 1
 
         if cross_cnt >= 2:
@@ -1120,35 +822,6 @@ def is_ma_knife(index, candles, ma, ma_slope):
         return False
 
 
-def is_ema_knife(index, candles, ema, ema_slope):
-    """
-    MA断头铡刀(5/10/20)
-    大阴线/中阴线
-    K线跌破ema5/ema10/ema20
-    昨日K线未跌破ema5/ema10/ema20
-    昨日出现均线粘合
-    过去13个交易日EMA20上行
-    """
-
-    pre_close = candles[index - 1][3]
-    _close = candles[index][3]
-    ema5 = ema[:, 0]
-    ema10 = ema[:, 1]
-    ema20 = ema[:, 2]
-
-    # 股票 要求涨跌幅不小于 4%
-    if type == 1 and candles[index][4] < 4:
-        return False
-
-    if _close < ema5[index] and _close < ema10[index] and _close < ema20[index] and \
-            (pre_close > ema[index - 1][0] or pre_close > ema[index - 1][1] or pre_close > ema[index - 1][2]) and \
-            ema_slope[index - 1][2] > 0 and ema[index - 1][0] > ema[index - 1][2] \
-            and ema[index - 1][1] > ema[index - 1][2]:
-        return True
-    else:
-        return False
-
-
 def is_ma_dark_cloud(index, ma_slope):
     # MA乌云密布
     # MA20持续下行 压制价格
@@ -1163,25 +836,6 @@ def is_ma_dark_cloud(index, ma_slope):
     if index > 10 and min(ma20_slope[index - 6: index + 1]) < 0 and max(ma20_slope[index - 6: index + 1]) > -0.6 and \
             min(ma10_slope[index - 6: index + 1]) > -0.5 and max(ma10_slope[index - 6: index + 1]) < 0.8 and \
             min(ma5_slope[index - 6: index + 1]) > -0.5 and max(ma5_slope[index - 6: index + 1]) < 1:
-        return True
-    else:
-        return False
-
-
-def is_ema_dark_cloud(index, ema_slope):
-    # EMA乌云密布
-    # EMA20持续下行 压制价格
-    # 最近7个交易日 0 > ema20_slope > -0.6
-    # 最近7个交易日 -0.5 < ema10_slope < 0.8
-    # 最近7个交易日 -0.5 < ema5_slope < 1
-
-    ema5_slope = ema_slope[:, 0]
-    ema10_slope = ema_slope[:, 1]
-    ema20_slope = ema_slope[:, 2]
-
-    if index > 10 and min(ema20_slope[index - 6: index + 1]) < 0 and max(ema20_slope[index - 6: index + 1]) > -0.6 and \
-            min(ema10_slope[index - 6: index + 1]) > -0.5 and max(ema10_slope[index - 6: index + 1]) < 0.8 and \
-            min(ema5_slope[index - 6: index + 1]) > -0.5 and max(ema5_slope[index - 6: index + 1]) < 1:
         return True
     else:
         return False

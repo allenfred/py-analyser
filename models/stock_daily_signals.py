@@ -73,49 +73,30 @@ class StockDailySignal(Base):
     ma_gold_cross2 = Column(SmallInteger)
     ma_gold_cross3 = Column(SmallInteger)
     ma_gold_cross4 = Column(SmallInteger)
-    ema_gold_cross1 = Column(SmallInteger)
-    ema_gold_cross2 = Column(SmallInteger)
-    ema_gold_cross3 = Column(SmallInteger)
-    ema_gold_cross4 = Column(SmallInteger)
 
     ma_dead_cross1 = Column(SmallInteger)
     ma_dead_cross2 = Column(SmallInteger)
     ma_dead_cross3 = Column(SmallInteger)
-    ema_dead_cross1 = Column(SmallInteger)
-    ema_dead_cross2 = Column(SmallInteger)
-    ema_dead_cross3 = Column(SmallInteger)
 
     ma_silver_valley = Column(SmallInteger)
-    ema_silver_valley = Column(SmallInteger)
     ma_gold_valley = Column(SmallInteger)
-    ema_gold_valley = Column(SmallInteger)
     ma_out_sea = Column(SmallInteger)
-    ema_out_sea = Column(SmallInteger)
     ma_hold_moon = Column(SmallInteger)
-    ema_hold_moon = Column(SmallInteger)
     ma_over_gate = Column(SmallInteger)
-    ema_over_gate = Column(SmallInteger)
     ma_up_ground = Column(SmallInteger)
-    ema_up_ground = Column(SmallInteger)
 
     ma_dead_valley = Column(SmallInteger)
-    ema_dead_valley = Column(SmallInteger)
     ma_knife = Column(SmallInteger)
-    ema_knife = Column(SmallInteger)
     ma_dark_cloud = Column(SmallInteger)
-    ema_dark_cloud = Column(SmallInteger)
     ma_set_sail = Column(SmallInteger)
-    ema_set_sail = Column(SmallInteger)
     ma_supreme = Column(SmallInteger)
-    ema_supreme = Column(SmallInteger)
     ma_dead_jump = Column(SmallInteger)
-    ema_dead_jump = Column(SmallInteger)
 
     up_ma_spider = Column(SmallInteger)
-    up_ema_spider = Column(SmallInteger)
-
     down_ma_spider = Column(SmallInteger)
-    down_ema_spider = Column(SmallInteger)
+
+    up_hill = Column(SmallInteger)
+    down_hill = Column(SmallInteger)
 
     up_td8 = Column(SmallInteger)
     up_td9 = Column(SmallInteger)
@@ -138,9 +119,7 @@ class StockDailySignal(Base):
     down_bias120 = Column(SmallInteger)
 
     ma60_support = Column(SmallInteger)
-    ema60_support = Column(SmallInteger)
     ma120_support = Column(SmallInteger)
-    ema120_support = Column(SmallInteger)
 
     ma_group_glue = Column(SmallInteger)
     ema_group_glue = Column(SmallInteger)
@@ -151,28 +130,14 @@ class StockDailySignal(Base):
     ma_up_arrange203060 = Column(SmallInteger)
     ma_up_arrange2060120 = Column(SmallInteger)
 
-    ema_up_arrange51020 = Column(SmallInteger)
-    ema_up_arrange5102030 = Column(SmallInteger)
-    ema_up_arrange510203060 = Column(SmallInteger)
-    ema_up_arrange203060 = Column(SmallInteger)
-    ema_up_arrange2055120 = Column(SmallInteger)
-
     ma_down_arrange51020 = Column(SmallInteger)
     ma_down_arrange5102030 = Column(SmallInteger)
     ma_down_arrange510203060 = Column(SmallInteger)
     ma_down_arrange203060 = Column(SmallInteger)
     ma_down_arrange2060120 = Column(SmallInteger)
 
-    ema_down_arrange51020 = Column(SmallInteger)
-    ema_down_arrange5102030 = Column(SmallInteger)
-    ema_down_arrange510203060 = Column(SmallInteger)
-    ema_down_arrange203060 = Column(SmallInteger)
-    ema_down_arrange2055120 = Column(SmallInteger)
-
     stand_up_ma60 = Column(SmallInteger)
     stand_up_ma120 = Column(SmallInteger)
-    stand_up_ema60 = Column(SmallInteger)
-    stand_up_ema120 = Column(SmallInteger)
 
     hammer = Column(SmallInteger)
     pour_hammer = Column(SmallInteger)
@@ -208,25 +173,6 @@ class StockDailySignal(Base):
     ma60_sixth = Column(SmallInteger)
     ma60_seventh = Column(SmallInteger)
     ma60_eighth = Column(SmallInteger)
-
-    ema55_first = Column(SmallInteger)
-    ema55_second = Column(SmallInteger)
-    ema55_third = Column(SmallInteger)
-    ema55_fourth = Column(SmallInteger)
-    ema55_fifth = Column(SmallInteger)
-    ema55_sixth = Column(SmallInteger)
-    ema55_seventh = Column(SmallInteger)
-    ema55_eighth = Column(SmallInteger)
-
-    ema60_first = Column(SmallInteger)
-    ema60_second = Column(SmallInteger)
-    ema60_third = Column(SmallInteger)
-    ema60_fourth = Column(SmallInteger)
-    ema60_fifth = Column(SmallInteger)
-    ema60_sixth = Column(SmallInteger)
-    ema60_seventh = Column(SmallInteger)
-    ema60_eighth = Column(SmallInteger)
-
 
 def get_obj(signal):
     signal = {k: v if not pd.isna(v) else None for k, v in signal.items()}
@@ -296,50 +242,31 @@ def get_obj(signal):
         ma_gold_cross2=signal.get('ma_gold_cross2', None),
         ma_gold_cross3=signal.get('ma_gold_cross3', None),
         ma_gold_cross4=signal.get('ma_gold_cross4', None),
-        ema_gold_cross1=signal.get('ema_gold_cross1', None),
-        ema_gold_cross2=signal.get('ema_gold_cross2', None),
-        ema_gold_cross3=signal.get('ema_gold_cross3', None),
-        ema_gold_cross4=signal.get('ema_gold_cross4', None),
 
         ma_dead_cross1=signal.get('ma_dead_cross1', None),
         ma_dead_cross2=signal.get('ma_dead_cross2', None),
         ma_dead_cross3=signal.get('ma_dead_cross3', None),
-        ema_dead_cross1=signal.get('ema_dead_cross1', None),
-        ema_dead_cross2=signal.get('ema_dead_cross2', None),
-        ema_dead_cross3=signal.get('ema_dead_cross3', None),
 
         ma_silver_valley=signal.get('ma_silver_valley', None),
-        ema_silver_valley=signal.get('ema_silver_valley', None),
         ma_gold_valley=signal.get('ma_gold_valley', None),
-        ema_gold_valley=signal.get('ema_gold_valley', None),
         ma_dead_valley=signal.get('ma_dead_valley', None),
-        ema_dead_valley=signal.get('ema_dead_valley', None),
 
         ma_out_sea=signal.get('ma_out_sea', None),
-        ema_out_sea=signal.get('ema_out_sea', None),
         ma_hold_moon=signal.get('ma_hold_moon', None),
-        ema_hold_moon=signal.get('ema_hold_moon', None),
         ma_over_gate=signal.get('ma_over_gate', None),
-        ema_over_gate=signal.get('ema_over_gate', None),
         ma_up_ground=signal.get('ma_up_ground', None),
-        ema_up_ground=signal.get('ema_up_ground', None),
 
         ma_knife=signal.get('ma_knife', None),
-        ema_knife=signal.get('ema_knife', None),
         ma_dark_cloud=signal.get('ma_dark_cloud', None),
-        ema_dark_cloud=signal.get('ema_dark_cloud', None),
         ma_set_sail=signal.get('ma_set_sail', None),
-        ema_set_sail=signal.get('ema_set_sail', None),
         ma_supreme=signal.get('ma_supreme', None),
-        ema_supreme=signal.get('ema_supreme', None),
         ma_dead_jump=signal.get('ma_dead_jump', None),
-        ema_dead_jump=signal.get('ema_dead_jump', None),
 
         up_ma_spider=signal.get('up_ma_spider', None),
-        up_ema_spider=signal.get('up_ema_spider', None),
-
         down_ma_spider=signal.get('down_ma_spider', None),
-        down_ema_spider=signal.get('down_ema_spider', None),
+
+        up_hill=signal.get('up_hill', None),
+        down_hill=signal.get('down_hill', None),
 
         up_td8=signal.get('up_td8', None),
         up_td9=signal.get('up_td9', None),
@@ -362,39 +289,24 @@ def get_obj(signal):
         down_bias120=signal.get('down_bias120', None),
 
         ma60_support=signal.get('ma60_support', None),
-        ema60_support=signal.get('ema60_support', None),
         ma120_support=signal.get('ma120_support', None),
-        ema120_support=signal.get('ema120_support', None),
 
         ma_group_glue=signal.get('ma_group_glue', None),
-        ema_group_glue=signal.get('ema_group_glue', None),
 
         ma_up_arrange51020=signal.get('ma_up_arrange51020', None),
         ma_up_arrange5102030=signal.get('ma_up_arrange5102030', None),
         ma_up_arrange510203060=signal.get('ma_up_arrange510203060', None),
         ma_up_arrange203060=signal.get('ma_up_arrange203060', None),
         ma_up_arrange2060120=signal.get('ma_up_arrange2060120', None),
-        ema_up_arrange51020=signal.get('ema_up_arrange51020', None),
-        ema_up_arrange5102030=signal.get('ema_up_arrange5102030', None),
-        ema_up_arrange510203060=signal.get('ema_up_arrange510203060', None),
-        ema_up_arrange203060=signal.get('ema_up_arrange203060', None),
-        ema_up_arrange2055120=signal.get('ema_up_arrange2055120', None),
 
         ma_down_arrange51020=signal.get('ma_down_arrange51020', None),
         ma_down_arrange5102030=signal.get('ma_down_arrange5102030', None),
         ma_down_arrange510203060=signal.get('ma_down_arrange510203060', None),
         ma_down_arrange203060=signal.get('ma_down_arrange203060', None),
         ma_down_arrange2060120=signal.get('ma_down_arrange2060120', None),
-        ema_down_arrange51020=signal.get('ema_down_arrange51020', None),
-        ema_down_arrange5102030=signal.get('ema_down_arrange5102030', None),
-        ema_down_arrange510203060=signal.get('ema_down_arrange510203060', None),
-        ema_down_arrange203060=signal.get('ema_down_arrange203060', None),
-        ema_down_arrange2055120=signal.get('ema_down_arrange2055120', None),
 
         stand_up_ma60=signal.get('stand_up_ma60', None),
         stand_up_ma120=signal.get('stand_up_ma120', None),
-        stand_up_ema60=signal.get('stand_up_ema60', None),
-        stand_up_ema120=signal.get('stand_up_ema120', None),
 
         hammer=signal.get('hammer', None),
         pour_hammer=signal.get('pour_hammer', None),
@@ -431,23 +343,6 @@ def get_obj(signal):
         ma60_seventh=signal.get('ma60_seventh', None),
         ma60_eighth=signal.get('ma60_eighth', None),
 
-        ema55_first=signal.get('ema55_first', None),
-        ema55_second=signal.get('ema55_second', None),
-        ema55_third=signal.get('ema55_third', None),
-        ema55_fourth=signal.get('ema55_fourth', None),
-        ema55_fifth=signal.get('ema55_fifth', None),
-        ema55_sixth=signal.get('ema55_sixth', None),
-        ema55_seventh=signal.get('ema55_seventh', None),
-        ema55_eighth=signal.get('ema55_eighth', None),
-
-        ema60_first=signal.get('ema60_first', None),
-        ema60_second=signal.get('ema60_second', None),
-        ema60_third=signal.get('ema60_third', None),
-        ema60_fourth=signal.get('ema60_fourth', None),
-        ema60_fifth=signal.get('ema60_fifth', None),
-        ema60_sixth=signal.get('ema60_sixth', None),
-        ema60_seventh=signal.get('ema60_seventh', None),
-        ema60_eighth=signal.get('ema60_eighth', None),
     )
 
 
@@ -613,14 +508,6 @@ class StockDailySignalDao:
                     row.ma_gold_cross3 = obj.ma_gold_cross3
                 if obj.ma_gold_cross4 is not None:
                     row.ma_gold_cross4 = obj.ma_gold_cross4
-                if obj.ema_gold_cross1 is not None:
-                    row.ema_gold_cross1 = obj.ema_gold_cross1
-                if obj.ema_gold_cross2 is not None:
-                    row.ema_gold_cross2 = obj.ema_gold_cross2
-                if obj.ema_gold_cross3 is not None:
-                    row.ema_gold_cross3 = obj.ema_gold_cross3
-                if obj.ema_gold_cross4 is not None:
-                    row.ema_gold_cross4 = obj.ema_gold_cross4
 
                 if obj.ma_dead_cross1 is not None:
                     row.ma_dead_cross1 = obj.ma_dead_cross1
@@ -628,73 +515,46 @@ class StockDailySignalDao:
                     row.ma_dead_cross2 = obj.ma_dead_cross2
                 if obj.ma_dead_cross3 is not None:
                     row.ma_dead_cross3 = obj.ma_dead_cross3
-                if obj.ema_dead_cross1 is not None:
-                    row.ema_dead_cross1 = obj.ema_dead_cross1
-                if obj.ema_dead_cross2 is not None:
-                    row.ema_dead_cross2 = obj.ema_dead_cross2
-                if obj.ema_dead_cross3 is not None:
-                    row.ema_dead_cross3 = obj.ema_dead_cross3
 
                 if obj.ma_silver_valley is not None:
                     row.ma_silver_valley = obj.ma_silver_valley
-                if obj.ema_silver_valley is not None:
-                    row.ema_silver_valley = obj.ema_silver_valley
                 if obj.ma_gold_valley is not None:
                     row.ma_gold_valley = obj.ma_gold_valley
-                if obj.ema_gold_valley is not None:
-                    row.ema_gold_valley = obj.ema_gold_valley
 
                 if obj.ma_dead_valley is not None:
                     row.ma_dead_valley = obj.ma_dead_valley
-                if obj.ema_dead_valley is not None:
-                    row.ema_dead_valley = obj.ema_dead_valley
 
                 if obj.ma_out_sea is not None:
                     row.ma_out_sea = obj.ma_out_sea
-                if obj.ema_out_sea is not None:
-                    row.ema_out_sea = obj.ema_out_sea
                 if obj.ma_hold_moon is not None:
                     row.ma_hold_moon = obj.ma_hold_moon
-                if obj.ema_hold_moon is not None:
-                    row.ema_hold_moon = obj.ema_hold_moon
                 if obj.ma_over_gate is not None:
                     row.ma_over_gate = obj.ma_over_gate
-                if obj.ema_over_gate is not None:
-                    row.ema_over_gate = obj.ema_over_gate
                 if obj.ma_up_ground is not None:
                     row.ma_up_ground = obj.ma_up_ground
-                if obj.ema_up_ground is not None:
-                    row.ema_up_ground = obj.ema_up_ground
 
                 if obj.ma_knife is not None:
                     row.ma_knife = obj.ma_knife
-                if obj.ema_knife is not None:
-                    row.ema_knife = obj.ema_knife
                 if obj.ma_dark_cloud is not None:
                     row.ma_dark_cloud = obj.ma_dark_cloud
-                if obj.ema_dark_cloud is not None:
-                    row.ema_dark_cloud = obj.ema_dark_cloud
                 if obj.ma_set_sail is not None:
                     row.ma_set_sail = obj.ma_set_sail
-                if obj.ema_set_sail is not None:
-                    row.ema_set_sail = obj.ema_set_sail
                 if obj.ma_supreme is not None:
                     row.ma_supreme = obj.ma_supreme
-                if obj.ema_supreme is not None:
-                    row.ema_supreme = obj.ema_supreme
                 if obj.ma_dead_jump is not None:
                     row.ma_dead_jump = obj.ma_dead_jump
-                if obj.ema_dead_jump is not None:
-                    row.ema_dead_jump = obj.ema_dead_jump
+                if obj.ma_group_glue is not None:
+                    row.ma_group_glue = obj.ma_group_glue
 
                 if obj.up_ma_spider is not None:
                     row.up_ma_spider = obj.up_ma_spider
-                if obj.up_ema_spider is not None:
-                    row.up_ema_spider = obj.up_ema_spider
                 if obj.down_ma_spider is not None:
                     row.down_ma_spider = obj.down_ma_spider
-                if obj.down_ema_spider is not None:
-                    row.down_ema_spider = obj.down_ema_spider
+
+                if obj.up_hill is not None:
+                    row.up_hill = obj.up_hill
+                if obj.down_hill is not None:
+                    row.down_hill = obj.down_hill
 
                 if obj.up_td8 is not None:
                     row.up_td8 = obj.up_td8
@@ -733,17 +593,8 @@ class StockDailySignalDao:
 
                 if obj.ma60_support is not None:
                     row.ma60_support = obj.ma60_support
-                if obj.ema60_support is not None:
-                    row.ema60_support = obj.ema60_support
                 if obj.ma120_support is not None:
                     row.ma120_support = obj.ma120_support
-                if obj.ema120_support is not None:
-                    row.ema120_support = obj.ema120_support
-
-                if obj.ma_group_glue is not None:
-                    row.ma_group_glue = obj.ma_group_glue
-                if obj.ema_group_glue is not None:
-                    row.ema_group_glue = obj.ema_group_glue
 
                 if obj.ma_up_arrange51020 is not None:
                     row.ma_up_arrange51020 = obj.ma_up_arrange51020
@@ -755,16 +606,6 @@ class StockDailySignalDao:
                     row.ma_up_arrange203060 = obj.ma_up_arrange203060
                 if obj.ma_up_arrange2060120 is not None:
                     row.ma_up_arrange2060120 = obj.ma_up_arrange2060120
-                if obj.ema_up_arrange51020 is not None:
-                    row.ema_up_arrange51020 = obj.ema_up_arrange51020
-                if obj.ema_up_arrange5102030 is not None:
-                    row.ema_up_arrange5102030 = obj.ema_up_arrange5102030
-                if obj.ema_up_arrange510203060 is not None:
-                    row.ema_up_arrange510203060 = obj.ema_up_arrange510203060
-                if obj.ema_up_arrange203060 is not None:
-                    row.ema_up_arrange203060 = obj.ema_up_arrange203060
-                if obj.ema_up_arrange2055120 is not None:
-                    row.ema_up_arrange2055120 = obj.ema_up_arrange2055120
 
                 if obj.ma_down_arrange51020 is not None:
                     row.ma_down_arrange51020 = obj.ma_down_arrange51020
@@ -776,25 +617,11 @@ class StockDailySignalDao:
                     row.ma_down_arrange203060 = obj.ma_down_arrange203060
                 if obj.ma_down_arrange2060120 is not None:
                     row.ma_down_arrange2060120 = obj.ma_down_arrange2060120
-                if obj.ema_down_arrange51020 is not None:
-                    row.ema_down_arrange51020 = obj.ema_down_arrange51020
-                if obj.ema_down_arrange5102030 is not None:
-                    row.ema_down_arrange5102030 = obj.ema_down_arrange5102030
-                if obj.ema_down_arrange510203060 is not None:
-                    row.ema_down_arrange510203060 = obj.ema_down_arrange510203060
-                if obj.ema_down_arrange203060 is not None:
-                    row.ema_down_arrange203060 = obj.ema_down_arrange203060
-                if obj.ema_down_arrange2055120 is not None:
-                    row.ema_down_arrange2055120 = obj.ema_down_arrange2055120
 
                 if obj.stand_up_ma60 is not None:
                     row.stand_up_ma60 = obj.stand_up_ma60
                 if obj.stand_up_ma120 is not None:
                     row.stand_up_ma120 = obj.stand_up_ma120
-                if obj.stand_up_ema60 is not None:
-                    row.stand_up_ema60 = obj.stand_up_ema60
-                if obj.stand_up_ema120 is not None:
-                    row.stand_up_ema120 = obj.stand_up_ema120
 
                 if obj.hammer is not None:
                     row.hammer = obj.hammer
@@ -859,41 +686,6 @@ class StockDailySignalDao:
                     row.ma60_seventh = obj.ma60_seventh
                 if obj.ma60_eighth is not None:
                     row.ma60_eighth = obj.ma60_eighth
-
-                if obj.ema55_first is not None:
-                    row.ema55_first = obj.ema55_first
-                if obj.ema55_second is not None:
-                    row.ema55_second = obj.ema55_second
-                if obj.ema55_third is not None:
-                    row.ema55_third = obj.ema55_third
-                if obj.ema55_fourth is not None:
-                    row.ema55_fourth = obj.ema55_fourth
-                if obj.ema55_fifth is not None:
-                    row.ema55_fifth = obj.ema55_fifth
-                if obj.ema55_sixth is not None:
-                    row.ema55_sixth = obj.ema55_sixth
-                if obj.ema55_seventh is not None:
-                    row.ema55_seventh = obj.ema55_seventh
-                if obj.ema55_eighth is not None:
-                    row.ema55_eighth = obj.ema55_eighth
-
-                if obj.ema60_first is not None:
-                    row.ema60_first = obj.ema60_first
-                if obj.ema60_second is not None:
-                    row.ema60_second = obj.ema60_second
-                if obj.ema60_third is not None:
-                    row.ema60_third = obj.ema60_third
-                if obj.ema60_fourth is not None:
-                    row.ema60_fourth = obj.ema60_fourth
-                if obj.ema60_fifth is not None:
-                    row.ema60_fifth = obj.ema60_fifth
-                if obj.ema60_sixth is not None:
-                    row.ema60_sixth = obj.ema60_sixth
-                if obj.ema60_seventh is not None:
-                    row.ema60_seventh = obj.ema60_seventh
-                if obj.ema60_eighth is not None:
-                    row.ema60_eighth = obj.ema60_eighth
-
 
         except Exception as e:
             print('Error:', e)
