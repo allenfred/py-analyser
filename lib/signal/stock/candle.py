@@ -14,6 +14,8 @@ def is_hammer(i, candles):
     1.市场处于清晰的下降趋势
     2.当前K线收出锤头线形态
     3.当前K线最低价为近期最低价
+    4..K线震幅大于6%
+
 
     :param i: 当前tick
     :param candles:
@@ -32,6 +34,7 @@ def is_hammer(i, candles):
     _high = high[i]
     _low = low[i]
     _close = close[i]
+    pre_close = close[i - 1]
 
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
@@ -44,7 +47,8 @@ def is_hammer(i, candles):
     # 开盘价和收盘价都位于k线上方1/3处 (即：下影线长度占k线长度的2/3以上）
     # 上影线长度需小于柱体长度的1/5
     if lowest_low == _low and _open > up_one_third and _close > up_one_third \
-            and up_shadow_len < bar_len / 5:
+            and up_shadow_len < bar_len / 5 \
+        and pre_close * 0.06 <= k_len:
         return True
 
     return False
@@ -57,6 +61,7 @@ def is_pour_hammer(i, candles):
     1.市场处于清晰的下降趋势
     2.当前K线收出倒锤头线形态
     3.当前K线最低价为近期最低价
+    4..K线震幅大于6%
 
     :param i: 当前tick
     :param candles:
@@ -75,6 +80,7 @@ def is_pour_hammer(i, candles):
     _high = high[i]
     _low = low[i]
     _close = close[i]
+    pre_close = close[i - 1]
 
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
@@ -88,7 +94,8 @@ def is_pour_hammer(i, candles):
     # 开盘价和收盘价都位于k线下方1/3处 (即：上影线长度占k线长度的2/3以上）
     # 下影线长度需小于柱体长度的1/5
     if lowest_low == _low and _open < bottom_one_third and _close < bottom_one_third \
-            and bottom_shadow_len < bar_len / 5:
+            and bottom_shadow_len < bar_len / 5 \
+            and pre_close * 0.06 <= k_len:
         return True
 
     return False

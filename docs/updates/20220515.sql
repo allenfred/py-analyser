@@ -1,0 +1,1 @@
+alter table stocks add COLUMN ex_date date DEFAULT null COMMENT '除权除息日';

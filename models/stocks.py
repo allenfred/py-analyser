@@ -49,6 +49,7 @@ class Stock(Base):
     indicator_date = Column(Date)  # 上一次计算indicator完成日期
     weekly_date = Column(Date)  # 上一次计算weekly candle完成日期
     amount = Column(Float)  # 最近一个交易日的成交额
+    ex_date = Column(Date)  # 除权除息日
 
 
 stocks = Table('stocks', metadata_obj,
@@ -86,7 +87,8 @@ stocks = Table('stocks', metadata_obj,
                Column('candle_date', Date),
                Column('indicator_date', Date),
                Column('weekly_date', Date),
-               Column('amount', Float)
+               Column('amount', Float),
+               Column('ex_date', Date),
                )
 
 
@@ -128,7 +130,8 @@ def get_obj(item):
         candle_date=item.get('candle_date', None),
         indicator_date=item.get('indicator_date', None),
         weekly_date=item.get('weekly_date', None),
-        amount=item.get('amount', None)  # 成交额
+        amount=item.get('amount', None),  # 成交额
+        ex_date=item.get('ex_date', None)  # 除权除息日
     )
 
 
@@ -280,6 +283,8 @@ class StockDao:
                     row.weekly_date = obj.get('weekly_date')
                 if obj.get('amount') is not None:
                     row.amount = obj.get('amount')
+                if obj.get('ex_date') is not None:
+                    row.ex_date = obj.get('ex_date')
 
         except Exception as e:
             print('Error:', e)
@@ -368,6 +373,8 @@ class StockDao:
                         row.circ_mv = obj.circ_mv
                     if obj.amount is not None:
                         row.amount = obj.amount
+                    if obj.ex_date is not None:
+                        row.ex_date = obj.ex_date
 
             except Exception as e:
                 print('Error:', e)

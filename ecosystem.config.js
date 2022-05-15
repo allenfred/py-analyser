@@ -11,6 +11,16 @@ module.exports = {
       autorestart: false,
     },
     {
+      name: 'stockCN-dividend',
+      script: 'jobs/candles/daily/check_cn_dividend.py',
+      interpreter: 'python3',
+      instances: 1,
+      exec_mode: 'fork',
+      cron_restart: '30 16 * * *', // 每个交易日下午 16:30
+      watch: false,
+      autorestart: false,
+    },
+    {
       name: 'stockHK-daily',
       script: 'jobs/candles/daily/hk_stock_daily.py',
       interpreter: 'python3',

@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Integer, String, Date, Float, select, text
+from sqlalchemy import Column, Integer, String, Date, Float, select, text, update, bindparam
 from sqlalchemy.ext.declarative import declarative_base
-from .db import DBSession
+from .db import engine, DBSession
 import pandas as pd
+from datetime import datetime, date
+import mysql.connector
 
 Base = declarative_base()
 
@@ -153,8 +155,6 @@ class CNDailyCandleDao:
                 if row is None:
                     self.session.add(obj)
                 else:
-                    if obj.exchange is not None:
-                        row.exchange = obj.exchange
                     if obj.open is not None:
                         row.open = obj.open
                     if obj.high is not None:
@@ -211,3 +211,54 @@ class CNDailyCandleDao:
         self.session.close()
 
         return df
+
+    # def bulk_update(self, df):
+    #     # updated_df = df[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
+    #     ts_code = df['ts_code'][0]
+    #     # f = updated_df[updated_df['trade_date'] == '20220512']
+    #     # print(f.iloc[0].open)
+    #     s = text("select id, trade_date, open, close, high, low from cn_daily_candles where ts_code = :ts_code "
+    #              "order by trade_date desc limit 0,:limit;").params(limit=len(df))
+    #     statement = self.session.execute(s.params(ts_code=ts_code))
+    #     db_df = pd.DataFrame(statement.fetchall(), columns=['id', 'trade_date', 'open', 'close', 'high', 'low'])
+    #
+    #     mappings = []
+    #
+    #     for row in db_df.itertuples():
+    #         dte = datetime.strftime(row.trade_date, "%Y%m%d")
+    #         f = df[df['trade_date'] == dte]
+    #         i = f.iloc[0]
+    #         # print(row.trade_date, i.trade_date, f.iloc[0].open)
+    #         mappings.append({'id': row.id, 'open': i.open, 'high': i.high, 'low': i.low, 'close': i.close})
+    #
+    #     self.session.bulk_update_mappings(CNDailyCandle, mappings)
+    #     self.session.commit()
+
+    def bulk_update(self, df):
+        conn = mysql.connector.connect(host="8.210.170.98", user='dev',
+                                       password='dev123456', database='quant')
+        cursor = conn.cursor()
+        ts_code = df['ts_code'][0]
+        querysql = 'select id, trade_date, open, high, low, close from cn_daily_candles ' \
+                   'where ts_code = %s order by trade_date desc  limit 0,%s;'
+        cursor.execute(querysql, (ts_code, len(df)))
+        db_df = pd.DataFrame(cursor.fetchall(), columns=['id', 'trade_date', 'open', 'high', 'low', 'close'])
+
+        updated_rows_cnt = 0
+        for item in db_df.itertuples():
+            dte = datetime.strftime(item.trade_date, "%Y%m%d")
+            i = df[df['trade_date'] == dte].iloc[0]
+
+            if not (i.open == item.open and i.high == item.high and i.low == item.low and i.close == item.close):
+                updated_rows_cnt += 1
+                sql = 'update cn_daily_candles set open = %s, high = %s, low = %s, close = %s ' \
+                      'where id = %s;'
+                cursor.execute(sql, (float(i.open), float(i.high), float(i.low), float(i.close), item.id))
+
+        if updated_rows_cnt > 0:
+            print(ts_code, '已更新K线:', updated_rows_cnt)
+        else:
+            print(ts_code, '无需更新')
+
+        conn.commit()
+        cursor.close()

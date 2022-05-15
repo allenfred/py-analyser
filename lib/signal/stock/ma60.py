@@ -261,7 +261,7 @@ def is_ma60_sixth(index, candles, bias, ma, ma_slope):
                 flag = False
         return flag
 
-    if index > 90 and ma_rise_before() and ma_down_recently() and 11 > _bias60 > -11:
+    if index > 90 and _close < _ma60 and ma_rise_before() and ma_down_recently() and 8 > _bias60 > -7:
         return True
     else:
         return False
@@ -335,7 +335,7 @@ def is_ma60_eighth(index, candles, bias, ma, ma_slope):
 
     def stand_on_ma_temp():
         tag = 0
-        for i in range(13):
+        for i in range(7):
             if candles[index - i - 1][3] > ma60[index - i - 1]:
                 tag += 1
         return tag >= 2
