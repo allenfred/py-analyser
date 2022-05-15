@@ -11,11 +11,12 @@ from config.common import TS_TOKEN
 from models.stocks import StockDao
 from models.cn_daily_candles import CNDailyCandleDao
 
-pro = ts.pro_api(TS_TOKEN)
+ts.set_token(TS_TOKEN)
+pro = ts.pro_api()
 stockDao = StockDao()
 dailyCandleDao = CNDailyCandleDao()
 
-print(TS_TOKEN)
+
 def check_daily():
     start = time.time()
     today = datetime.now().strftime("%Y%m%d")
