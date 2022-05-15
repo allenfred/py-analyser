@@ -43,8 +43,8 @@ def check_all():
     today = datetime.now().strftime("%Y%m%d")
     year_ago = (datetime.now() - timedelta(days=360)).strftime("%Y%m%d")
 
-    check_days = 4
-    while check_days < 200:
+    check_days = 200
+    while check_days < 360:
         ex_date = (datetime.now() - timedelta(days=check_days)).strftime("%Y%m%d")
         # 获取除权除息日的股票
         df = pro.dividend(ex_date=ex_date, fields='ts_code,div_proc,stk_div,record_date,ex_date')
