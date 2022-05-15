@@ -15,7 +15,7 @@ pro = ts.pro_api(TS_TOKEN)
 stockDao = StockDao()
 dailyCandleDao = CNDailyCandleDao()
 
-
+print(TS_TOKEN)
 def check_daily():
     start = time.time()
     today = datetime.now().strftime("%Y%m%d")
