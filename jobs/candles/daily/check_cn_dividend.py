@@ -24,15 +24,15 @@ def check_daily():
     # 获取当天是除权除息日的股票
     df = pro.dividend(ex_date=today, fields='ts_code,div_proc,stk_div,record_date,ex_date')
     year_ago = (datetime.now() - timedelta(days=360)).strftime("%Y%m%d")
-    print(df['ts_code'])
+    print(today, '当日除权除息股票: ', len(df))
 
     for row in df.itertuples():
         df = ts.pro_bar(ts_code=row.ts_code, adj='qfq', start_date=year_ago, end_date=today)
         print(row.ts_code, '获取行情完成, 当前用时', round(time.time() - start, 2), 's')
 
         stockDao.update({'ts_code': row.ts_code, 'ex_date': row.ex_date})
-        dailyCandleDao.bulk_update(df)
-        print(row.ts_code, '更新行情完成, 当前用时', round(time.time() - start, 2), 's')
+        cnt = dailyCandleDao.bulk_update(df)
+        print(row.ts_code, '更新K线: ', cnt, ',当前用时', round(time.time() - start, 2), 's')
 
     end = time.time()
     print('总用时', round(end - start, 2), 's')
@@ -65,4 +65,4 @@ def check_all():
 
 
 if __name__ == "__main__":
-    check_all()
+    check_daily()

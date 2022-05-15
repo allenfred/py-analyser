@@ -212,29 +212,10 @@ class CNDailyCandleDao:
 
         return df
 
-    # def bulk_update(self, df):
-    #     # updated_df = df[['ts_code', 'trade_date', 'open', 'high', 'low', 'close']]
-    #     ts_code = df['ts_code'][0]
-    #     # f = updated_df[updated_df['trade_date'] == '20220512']
-    #     # print(f.iloc[0].open)
-    #     s = text("select id, trade_date, open, close, high, low from cn_daily_candles where ts_code = :ts_code "
-    #              "order by trade_date desc limit 0,:limit;").params(limit=len(df))
-    #     statement = self.session.execute(s.params(ts_code=ts_code))
-    #     db_df = pd.DataFrame(statement.fetchall(), columns=['id', 'trade_date', 'open', 'close', 'high', 'low'])
-    #
-    #     mappings = []
-    #
-    #     for row in db_df.itertuples():
-    #         dte = datetime.strftime(row.trade_date, "%Y%m%d")
-    #         f = df[df['trade_date'] == dte]
-    #         i = f.iloc[0]
-    #         # print(row.trade_date, i.trade_date, f.iloc[0].open)
-    #         mappings.append({'id': row.id, 'open': i.open, 'high': i.high, 'low': i.low, 'close': i.close})
-    #
-    #     self.session.bulk_update_mappings(CNDailyCandle, mappings)
-    #     self.session.commit()
-
     def bulk_update(self, df):
+        if len(df) == 0:
+            return 0
+
         conn = mysql.connector.connect(host="8.210.170.98", user='dev',
                                        password='dev123456', database='quant')
         cursor = conn.cursor()
@@ -255,10 +236,7 @@ class CNDailyCandleDao:
                       'where id = %s;'
                 cursor.execute(sql, (float(i.open), float(i.high), float(i.low), float(i.close), item.id))
 
-        if updated_rows_cnt > 0:
-            print(ts_code, '已更新K线:', updated_rows_cnt)
-        else:
-            print(ts_code, '无需更新')
-
         conn.commit()
         cursor.close()
+
+        return updated_rows_cnt
