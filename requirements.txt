@@ -4,3 +4,4 @@ PyMySQL==1.0.2
 SQLAlchemy==1.4.23
 TA-Lib==0.4.15
 tushare==1.2.64
+mysql-connector-python==8.0.29
