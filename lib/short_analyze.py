@@ -99,36 +99,25 @@ def short_analyze(org_df):
     ma_dead_cross2 = []
     ma_dead_cross3 = []
     ma_dead_cross4 = []
-    ema_dead_cross1 = []
-    ema_dead_cross2 = []
-    ema_dead_cross3 = []
-    ema_dead_cross4 = []
 
     ma_dead_valley = []
-    ema_dead_valley = []
 
     # 断头铡刀
     ma_knife = []
-    ema_knife = []
 
     # 乌云密布
     ma_dark_cloud = []
-    ema_dark_cloud = []
 
     # 战机起航
     ma_set_sail = []
-    ema_set_sail = []
 
     # 气贯长虹
     ma_supreme = []
-    ema_supreme = []
 
     # 绝命跳
     ma_dead_jump = []
-    ema_dead_jump = []
 
     down_ma_spider = []
-    down_ema_spider = []
 
     up_td8 = []
     up_td9 = []
