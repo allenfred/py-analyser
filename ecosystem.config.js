@@ -1,8 +1,8 @@
 module.exports = {
   apps: [
     {
-      name: 'stockCN-daily',
-      script: 'jobs/candles/daily/cn_stock_daily.py',
+      name: 'klines_CN',
+      script: 'jobs/candles/daily/cn.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
@@ -11,8 +11,8 @@ module.exports = {
       autorestart: false,
     },
     {
-      name: 'stockCN-dividend',
-      script: 'jobs/candles/daily/check_cn_dividend.py',
+      name: 'cn-dividend',
+      script: 'jobs/candles/daily/cn_dividend.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
@@ -21,8 +21,8 @@ module.exports = {
       autorestart: false,
     },
     {
-      name: 'stockHK-daily',
-      script: 'jobs/candles/daily/hk_stock_daily.py',
+      name: 'klines_HK',
+      script: 'jobs/candles/daily/hk.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
@@ -31,18 +31,18 @@ module.exports = {
       autorestart: false,
     },
     {
-      name: 'stockUS-daily',
-      script: 'jobs/candles/daily/us_stock_daily.py',
+      name: 'klines_US',
+      script: 'jobs/candles/daily/us.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '0 10 * * *', // 每天上午 10:00
+      cron_restart: '0 13 * * *', // 每天下午 13:00
       watch: false,
       autorestart: false,
     },
     {
-      name: 'stockCN-weekly',
-      script: 'jobs/candles/weekly/cn_stock_weekly.py',
+      name: 'cn-weekly',
+      script: 'jobs/candles/weekly/cn.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
@@ -51,8 +51,8 @@ module.exports = {
       autorestart: false,
     },
     {
-      name: 'stockCN-basic',
-      script: 'jobs/candles/daily/cn_stock_daily_basic.py',
+      name: 'cn-basic',
+      script: 'jobs/candles/daily/cn_basic.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
@@ -61,8 +61,8 @@ module.exports = {
       autorestart: false,
     },
     {
-      name: 'CNdaily-analysis',
-      script: 'jobs/analysis/daily/stock_cn.py',
+      name: 'analysis_CN',
+      script: 'jobs/analysis/daily/cn.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
@@ -71,8 +71,8 @@ module.exports = {
       autorestart: false,
     },
     {
-      name: 'HKdaily-analysis',
-      script: 'jobs/analysis/daily/stock_hk.py',
+      name: 'analysis_HK',
+      script: 'jobs/analysis/daily/hk.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
@@ -81,8 +81,8 @@ module.exports = {
       autorestart: false,
     },
     {
-      name: 'USdaily-analysis',
-      script: 'jobs/analysis/daily/stock_us.py',
+      name: 'analysis_US',
+      script: 'jobs/analysis/daily/us.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
