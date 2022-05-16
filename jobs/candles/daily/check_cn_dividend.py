@@ -27,11 +27,11 @@ def check_daily():
     print(today, '当日除权除息股票: ', len(df))
 
     for row in df.itertuples():
-        df = ts.pro_bar(ts_code=row.ts_code, adj='qfq', start_date=year_ago, end_date=today)
+        k_df = ts.pro_bar(ts_code=row.ts_code, adj='qfq', start_date=year_ago, end_date=today)
         print(row.ts_code, '获取行情完成, 当前用时', round(time.time() - start, 2), 's')
 
         stockDao.update({'ts_code': row.ts_code, 'ex_date': row.ex_date})
-        cnt = dailyCandleDao.bulk_update(df)
+        cnt = dailyCandleDao.bulk_update(k_df)
         print(row.ts_code, '更新K线: ', cnt, ',当前用时', round(time.time() - start, 2), 's')
 
     end = time.time()
@@ -51,11 +51,11 @@ def check_all():
         print(ex_date, df['ts_code'].to_numpy())
 
         for row in df.itertuples():
-            df = ts.pro_bar(ts_code=row.ts_code, adj='qfq', start_date=year_ago, end_date=today)
+            k_df = ts.pro_bar(ts_code=row.ts_code, adj='qfq', start_date=year_ago, end_date=today)
             print(row.ts_code, '获取行情完成, 当前用时', round(time.time() - start, 2), 's')
 
             stockDao.update({'ts_code': row.ts_code, 'ex_date': row.ex_date})
-            dailyCandleDao.bulk_update(df)
+            dailyCandleDao.bulk_update(k_df)
             print(row.ts_code, '更新行情完成, 当前用时', round(time.time() - start, 2), 's')
 
         check_days += 1
