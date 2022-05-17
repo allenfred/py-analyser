@@ -2,11 +2,8 @@
 
 from .signal.stock.candle import is_long_end, is_swallow_down, \
     is_hang_neck, is_shooting, is_jump_line, is_up_screw
-from .signal.stock.ma60 import is_ma60_fifth, is_ma60_sixth, is_ma60_seventh, is_ma60_eighth
-from .signal.stock.ma55 import is_ma55_fifth, is_ma55_sixth, is_ma55_seventh, is_ma55_eighth
 
 
-# def short_analyze(candle, ma, ema, ma_slope, ema_slope, bias, td):
 def short_analyze(org_df):
     """
     计算空头信号
@@ -135,26 +132,6 @@ def short_analyze(org_df):
     shooting = []
     jump_line = []
     up_screw = []
-
-    ma55_fifth = []
-    ma55_sixth = []
-    ma55_seventh = []
-    ma55_eighth = []
-
-    ma60_fifth = []
-    ma60_sixth = []
-    ma60_seventh = []
-    ma60_eighth = []
-
-    ema55_fifth = []
-    ema55_sixth = []
-    ema55_seventh = []
-    ema55_eighth = []
-
-    ema60_fifth = []
-    ema60_sixth = []
-    ema60_seventh = []
-    ema60_eighth = []
 
     for index in range(len(candle)):
         _open = open[index]
@@ -509,55 +486,6 @@ def short_analyze(org_df):
         else:
             up_screw.insert(index, 0)
 
-        # MA55 葛南维第5大法则
-        if is_ma55_fifth(index, candle, bias, ma, ma_slope):
-            ma55_fifth.insert(index, 1)
-        else:
-            ma55_fifth.insert(index, 0)
-
-        # MA55 葛南维第6大法则
-        if is_ma55_sixth(index, candle, bias, ma, ma_slope):
-            ma55_sixth.insert(index, 1)
-        else:
-            ma55_sixth.insert(index, 0)
-
-        # MA55 葛南维第7大法则
-        if is_ma55_seventh(index, candle, bias, ma, ma_slope):
-            ma55_seventh.insert(index, 1)
-        else:
-            ma55_seventh.insert(index, 0)
-
-        # MA55 葛南维第8大法则
-        if is_ma55_eighth(index, candle, bias, ma, ma_slope):
-            ma55_eighth.insert(index, 1)
-        else:
-            ma55_eighth.insert(index, 0)
-
-        # MA60 葛南维第5大法则
-        if is_ma60_fifth(index, candle, bias, ma, ma_slope):
-            ma60_fifth.insert(index, 1)
-        else:
-            ma60_fifth.insert(index, 0)
-
-        # MA60 葛南维第6大法则
-        if is_ma60_sixth(index, candle, bias, ma, ma_slope):
-            ma60_sixth.insert(index, 1)
-        else:
-            ma60_sixth.insert(index, 0)
-
-        # MA60 葛南维第7大法则
-        if is_ma60_seventh(index, candle, bias, ma, ma_slope):
-            ma60_seventh.insert(index, 1)
-        else:
-            ma60_seventh.insert(index, 0)
-
-        # MA60 葛南维第8大法则
-        if is_ma60_eighth(index, candle, bias, ma, ma_slope):
-            ma60_eighth.insert(index, 1)
-        else:
-            ma60_eighth.insert(index, 0)
-
-
     org_df['ma20_down'] = ma20_down
     org_df['ema20_down'] = ema20_down
     org_df['ma30_down'] = ma30_down
@@ -627,16 +555,6 @@ def short_analyze(org_df):
     org_df['ma_down_arrange510203060'] = ma_down_arrange510203060
     org_df['ma_down_arrange203060'] = ma_down_arrange203060
     org_df['ma_down_arrange2060120'] = ma_down_arrange2060120
-
-    org_df['ma55_fifth'] = ma55_fifth
-    org_df['ma55_sixth'] = ma55_sixth
-    org_df['ma55_seventh'] = ma55_seventh
-    org_df['ma55_eighth'] = ma55_eighth
-
-    org_df['ma60_fifth'] = ma60_fifth
-    org_df['ma60_sixth'] = ma60_sixth
-    org_df['ma60_seventh'] = ma60_seventh
-    org_df['ma60_eighth'] = ma60_eighth
 
     org_df['long_end'] = long_end
     org_df['swallow_down'] = swallow_down

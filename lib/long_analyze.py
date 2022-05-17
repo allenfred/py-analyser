@@ -2,11 +2,7 @@
 
 from .signal.stock.candle import is_hammer, is_pour_hammer, is_short_end, is_swallow_up, \
     is_sunrise, is_first_light, is_attack_short, is_flat_base, is_rise_line, is_down_screw
-from .signal.stock.ma60 import is_ma60_first, is_ma60_second, is_ma60_third, is_ma60_fourth
-from .signal.stock.ma55 import is_ma55_first, is_ma55_second, is_ma55_third, is_ma55_fourth
-
-from .signal.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma120_rise, \
-    is_ema20_rise, is_ema30_rise, is_ema60_rise, is_ema120_rise
+from .signal.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma120_rise
 
 
 def long_analyze(org_df):
@@ -141,16 +137,6 @@ def long_analyze(org_df):
     flat_base = []
     rise_line = []
     down_screw = []
-
-    ma55_first = []
-    ma55_second = []
-    ma55_third = []
-    ma55_fourth = []
-
-    ma60_first = []
-    ma60_second = []
-    ma60_third = []
-    ma60_fourth = []
 
     # 连续两日K线在ma120上方止跌
     # 最近20个交易日 沿着ma30上行 未曾跌破ma30
@@ -633,55 +619,6 @@ def long_analyze(org_df):
         else:
             down_screw.insert(index, 0)
 
-        # MA55 葛南维第一大法则
-        if is_ma55_first(index, candle, bias, ma, ma_slope):
-            ma55_first.insert(index, 1)
-        else:
-            ma55_first.insert(index, 0)
-
-        # MA55 葛南维第二大法则
-        if is_ma55_second(index, candle, bias, ma, ma_slope):
-            ma55_second.insert(index, 1)
-        else:
-            ma55_second.insert(index, 0)
-
-        # MA55 葛南维第三大法则
-        if is_ma55_third(index, candle, bias, ma, ma_slope):
-            ma55_third.insert(index, 1)
-        else:
-            ma55_third.insert(index, 0)
-
-        # MA55 葛南维第四大法则
-        if is_ma55_fourth(index, candle, bias, ma, ma_slope):
-            ma55_fourth.insert(index, 1)
-        else:
-            ma55_fourth.insert(index, 0)
-
-        # MA60 葛南维第一大法则
-        if is_ma60_first(index, candle, bias, ma, ma_slope):
-            ma60_first.insert(index, 1)
-        else:
-            ma60_first.insert(index, 0)
-
-        # MA60 葛南维第二大法则
-        if is_ma60_second(index, candle, bias, ma, ma_slope):
-            ma60_second.insert(index, 1)
-        else:
-            ma60_second.insert(index, 0)
-
-        # MA60 葛南维第三大法则
-        if is_ma60_third(index, candle, bias, ma, ma_slope):
-            ma60_third.insert(index, 1)
-        else:
-            ma60_third.insert(index, 0)
-
-        # MA60 葛南维第四大法则
-        if is_ma60_fourth(index, candle, bias, ma, ma_slope):
-            ma60_fourth.insert(index, 1)
-        else:
-            ma60_fourth.insert(index, 0)
-
-
     org_df['yearly_price_position'] = yearly_price_position
     org_df['yearly_price_position10'] = yearly_price_position10
     org_df['yearly_price_position20'] = yearly_price_position20
@@ -746,17 +683,6 @@ def long_analyze(org_df):
 
     org_df['ma60_support'] = ma60_support
     org_df['ma120_support'] = ma120_support
-
-
-    org_df['ma55_first'] = ma55_first
-    org_df['ma55_second'] = ma55_second
-    org_df['ma55_third'] = ma55_third
-    org_df['ma55_fourth'] = ma55_fourth
-
-    org_df['ma60_first'] = ma60_first
-    org_df['ma60_second'] = ma60_second
-    org_df['ma60_third'] = ma60_third
-    org_df['ma60_fourth'] = ma60_fourth
 
     org_df['hammer'] = hammer
     org_df['pour_hammer'] = pour_hammer
