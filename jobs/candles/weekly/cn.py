@@ -11,10 +11,10 @@ import tushare as ts
 import pandas as pd
 from models.weekly_candles import WeeklyCandleDao
 from models.weekly_indicators import WeeklyIndicatorDao
-from models.weekly_long_signals import WeeklyLongSignalDao
+from models.weekly_signals import WeeklySignalDao
 from models.stocks import StockDao
-from lib.analyze import analytic_signals
-from lib.util import wrap_quota, used_time_fmt
+from lib.analyze import analyze
+from lib.util import set_quota, used_time_fmt
 import time
 from datetime import datetime
 from config.common import TS_TOKEN
@@ -23,7 +23,7 @@ from api.weekly_candle import get_candles
 pro = ts.pro_api(TS_TOKEN)
 weeklyCandleDao = WeeklyCandleDao()
 weeklyIndicatorDao = WeeklyIndicatorDao()
-weeklyLongSignalDao = WeeklyLongSignalDao()
+weeklySignalDao = WeeklySignalDao()
 stockDao = StockDao()
 
 if __name__ == "__main__":
@@ -37,7 +37,7 @@ if __name__ == "__main__":
         if ts_code is None:
             break
 
-        df = get_candles({"ts_code": ts_code, "limit": 500, "offset": 0})
+        df = get_candles({"ts_code": ts_code, "limit": 300, "offset": 0})
 
         try:
             df = df.sort_values(by='trade_date', ascending=True)
@@ -45,7 +45,7 @@ if __name__ == "__main__":
             df['num'] = df.index[::-1].to_numpy()
             df = df.set_index('num')
 
-            df = wrap_quota(df)
+            df = set_quota(df)
             df_len = len(df)
 
             # 过滤出最新candle数据 (相较于db)
@@ -56,9 +56,9 @@ if __name__ == "__main__":
             weeklyIndicatorDao.bulk_insert(df, ts_code)
 
             # 更新weekly signal
-            df = analytic_signals(df)
+            df = analyze(df)
             small_df = df.iloc[df_len - 30: df_len]
-            weeklyLongSignalDao.bulk_insert(small_df, ts_code)
+            weeklySignalDao.bulk_insert(small_df, ts_code)
             stockDao.update({'ts_code': ts_code, 'weekly_date': today})
 
             print('已更新 CN weekly_candles :', ts_code, ': ', len(new_df), ' 条数据，用时 ',

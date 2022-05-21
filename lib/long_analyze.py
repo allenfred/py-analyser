@@ -417,7 +417,6 @@ def long_analyze(org_df):
         # MA蛟龙出海(5/10/20)
         # 大阳线 贯穿ma5/ma10/ma20
         # ma20 上行
-
         if _pct_chg >= 4 and _open < _ma5 and _open < _ma10 and _open < _ma20 and \
                 _close > _ma5 and _close > _ma10 and _close > _ma20 and _ma60_slope > 0:
             ma_out_sea.insert(index, 1)
@@ -447,7 +446,6 @@ def long_analyze(org_df):
             ma_up_ground.insert(index, 1)
         else:
             ma_up_ground.insert(index, 0)
-
 
         # TD_8
         if td[index][1] == 8:
@@ -804,24 +802,6 @@ def is_ema60_steady_up(index, ema60_slope):
 def is_ema120_steady_up(index, ema120_slope):
     # 最近34个交易日 ma120 稳步向上
     if len(ema120_slope) > 81 and min(ema120_slope[index - 33: index + 1]) > 0:
-        return 1
-    else:
-        return 0
-
-
-def is_ma60_support(index, _open, _high, _low, _close, ma60, ma60_slope):
-    # 连续两日K线在ma60上方收出下影线 / 或遇支撑
-    if stand_on_ma(_open, _high, _low, _close, ma60[index], ma60_slope[index]) \
-            and is_ma60_steady_up(index, ma60_slope):
-        return 1
-    else:
-        return 0
-
-
-def is_ma120_support(index, _open, _high, _low, _close, ma120, ma120_slope):
-    # 连续两日K线在ma120上方收出下影线 / 或遇支撑
-    if stand_on_ma(_open, _high, _low, _close, ma120[index], ma120_slope[index]) \
-            and is_ma120_steady_up(index, ma120_slope):
         return 1
     else:
         return 0
