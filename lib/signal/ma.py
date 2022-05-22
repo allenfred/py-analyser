@@ -134,3 +134,74 @@ def is_ema120_rise(index, ema):
         return True
     else:
         return False
+
+
+def is_up_ma_arrange(index, ma):
+    # MA多头排列（5/10/20/60）
+    ma5 = ma[:, 0]
+    ma10 = ma[:, 1]
+    ma20 = ma[:, 2]
+    ma60 = ma[:, 5]
+
+    def ma_rise():
+        flag = True
+        for i in range(7):
+            # 如果当前 MA <= 前值
+            if ma5[index - i] < ma5[index - i - 1] \
+                    or ma10[index - i] < ma10[index - i - 1] \
+                    or ma20[index - i] < ma20[index - i - 1] \
+                    or ma60[index - i] < ma60[index - i - 1] \
+                    or not (ma5[index - i] > ma10[index - i] > ma20[index - i] > ma60[index - i]):
+                flag = False
+        return flag
+
+    if index > 80 and ma_rise():
+        return True
+
+    return False
+
+
+def is_up_short_ma_arrange1(index, ma):
+    # MA多头排列（5/10/20）
+    ma5 = ma[:, 0]
+    ma10 = ma[:, 1]
+    ma20 = ma[:, 2]
+
+    def ma_rise():
+        flag = True
+        for i in range(5):
+            # 如果当前 MA <= 前值
+            if ma5[index - i] < ma5[index - i - 1] \
+                    or ma10[index - i] < ma10[index - i - 1] \
+                    or ma20[index - i] < ma20[index - i - 1] \
+                    or not (ma5[index - i] > ma10[index - i] > ma20[index - i]):
+                flag = False
+        return flag
+
+    if index > 80 and ma_rise():
+        return True
+
+    return False
+
+
+def is_up_short_ma_arrange2(index, ma):
+    # MA多头排列（5/10/30）
+    ma5 = ma[:, 0]
+    ma10 = ma[:, 1]
+    ma30 = ma[:, 3]
+
+    def ma_rise():
+        flag = True
+        for i in range(5):
+            # 如果当前 MA <= 前值
+            if ma5[index - i] < ma5[index - i - 1] \
+                    or ma10[index - i] < ma10[index - i - 1] \
+                    or ma30[index - i] < ma30[index - i - 1] \
+                    or not (ma5[index - i] > ma10[index - i] > ma30[index - i]):
+                flag = False
+        return flag
+
+    if index > 80 and ma_rise():
+        return True
+
+    return False

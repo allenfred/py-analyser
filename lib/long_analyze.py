@@ -2,7 +2,8 @@
 
 from .signal.stock.candle import is_hammer, is_pour_hammer, is_short_end, is_swallow_up, \
     is_sunrise, is_first_light, is_attack_short, is_flat_base, is_rise_line, is_down_screw
-from .signal.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma120_rise
+from .signal.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma120_rise, is_up_ma_arrange, \
+    is_up_short_ma_arrange1, is_up_short_ma_arrange2
 
 
 def long_analyze(org_df):
@@ -271,43 +272,37 @@ def long_analyze(org_df):
             ema120_up.insert(index, 0)
 
         # MA多头排列（5/10/20/60）
-        if _ma5_slope > 0 and _ma10_slope > 0 and _ma20_slope > 0 and _ma60_slope > 0 \
-                and _ma5 > _ma10 > _ma20 > _ma60:
+        if is_up_ma_arrange(index, ma):
             up_ma_arrange.insert(index, 1)
         else:
             up_ma_arrange.insert(index, 0)
 
         # EMA多头排列（5/10/20/60）
-        if _ema5_slope > 0 and _ema10_slope > 0 and _ema20_slope > 0 and _ema60_slope > 0 \
-                and _ema5 > _ema10 > _ema20 > _ema60:
+        if is_up_ma_arrange(index, ema):
             up_ema_arrange.insert(index, 1)
         else:
             up_ema_arrange.insert(index, 0)
 
         # MA短期组合多头排列（5/10/20）
-        if _ma5_slope > 0 and _ma10_slope > 0 and _ma20_slope > 0 \
-                and _ma5 > _ma10 > _ma20:
+        if is_up_short_ma_arrange1(index, ma):
             up_short_ma_arrange1.insert(index, 1)
         else:
             up_short_ma_arrange1.insert(index, 0)
 
         # MA短期组合多头排列（5/10/30）
-        if _ma5_slope > 0 and _ma10_slope > 0 and _ma30_slope > 0 \
-                and _ma5 > _ma10 > _ma30:
+        if is_up_short_ma_arrange2(index, ma):
             up_short_ma_arrange2.insert(index, 1)
         else:
             up_short_ma_arrange2.insert(index, 0)
 
         # EMA短期组合多头排列（5/10/20）
-        if _ema5_slope > 0 and _ema10_slope > 0 and _ema20_slope > 0 \
-                and _ema5 > _ema10 > _ema20:
+        if is_up_short_ma_arrange1(index, ema):
             up_short_ema_arrange1.insert(index, 1)
         else:
             up_short_ema_arrange1.insert(index, 0)
 
         # EMA短期组合多头排列（5/10/30）
-        if _ema5_slope > 0 and _ema10_slope > 0 and _ema30_slope > 0 \
-                and _ema5 > _ema10 > _ema30:
+        if is_up_short_ma_arrange2(index, ema):
             up_short_ema_arrange2.insert(index, 1)
         else:
             up_short_ema_arrange2.insert(index, 0)

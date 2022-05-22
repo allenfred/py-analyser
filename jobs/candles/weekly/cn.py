@@ -38,17 +38,17 @@ if __name__ == "__main__":
             break
 
         df = get_candles({"ts_code": ts_code, "limit": 300, "offset": 0})
+        df_len = len(df)
 
         try:
-            df = df.sort_values(by='trade_date', ascending=True)
-            df['trade_date'] = pd.to_datetime(df["trade_date"], format='%Y-%m-%d')
-            df['num'] = df.index[::-1].to_numpy()
-            df = df.set_index('num')
-
-            df = set_quota(df)
-            df_len = len(df)
-
             if df_len > 30:
+                df = df.sort_values(by='trade_date', ascending=True)
+                df['trade_date'] = pd.to_datetime(df["trade_date"], format='%Y-%m-%d')
+                df['num'] = df.index[::-1].to_numpy()
+                df = df.set_index('num')
+
+                df = set_quota(df)
+
                 # 过滤出最新candle数据 (相较于db)
                 db_df = weeklyCandleDao.find_by_ts_code(ts_code)
                 new_df = df.loc[~df["trade_date"].isin(db_df["trade_date"].to_numpy())]
@@ -60,13 +60,14 @@ if __name__ == "__main__":
                 df = analyze(df)
                 small_df = df.iloc[df_len - 20: df_len]
                 weeklySignalDao.bulk_insert(small_df, ts_code)
+
+                print('已更新 CN weekly_candles :', ts_code, ': ', len(new_df), ' 条数据，用时 ',
+                      used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start, time.time()))
             else:
                 print('新股周K线不足30')
 
             stockDao.update({'ts_code': ts_code, 'weekly_date': today})
 
-            print('已更新 CN weekly_candles :', ts_code, ': ', len(new_df), ' 条数据，用时 ',
-                  used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start, time.time()))
         except Exception as e:
             print(ts_code, 'Error:', e)
             break
