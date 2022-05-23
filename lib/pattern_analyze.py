@@ -1,5 +1,8 @@
 # -- coding: utf-8 -
 import talib as lib
+from .signal.stock.candle import is_hammer, is_pour_hammer, is_short_end, is_swallow_up, \
+    is_sunrise, is_first_light, is_attack_short, is_flat_base, is_rise_line, is_down_screw, \
+    is_long_end, is_swallow_down, is_hang_neck, is_shooting, is_jump_line, is_up_screw, is_down_rise
 
 
 def pattern_analyze(df):
@@ -7,6 +10,147 @@ def pattern_analyze(df):
     high = df.high.to_numpy()
     low = df.low.to_numpy()
     close = df.close.to_numpy()
+
+    candle = df[['open', 'high', 'low', 'close', 'pct_chg', 'trade_date']].to_numpy()
+
+    hammer = []
+    pour_hammer = []
+    short_end = []
+    swallow_up = []
+    attack_short = []
+    first_light = []
+    sunrise = []
+    flat_base = []
+    rise_line = []
+    down_screw = []
+    long_end = []
+    swallow_down = []
+    hang_neck = []
+    shooting = []
+    jump_line = []
+    up_screw = []
+    down_rise = []
+
+    for index in range(len(candle)):
+        # 锤子线
+        if is_hammer(index, candle):
+            hammer.insert(index, 1)
+        else:
+            hammer.insert(index, 0)
+
+        # 倒锤子线
+        if is_pour_hammer(index, candle):
+            pour_hammer.insert(index, 1)
+        else:
+            pour_hammer.insert(index, 0)
+
+        # 看涨尽头线
+        if is_short_end(index, candle):
+            short_end.insert(index, 1)
+        else:
+            short_end.insert(index, 0)
+
+        # 下探上涨
+        if is_down_rise(index, candle):
+            down_rise.insert(index, 1)
+        else:
+            down_rise.insert(index, 0)
+
+        # 看涨吞没
+        if is_swallow_up(index, candle):
+            swallow_up.insert(index, 1)
+        else:
+            swallow_up.insert(index, 0)
+
+        # 好友反攻
+        if is_attack_short(index, candle):
+            attack_short.insert(index, 1)
+        else:
+            attack_short.insert(index, 0)
+
+        # 曙光初现
+        if is_first_light(index, candle):
+            first_light.insert(index, 1)
+        else:
+            first_light.insert(index, 0)
+
+        # 旭日东升
+        if is_sunrise(index, candle):
+            sunrise.insert(index, 1)
+        else:
+            sunrise.insert(index, 0)
+
+        # 平底
+        if is_flat_base(index, candle):
+            flat_base.insert(index, 1)
+        else:
+            flat_base.insert(index, 0)
+
+        # 涨停一字板
+        if is_rise_line(index, candle):
+            rise_line.insert(index, 1)
+        else:
+            rise_line.insert(index, 0)
+
+        # 下跌螺旋桨
+        if is_down_screw(index, candle):
+            down_screw.insert(index, 1)
+        else:
+            down_screw.insert(index, 0)
+
+        # 看跌尽头线
+        if is_long_end(index, candle):
+            long_end.insert(index, 1)
+        else:
+            long_end.insert(index, 0)
+
+        # 看跌吞没
+        if is_swallow_down(index, candle):
+            swallow_down.insert(index, 1)
+        else:
+            swallow_down.insert(index, 0)
+
+        # 吊颈线
+        if is_hang_neck(index, candle):
+            hang_neck.insert(index, 1)
+        else:
+            hang_neck.insert(index, 0)
+
+        # 射击之星
+        if is_shooting(index, candle):
+            shooting.insert(index, 1)
+        else:
+            shooting.insert(index, 0)
+
+        # 跌停一字板
+        if is_jump_line(index, candle):
+            jump_line.insert(index, 1)
+        else:
+            jump_line.insert(index, 0)
+
+        # 看跌螺旋桨
+        if is_up_screw(index, candle):
+            up_screw.insert(index, 1)
+        else:
+            up_screw.insert(index, 0)
+
+    df['hammer'] = hammer
+    df['pour_hammer'] = pour_hammer
+    df['short_end'] = short_end
+    df['swallow_up'] = swallow_up
+    df['attack_short'] = attack_short
+    df['first_light'] = first_light
+    df['sunrise'] = sunrise
+    df['flat_base'] = flat_base
+    df['rise_line'] = rise_line
+    df['down_screw'] = down_screw
+    df['long_end'] = long_end
+    df['swallow_down'] = swallow_down
+    df['hang_neck'] = hang_neck
+    df['shooting'] = shooting
+    df['jump_line'] = jump_line
+    df['up_screw'] = up_screw
+    df['down_rise'] = down_rise
 
     """
     +200 bullish pattern with confirmation

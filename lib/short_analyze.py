@@ -1,9 +1,5 @@
 # -- coding: utf-8 -
 
-from .signal.stock.candle import is_long_end, is_swallow_down, \
-    is_hang_neck, is_shooting, is_jump_line, is_up_screw
-
-
 def short_analyze(org_df):
     """
     计算空头信号
@@ -101,16 +97,12 @@ def short_analyze(org_df):
 
     # 断头铡刀
     ma_knife = []
-
     # 乌云密布
     ma_dark_cloud = []
-
     # 战机起航
     ma_set_sail = []
-
     # 气贯长虹
     ma_supreme = []
-
     # 绝命跳
     ma_dead_jump = []
 
@@ -125,13 +117,6 @@ def short_analyze(org_df):
     up_bias60 = []
     up_bias72 = []
     up_bias120 = []
-
-    long_end = []
-    swallow_down = []
-    hang_neck = []
-    shooting = []
-    jump_line = []
-    up_screw = []
 
     for index in range(len(candle)):
         _open = open[index]
@@ -450,42 +435,6 @@ def short_analyze(org_df):
         else:
             ma_down_arrange2060120.insert(index, 0)
 
-        # 看跌尽头线
-        if is_long_end(index, candle):
-            long_end.insert(index, 1)
-        else:
-            long_end.insert(index, 0)
-
-        # 看跌吞没
-        if is_swallow_down(index, candle):
-            swallow_down.insert(index, 1)
-        else:
-            swallow_down.insert(index, 0)
-
-        # 吊颈线
-        if is_hang_neck(index, candle):
-            hang_neck.insert(index, 1)
-        else:
-            hang_neck.insert(index, 0)
-
-        # 射击之星
-        if is_shooting(index, candle):
-            shooting.insert(index, 1)
-        else:
-            shooting.insert(index, 0)
-
-        # 跌停一字板
-        if is_jump_line(index, candle):
-            jump_line.insert(index, 1)
-        else:
-            jump_line.insert(index, 0)
-
-        # 看跌螺旋桨
-        if is_up_screw(index, candle, ma_slope):
-            up_screw.insert(index, 1)
-        else:
-            up_screw.insert(index, 0)
-
     org_df['ma20_down'] = ma20_down
     org_df['ema20_down'] = ema20_down
     org_df['ma30_down'] = ma30_down
@@ -555,13 +504,6 @@ def short_analyze(org_df):
     org_df['ma_down_arrange510203060'] = ma_down_arrange510203060
     org_df['ma_down_arrange203060'] = ma_down_arrange203060
     org_df['ma_down_arrange2060120'] = ma_down_arrange2060120
-
-    org_df['long_end'] = long_end
-    org_df['swallow_down'] = swallow_down
-    org_df['hang_neck'] = hang_neck
-    org_df['shooting'] = shooting
-    org_df['jump_line'] = jump_line
-    org_df['up_screw'] = up_screw
 
     return org_df
 

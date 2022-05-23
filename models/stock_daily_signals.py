@@ -155,6 +155,7 @@ class StockDailySignal(Base):
     jump_line = Column(SmallInteger)
     up_screw = Column(SmallInteger)
     down_screw = Column(SmallInteger)
+    down_rise = Column(SmallInteger)
 
     ma55_first = Column(SmallInteger)
     ma55_second = Column(SmallInteger)
@@ -324,6 +325,7 @@ def get_obj(signal):
         jump_line=signal.get('jump_line', None),
         up_screw=signal.get('up_screw', None),
         down_screw=signal.get('down_screw', None),
+        down_rise=signal.get('down_rise', None),
 
         ma55_first=signal.get('ma55_first', None),
         ma55_second=signal.get('ma55_second', None),
@@ -652,6 +654,8 @@ class StockDailySignalDao:
                     row.up_screw = obj.up_screw
                 if obj.down_screw is not None:
                     row.down_screw = obj.down_screw
+                if obj.down_rise is not None:
+                    row.down_rise = obj.down_rise
 
                 if obj.ma55_first is not None:
                     row.ma55_first = obj.ma55_first

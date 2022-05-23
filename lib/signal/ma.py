@@ -52,7 +52,7 @@ def is_ma30_rise(index, ma):
 
 
 def is_ema30_rise(index, ema):
-    ema20 = ema[:, 3]
+    ema30 = ema[:, 3]
 
     def ma_rise():
         flag = True
@@ -202,6 +202,85 @@ def is_up_short_ma_arrange2(index, ma):
         return flag
 
     if index > 80 and ma_rise():
+        return True
+
+    return False
+
+
+def is_ma60_support(index, candles, ma, ma_slope, df):
+    if index < 90:
+        return False
+
+    open = candles[:, 0]
+    high = candles[:, 1]
+    low = candles[:, 2]
+    close = candles[:, 3]
+    ma60_slope = ma_slope[:, 5]
+    ma60 = ma[:, 5]
+
+    # 最近13个交易日 收盘价稳定在MA120之上 MA120稳定向上运行
+    def steady_on_ma():
+        flag = True
+        for i in range(13):
+            if close[index - i] < ma60[index - i] or ma60[index - i] < ma60[index - i - 1]:
+                flag = False
+        return flag
+
+    if steady_on_ma() and has_support_patterns(index, df):
+        return True
+    else:
+        return False
+
+
+def is_ma120_support(index, candles, ma, ma_slope, df):
+    if index < 150:
+        return 0
+
+    open = candles[:, 0]
+    high = candles[:, 1]
+    low = candles[:, 2]
+    close = candles[:, 3]
+    ma120_slope = ma_slope[:, 6]
+    ma120 = ma[:, 6]
+
+    # 最近21个交易日 收盘价稳定在MA120之上 MA120稳定向上运行
+    def steady_on_ma():
+        flag = True
+        for i in range(21):
+            if close[index - i] < ma120[index - i] or ma120[index - i] < ma120[index - i - 1]:
+                flag = False
+        return flag
+
+    if steady_on_ma() and has_support_patterns(index, df) and \
+            has_support_patterns(index - 1, df):
+        return True
+    else:
+        return False
+
+
+def has_support_patterns(index, df):
+    """
+    当前Ticker 存在看涨K线形态
+    看涨吞没
+    下探上涨
+    锤头线
+    墓碑十字线
+    蜻蜓十字线
+    探水竿
+    孕线
+    十字孕线
+    刺透形态
+    梯底
+
+    :param index:
+    :param df:
+    :return:
+    """
+    if df.iloc[index]['swallow_up'] > 0 or df.iloc[index]['down_rise'] > 0 \
+            or df.iloc[index]['CDLHAMMER'] > 0 or df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 \
+            or df.iloc[index]['CDLDRAGONFLYDOJI'] > 0 or df.iloc[index]['CDLTAKURI'] > 0 \
+            or df.iloc[index]['CDLHARAMI'] > 0 or df.iloc[index]['CDLHARAMICROSS'] > 0 \
+            or df.iloc[index]['CDLPIERCING'] > 0 or df.iloc[index]['CDLLADDERBOTTOM'] > 0:
         return True
 
     return False

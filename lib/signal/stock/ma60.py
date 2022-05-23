@@ -51,7 +51,7 @@ def is_ma60_second(index, candles, bias, ma, ma_slope, df):
     """
     葛南维第二大法则 (均线服从)
     1. 连续13个交易日 收盘价在MA60之上 / MA60上行 / ma60_slope > 0
-    2. 价格回落 未跌破MA60 且 K线出现止跌支撑信号 (看涨吞没/看涨锤头线/看涨螺旋桨/看涨孕线)
+    2. 价格回落 未跌破MA60 且 K线出现止跌支撑信号 (看涨吞没/看涨锤头线/探水竿/看涨螺旋桨/看涨孕线/下探上涨)
     3. 价格回落未出现强势空头K线 （大阴线/倒锤头线）
 
     :param index:
@@ -78,11 +78,12 @@ def is_ma60_second(index, candles, bias, ma, ma_slope, df):
     def steady_on_ma():
         flag = True
         for i in range(13):
-            if candles[index - i][3] < ma60[index - i] or ma60[index] < ma60[index - 1]:
+            if candles[index - i][3] < ma60[index - i] or ma60[index - i] < ma60[index - i - 1]:
                 flag = False
         return flag
 
-    if index > 90 and steady_on_ma() and min(ma60_slope[index - 12: index]) > 0 and _low_bias60 < 2:
+    if index > 90 and steady_on_ma() and has_support_patterns(index, df) and \
+            min(ma60_slope[index - 12: index]) > 0 and _low_bias60 < 2:
         return True
     else:
         return False
@@ -220,7 +221,7 @@ def is_ma60_fifth(index, candles, bias, ma, ma_slope, df):
         return flag
 
     if index > 90 and steady_on_ma() and _bias60 > 11 and \
-        has_short_patterns(index, df) and \
+            has_short_patterns(index, df) and \
             min(ma60_slope[index - 12: index]) > 1:
         return True
     else:
@@ -369,6 +370,34 @@ def is_ma60_eighth(index, candles, bias, ma, ma_slope, df):
         return True
     else:
         return False
+
+
+def has_support_patterns(index, df):
+    """
+    当前Ticker 存在看涨K线形态
+    看涨吞没
+    下探上涨
+    锤头线
+    墓碑十字线
+    蜻蜓十字线
+    探水竿
+    孕线
+    十字孕线
+    刺透形态
+    梯底
+
+    :param index:
+    :param df:
+    :return:
+    """
+    if df.iloc[index]['swallow_up'] > 0 or df.iloc[index]['down_rise'] > 0 \
+            or df.iloc[index]['CDLHAMMER'] > 0 or df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 \
+            or df.iloc[index]['CDLDRAGONFLYDOJI'] > 0 or df.iloc[index]['CDLTAKURI'] > 0 \
+            or df.iloc[index]['CDLHARAMI'] > 0 or df.iloc[index]['CDLHARAMICROSS'] > 0 \
+            or df.iloc[index]['CDLPIERCING'] > 0 or df.iloc[index]['CDLLADDERBOTTOM'] > 0:
+        return True
+
+    return False
 
 
 def has_long_patterns(index, df):

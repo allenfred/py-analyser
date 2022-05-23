@@ -15,7 +15,6 @@ def ma_analyze(org_df):
     ma60_second = []
     ma60_third = []
     ma60_fourth = []
-
     ma60_fifth = []
     ma60_sixth = []
     ma60_seventh = []
@@ -74,7 +73,6 @@ def ma_analyze(org_df):
     org_df['ma60_second'] = ma60_second
     org_df['ma60_third'] = ma60_third
     org_df['ma60_fourth'] = ma60_fourth
-
     org_df['ma60_fifth'] = ma60_fifth
     org_df['ma60_sixth'] = ma60_sixth
     org_df['ma60_seventh'] = ma60_seventh

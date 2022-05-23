@@ -1,9 +1,6 @@
 # -- coding: utf-8 -
-
-from .signal.stock.candle import is_hammer, is_pour_hammer, is_short_end, is_swallow_up, \
-    is_sunrise, is_first_light, is_attack_short, is_flat_base, is_rise_line, is_down_screw
 from .signal.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma120_rise, is_up_ma_arrange, \
-    is_up_short_ma_arrange1, is_up_short_ma_arrange2
+    is_up_short_ma_arrange1, is_up_short_ma_arrange2, is_ma60_support, is_ma120_support
 
 
 def long_analyze(org_df):
@@ -127,17 +124,6 @@ def long_analyze(org_df):
     ma_up_arrange510203060 = []
     ma_up_arrange203060 = []
     ma_up_arrange2060120 = []
-
-    hammer = []
-    pour_hammer = []
-    short_end = []
-    swallow_up = []
-    attack_short = []
-    first_light = []
-    sunrise = []
-    flat_base = []
-    rise_line = []
-    down_screw = []
 
     # 连续两日K线在ma120上方止跌
     # 最近20个交易日 沿着ma30上行 未曾跌破ma30
@@ -502,15 +488,13 @@ def long_analyze(org_df):
             stand_up_ma120.insert(index, 0)
 
         # 连续两日K线在ma60上方收出下影线 / 或遇支撑
-        if stand_on_ma(_open, _high, _low, _close, _ma60, _ma60_slope) \
-                and is_ma60_steady_up(index, ma60_slope):
+        if is_ma60_support(index, candle, ma, ma_slope, org_df):
             ma60_support.insert(index, 1)
         else:
             ma60_support.insert(index, 0)
 
         # 连续两日K线在ma120上方收出下影线 / 或遇支撑
-        if stand_on_ma(_open, _high, _low, _close, _ma120, _ma120_slope) \
-                and is_ma120_steady_up(index, ma120_slope):
+        if is_ma120_support(index, candle, ma, ma_slope, org_df):
             ma120_support.insert(index, 1)
         else:
             ma120_support.insert(index, 0)
@@ -551,66 +535,6 @@ def long_analyze(org_df):
             ma_up_arrange2060120.insert(index, 1)
         else:
             ma_up_arrange2060120.insert(index, 0)
-
-        # 锤子线
-        if is_hammer(index, candle):
-            hammer.insert(index, 1)
-        else:
-            hammer.insert(index, 0)
-
-        # 倒锤子线
-        if is_pour_hammer(index, candle):
-            pour_hammer.insert(index, 1)
-        else:
-            pour_hammer.insert(index, 0)
-
-        # 看涨尽头线
-        if is_short_end(index, candle):
-            short_end.insert(index, 1)
-        else:
-            short_end.insert(index, 0)
-
-        # 看涨吞没
-        if is_swallow_up(index, candle):
-            swallow_up.insert(index, 1)
-        else:
-            swallow_up.insert(index, 0)
-
-        # 好友反攻
-        if is_attack_short(index, candle):
-            attack_short.insert(index, 1)
-        else:
-            attack_short.insert(index, 0)
-
-        # 曙光初现
-        if is_first_light(index, candle):
-            first_light.insert(index, 1)
-        else:
-            first_light.insert(index, 0)
-
-        # 旭日东升
-        if is_sunrise(index, candle):
-            sunrise.insert(index, 1)
-        else:
-            sunrise.insert(index, 0)
-
-        # 平底
-        if is_flat_base(index, candle):
-            flat_base.insert(index, 1)
-        else:
-            flat_base.insert(index, 0)
-
-        # 涨停一字板
-        if is_rise_line(index, candle):
-            rise_line.insert(index, 1)
-        else:
-            rise_line.insert(index, 0)
-
-        # 下跌螺旋桨
-        if is_down_screw(index, candle, ma_slope):
-            down_screw.insert(index, 1)
-        else:
-            down_screw.insert(index, 0)
 
     org_df['yearly_price_position'] = yearly_price_position
     org_df['yearly_price_position10'] = yearly_price_position10
@@ -677,17 +601,6 @@ def long_analyze(org_df):
     org_df['ma60_support'] = ma60_support
     org_df['ma120_support'] = ma120_support
 
-    org_df['hammer'] = hammer
-    org_df['pour_hammer'] = pour_hammer
-    org_df['short_end'] = short_end
-    org_df['swallow_up'] = swallow_up
-    org_df['attack_short'] = attack_short
-    org_df['first_light'] = first_light
-    org_df['sunrise'] = sunrise
-    org_df['flat_base'] = flat_base
-    org_df['rise_line'] = rise_line
-    org_df['down_screw'] = down_screw
-
     return org_df
 
 
@@ -723,83 +636,54 @@ def ma_hold(ma5, ma10, ma20, ma5_slope, ma10_slope):
 
 
 def is_stand_up_ma60(index, open, close, ma60, ma60_slope):
-    if index < 60:
+    if index < 90:
         return False
 
-    # 前55个交易日(除最近2个交易日外) ma60向下运行
+    # 前55个交易日(除最近3个交易日外) ma60向下运行
     ma60_down_still = True
     close_down_still = True
     ma60_up_recently = False
 
-    if max(ma60_slope[index - 55: index - 1]) >= 0:
+    if max(ma60_slope[index - 55: index - 2]) >= 0:
         ma60_down_still = False
 
-    # 最近2个交易日收盘价高于 ma60
-    # 最近2个交易日 ma60 开始向上
+    # 最近3个交易日收盘价高于 ma60
+    # 最近3个交易日 ma60 开始向上
     if close[index] > ma60[index] and close[index - 1] > ma60[index - 1] and \
-            ma60_slope[index] > 0 and ma60_slope[index - 1] > 0:
+            close[index - 2] > ma60[index - 2] and \
+            ma60[index] > ma60[index - 1] > ma60[index - 2]:
         ma60_up_recently = True
 
-    if len(open) > 81 and close_down_still and ma60_down_still and ma60_up_recently:
+    if close_down_still and ma60_down_still and ma60_up_recently:
         return True
     else:
         return False
 
 
 def is_stand_up_ma120(index, open, close, ma120, ma120_slope):
-    if index < 130:
+    if index < 160:
         return 0
 
-    # 前89个交易日(除最近2个交易日外) ma120向下运行
+    # 前89个交易日(除最近3个交易日外) ma120向下运行
     ma120_down_still = True
     close_down_still = True
     ma120_up_recently = False
 
-    if max(ma120_slope[index - 89: index - 1]) >= 0:
+    if max(ma120_slope[index - 89: index - 2]) >= 0:
         ma120_down_still = False
 
-    # 最近2个交易日收盘价高于 ma120
-    # 最近2个交易日 ma120 开始向上
+    # 最近3个交易日收盘价高于 ma120
+    # 最近3个交易日 ma120 开始向上
     if close[index] > ma120[index] and close[index - 1] > ma120[index - 1] and \
-            ma120_slope[index] > 0 and ma120_slope[index - 1] > 0:
+            close[index - 2] > ma120[index - 2] and \
+            ma120_slope[index] > 0 and ma120_slope[index - 1] > 0 and \
+            ma120[index] > ma120[index - 1] > ma120[index - 2] > ma120[index - 3]:
         ma120_up_recently = True
 
-    if len(open) > 154 and close_down_still and ma120_down_still and ma120_up_recently:
+    if close_down_still and ma120_down_still and ma120_up_recently:
         return True
     else:
         return False
-
-
-def is_ma60_steady_up(index, ma60_slope):
-    # 最近21个交易日 ma60 稳步向上
-    if len(ma60_slope) > 81 and min(ma60_slope[index - 20: index + 1]) > 0:
-        return 1
-    else:
-        return 0
-
-
-def is_ma120_steady_up(index, ma120_slope):
-    # 最近34个交易日 ma120 稳步向上
-    if len(ma120_slope) > 81 and min(ma120_slope[index - 33: index + 1]) > 0:
-        return 1
-    else:
-        return 0
-
-
-def is_ema60_steady_up(index, ema60_slope):
-    # 最近21个交易日 ema60 稳步向上
-    if len(ema60_slope) > 81 and min(ema60_slope[index - 20: index + 1]) > 0:
-        return 1
-    else:
-        return 0
-
-
-def is_ema120_steady_up(index, ema120_slope):
-    # 最近34个交易日 ma120 稳步向上
-    if len(ema120_slope) > 81 and min(ema120_slope[index - 33: index + 1]) > 0:
-        return 1
-    else:
-        return 0
 
 
 def is_ma_group_glue(index, ma10_slope, ma20_slope, ma30_slope, ma60_slope):
