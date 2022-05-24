@@ -177,7 +177,7 @@ def is_ma60_fourth(index, candles, bias, ma, ma_slope, df):
         return flag
 
     if index > 90 and _bias60 < -16 and ma_down_steady() and \
-            steady_under_ma() and has_long_patterns(index, df):
+            steady_under_ma() and has_bottom_patterns(index, df):
         return True
     else:
         return False
@@ -398,19 +398,27 @@ def has_support_patterns(index, df):
     return False
 
 
-def has_long_patterns(index, df):
+def has_bottom_patterns(index, df):
     """
-    判断当前是否存在看涨K线形态信号个数 > 1
+    判断当前是否存在di底部看涨K线形态
+    看涨吞没
+    刺透心态 (旭日东升 / 曙光初现 / 好友反攻)
+    看涨螺旋桨
+    梯底
+    锤头 (探水竿)
+    倒锤头
 
     :param index: 当前时间
     :param df:
     :return:
     """
-    patterns = get_patterns(df)
-    arr = patterns[index]
-    arr2 = np.argwhere(arr > 0)
 
-    return len(arr2) > 1
+    if df.iloc[index]['swallow_up'] > 0 or df.iloc[index]['sunrise'] > 0 \
+            or df.iloc[index]['down_screw'] > 0 or df.iloc[index]['CDLLADDERBOTTOM'] > 0 \
+            or df.iloc[index]['hammer'] > 0 or df.iloc[index]['pour_hammer'] > 0:
+        return True
+
+    return False
 
 
 def has_short_patterns(index, df):

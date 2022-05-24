@@ -16,7 +16,6 @@ def is_hammer(i, candles):
     3.当前K线最低价为近期最低价
     4..K线震幅大于6%
 
-
     :param i: 当前tick
     :param candles:
     :return: boolean
@@ -48,7 +47,7 @@ def is_hammer(i, candles):
     # 上影线长度需小于柱体长度的1/5
     if lowest_low == _low and _open > up_one_third and _close > up_one_third \
             and up_shadow_len < bar_len / 5 \
-        and pre_close * 0.06 <= k_len:
+            and pre_close * 0.06 <= k_len:
         return True
 
     return False
@@ -649,7 +648,7 @@ def is_down_screw(i, candles):
     """
     description: 看涨螺旋桨 (看涨)
     有效标准：
-    1.市场处于清晰的上涨趋势 连续13日沿MA10上涨
+    1.市场处于清晰的下跌趋势 连续13日沿MA10下跌
     2.K线震幅大于6%
     3.上下影线长度大于K线长度的1/3
 
