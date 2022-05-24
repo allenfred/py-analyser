@@ -1,6 +1,6 @@
 # -- coding: utf-8 -
 from .signal.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma120_rise, is_up_ma_arrange, \
-    is_up_short_ma_arrange1, is_up_short_ma_arrange2, is_ma60_support, is_ma120_support
+    is_up_short_ma_arrange1, is_up_short_ma_arrange2, is_ma60_support, is_ma120_support, is_ma_glue
 
 
 def long_analyze(org_df):
@@ -101,7 +101,6 @@ def long_analyze(org_df):
     ma_over_gate = []
     ma_up_ground = []
     ma_glue = []
-    ma_group_glue = []
 
     down_td8 = []
     down_td9 = []
@@ -405,7 +404,7 @@ def long_analyze(org_df):
             ma_out_sea.insert(index, 0)
 
         # MA均线粘合(5/10/20)
-        if is_ma_glue(index, candle, bias, ma, ma_slope):
+        if is_ma_glue(index, ma, org_df):
             ma_glue.insert(index, 1)
         else:
             ma_glue.insert(index, 0)
@@ -499,11 +498,6 @@ def long_analyze(org_df):
         else:
             ma120_support.insert(index, 0)
 
-        if is_ma_group_glue(index, ma10_slope, ma20_slope, ma30_slope, ma60_slope):
-            ma_group_glue.insert(index, 1)
-        else:
-            ma_group_glue.insert(index, 0)
-
         # ma5/ma10/ma20 出现多头排列
         if is_ma_up_arrange51020(index, ma5, ma10, ma20, ma5_slope, ma10_slope, ma20_slope):
             ma_up_arrange51020.insert(index, 1)
@@ -583,7 +577,6 @@ def long_analyze(org_df):
     org_df['ma_hold_moon'] = ma_hold_moon
     org_df['ma_over_gate'] = ma_over_gate
     org_df['ma_up_ground'] = ma_up_ground
-    org_df['ma_group_glue'] = ma_group_glue
 
     org_df['down_td8'] = down_td8
     org_df['down_td9'] = down_td9
@@ -681,27 +674,6 @@ def is_stand_up_ma120(index, open, close, ma120, ma120_slope):
         ma120_up_recently = True
 
     if close_down_still and ma120_down_still and ma120_up_recently:
-        return True
-    else:
-        return False
-
-
-def is_ma_group_glue(index, ma10_slope, ma20_slope, ma30_slope, ma60_slope):
-    if index < 10:
-        return False
-
-    # 最近9个交易日 0 <= ma60_slope < 0.6
-    # 最近9个交易日 0 <= ma30_slope < 0.6
-    # 最近9个交易日 0 <= ma20_slope < 0.6
-    # 最近9个交易日 -1 < ma10_slope < 1.2
-    if min(ma60_slope[index - 8: index + 1]) >= 0 \
-            and max(ma60_slope[index - 8: index + 1]) < 0.6 \
-            and min(ma30_slope[index - 8: index + 1]) >= 0 \
-            and max(ma30_slope[index - 8: index + 1]) < 0.6 \
-            and min(ma20_slope[index - 8: index + 1]) >= 0 \
-            and max(ma20_slope[index - 8: index + 1]) < 0.6 \
-            and min(ma10_slope[index - 8: index + 1]) > -1 \
-            and max(ma10_slope[index - 8: index + 1]) < 1.2:
         return True
     else:
         return False
@@ -821,45 +793,6 @@ def is_ma_spider(index, ma, ma_gold_cross1, ma_gold_cross2, ma_gold_cross3, ma_g
         flag = True
 
     return flag
-
-
-# TODO
-def is_ma_glue(index, candles, bias, ma, ma_slope):
-    # MA均线粘合(5/10/20)
-    # 最近13个交易日
-    # 不能有波动大于4%
-    # -0.5 < ma20_slope < 2
-    # -1 < ma10_slope < 3
-    # -2 < ma5_slope < 4
-    # 乖离率正常区间 bias12 < 5 / bias24 < 8
-
-    _count = 9 - 1
-
-    if index > 50:
-        min_bias6 = min(bias[:, 0][index - _count: index + 1])
-        max_bias6 = max(bias[:, 0][index - _count: index + 1])
-        min_bias12 = min(bias[:, 1][index - _count: index + 1])
-        max_bias12 = max(bias[:, 1][index - _count: index + 1])
-        min_bias24 = min(bias[:, 2][index - _count: index + 1])
-        max_bias24 = max(bias[:, 2][index - _count: index + 1])
-
-        min_ma10_slope = min(ma_slope[:, 1][index - _count: index + 1])
-        max_ma10_slope = max(ma_slope[:, 1][index - _count: index + 1])
-        min_ma20_slope = min(ma_slope[:, 2][index - _count: index + 1])
-        max_ma20_slope = max(ma_slope[:, 2][index - _count: index + 1])
-
-    ma20 = ma[:, 2]
-
-    if index > 50 and min(candles[:, 4][index - _count: index + 1]) >= -4 and \
-            max(candles[:, 4][index - _count: index + 1]) <= 4 \
-            and min_bias6 > -1 and max_bias6 < 3 \
-            and min_bias12 > -1 and max_bias12 < 3 \
-            and min_bias24 > -1 and max_bias24 < 4 \
-            and min_ma10_slope >= -1 and max_ma10_slope <= 2 \
-            and max_ma20_slope < 2:
-        return True
-    else:
-        return False
 
 
 def is_ma_hold_moon(index, candles, bias, ma, ma_slope):

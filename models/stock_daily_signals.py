@@ -121,8 +121,8 @@ class StockDailySignal(Base):
     ma60_support = Column(SmallInteger)
     ma120_support = Column(SmallInteger)
 
-    ma_group_glue = Column(SmallInteger)
-    ema_group_glue = Column(SmallInteger)
+    ma_glue = Column(SmallInteger)
+    ema_glue = Column(SmallInteger)
 
     ma_up_arrange51020 = Column(SmallInteger)
     ma_up_arrange5102030 = Column(SmallInteger)
@@ -292,7 +292,7 @@ def get_obj(signal):
         ma60_support=signal.get('ma60_support', None),
         ma120_support=signal.get('ma120_support', None),
 
-        ma_group_glue=signal.get('ma_group_glue', None),
+        ma_glue=signal.get('ma_glue', None),
 
         ma_up_arrange51020=signal.get('ma_up_arrange51020', None),
         ma_up_arrange5102030=signal.get('ma_up_arrange5102030', None),
@@ -565,8 +565,8 @@ class StockDailySignalDao:
                     row.ma_supreme = obj.ma_supreme
                 if obj.ma_dead_jump is not None:
                     row.ma_dead_jump = obj.ma_dead_jump
-                if obj.ma_group_glue is not None:
-                    row.ma_group_glue = obj.ma_group_glue
+                if obj.ma_glue is not None:
+                    row.ma_glue = obj.ma_glue
 
                 if obj.up_ma_spider is not None:
                     row.up_ma_spider = obj.up_ma_spider

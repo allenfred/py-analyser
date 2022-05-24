@@ -63,7 +63,7 @@ class WeeklySignal(Base):
     ma_dead_jump = Column(SmallInteger)
     up_ma_spider = Column(SmallInteger)
     down_ma_spider = Column(SmallInteger)
-    ma_group_glue = Column(SmallInteger)
+    ma_glue = Column(SmallInteger)
 
     up_hill = Column(SmallInteger)
     down_hill = Column(SmallInteger)
@@ -151,7 +151,7 @@ def get_obj(signal):
         ma_dead_jump=signal.get('ma_dead_jump', None),
         up_ma_spider=signal.get('up_ma_spider', None),
         down_ma_spider=signal.get('down_ma_spider', None),
-        ma_group_glue=signal.get('ma_group_glue', None),
+        ma_glue=signal.get('ma_glue', None),
 
         up_hill=signal.get('up_hill', None),
         down_hill=signal.get('down_hill', None),

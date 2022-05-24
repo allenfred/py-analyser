@@ -83,7 +83,7 @@ class StockSignal(Base):
     ma_hold_moon = Column(SmallInteger)
     ma_over_gate = Column(SmallInteger)
     ma_up_ground = Column(SmallInteger)
-    ma_group_glue = Column(SmallInteger)
+    ma_glue = Column(SmallInteger)
 
     ma_dead_valley = Column(SmallInteger)
     ma_knife = Column(SmallInteger)
@@ -253,6 +253,7 @@ def get_obj(signal):
         ma_hold_moon=signal.get('ma_hold_moon', None),
         ma_over_gate=signal.get('ma_over_gate', None),
         ma_up_ground=signal.get('ma_up_ground', None),
+        ma_glue=signal.get('ma_glue', None),
 
         ma_knife=signal.get('ma_knife', None),
         ma_dark_cloud=signal.get('ma_dark_cloud', None),
@@ -288,8 +289,6 @@ def get_obj(signal):
 
         ma60_support=signal.get('ma60_support', None),
         ma120_support=signal.get('ma120_support', None),
-
-        ma_group_glue=signal.get('ma_group_glue', None),
 
         ma_up_arrange51020=signal.get('ma_up_arrange51020', None),
         ma_up_arrange5102030=signal.get('ma_up_arrange5102030', None),
@@ -496,6 +495,8 @@ class StockSignalDao:
                     row.ma_over_gate = obj.ma_over_gate
                 if obj.ma_up_ground is not None:
                     row.ma_up_ground = obj.ma_up_ground
+                if obj.ma_glue is not None:
+                    row.ma_glue = obj.ma_glue
 
                 if obj.ma_knife is not None:
                     row.ma_knife = obj.ma_knife
@@ -507,8 +508,6 @@ class StockSignalDao:
                     row.ma_supreme = obj.ma_supreme
                 if obj.ma_dead_jump is not None:
                     row.ma_dead_jump = obj.ma_dead_jump
-                if obj.ma_group_glue is not None:
-                    row.ma_group_glue = obj.ma_group_glue
 
                 if obj.up_ma_spider is not None:
                     row.up_ma_spider = obj.up_ma_spider

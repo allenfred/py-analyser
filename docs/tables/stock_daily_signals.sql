@@ -75,7 +75,7 @@ CREATE TABLE `stock_daily_signals` (
   `ma_dead_jump` tinyint(2) COMMENT 'MA绝命跳(5/10/20)',
   `up_ma_spider` tinyint(2) COMMENT 'MA金蜘蛛',
   `down_ma_spider` tinyint(2) COMMENT 'MA毒蜘蛛',
-  `ma_group_glue` tinyint(1) COMMENT 'MA均线粘合',
+  `ma_glue` tinyint(1) COMMENT 'MA均线粘合',
   `up_hill` tinyint(2) COMMENT 'MA上山爬坡',
   `down_hill` tinyint(2) COMMENT 'MA下山滑坡',
   `up_td8` tinyint(2),

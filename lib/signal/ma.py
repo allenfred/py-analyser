@@ -1,4 +1,44 @@
+import numpy as np
+import math as math
+
+
 # MA 信号
+
+def is_ma_glue(index, ma, df):
+    """
+    均线粘合 (5/10/20)
+    最近7个交易日
+    模拟计算方差 波动3%内
+
+    :param index:
+    :param ma:
+    :param df:
+    :return:
+    """
+
+    ma5 = ma[:, 0]
+    ma10 = ma[:, 1]
+    ma20 = ma[:, 2]
+
+    _count = 7
+    _sum = round(np.sum(ma5[index - _count: index]) + np.sum(ma10[index - _count: index]) + \
+                 np.sum(ma20[index - _count: index]), 3)
+    _avg = round(_sum / 21, 3)
+    _wave = round(_avg * 0.03, 3)
+
+    avg_wave = True
+
+    for i in range(_count):
+        if math.fabs(ma5[index - i] - _avg) > _wave or \
+                math.fabs(ma10[index - i] - _avg) > _wave or \
+                math.fabs(ma20[index - i] - _avg) > _wave:
+            avg_wave = False
+
+    if index > 20 and avg_wave:
+        return True
+    else:
+        return False
+
 
 def is_ma20_rise(index, ma):
     ma20 = ma[:, 2]
