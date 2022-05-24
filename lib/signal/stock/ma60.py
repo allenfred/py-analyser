@@ -155,7 +155,7 @@ def is_ma60_fourth(index, candles, bias, ma, ma_slope, df):
     ma60_slope = ma_slope[:, 5]
     ma60 = ma[:, 5]
     _ma60 = ma60[index]
-    bias60 = bias[:, 4]
+    bias60 = bias[:, 5]
     _bias60 = bias60[index]
 
     if index > 90 and _ma60 > 0:
@@ -176,8 +176,14 @@ def is_ma60_fourth(index, candles, bias, ma, ma_slope, df):
                 flag = False
         return flag
 
+    def has_bottom_patterns_recently():
+        if has_bottom_patterns(index, df) or has_bottom_patterns(index - 1, df) or \
+                has_bottom_patterns(index - 2, df) or has_bottom_patterns(index - 3, df) or \
+                has_bottom_patterns(index - 4, df):
+            return True
+
     if index > 90 and _bias60 < -16 and ma_down_steady() and \
-            steady_under_ma() and has_bottom_patterns(index, df):
+            steady_under_ma() and has_bottom_patterns_recently():
         return True
     else:
         return False

@@ -29,7 +29,7 @@ if __name__ == "__main__":
     # ts_code = '600557.SH'
     # ts_code = '600502.SH'
     # ts_code = '600898.SH'
-    ts_code = '605098.SH'
+    ts_code = '300650.SZ'
     scan_daily_candles(ts_code, 'CN', '2022-05-23')
     print('扫描成功')
 

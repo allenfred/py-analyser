@@ -94,7 +94,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
 
             dailyIndicatorDao.bulk_insert(df, ts_code)
             stockSignalDao.upsert(signal)
-            stockDailySignalDao.bulk_insert(small_df, ts_code)
+            stockDailySignalDao.reinsert(small_df, ts_code)
             dailyPatternSignalDao.bulk_insert(small_df, ts_code)
 
             stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount, 'list_status': 'L'})

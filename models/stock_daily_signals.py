@@ -385,6 +385,26 @@ class StockDailySignalDao:
         finally:
             self.session.close()
 
+    def reinsert(self, df, ts_code):
+        trade_date = df['trade_date'].to_numpy()[0]
+
+        self.session.execute("delete from stock_daily_signals where "
+                             "ts_code = :ts_code and trade_date >= :trade_date;",
+                             {"ts_code": ts_code, "trade_date": trade_date})
+        items = []
+
+        for index, item in df.iterrows():
+            item = item.to_dict()
+            item = {k: v if not pd.isna(v) else None for k, v in item.items()}
+            items.insert(index, item)
+
+        try:
+            self.session.bulk_insert_mappings(StockDailySignal, items)
+            self.session.commit()
+        except Exception as e:
+            print('Error:', e)
+
+        self.session.close()
 
     def upsert(self, signal):
         obj = get_obj(signal)

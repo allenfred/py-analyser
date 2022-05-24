@@ -217,7 +217,7 @@ def is_ma60_support(index, candles, ma, ma_slope, df):
     close = candles[:, 3]
     ma60 = ma[:, 5]
 
-    # 最近13个交易日 收盘价稳定在MA120之上 MA120稳定向上运行
+    # 最近13个交易日 收盘价稳定在MA60之上 MA60上行
     def steady_on_ma():
         flag = True
         for i in range(13):
@@ -226,7 +226,7 @@ def is_ma60_support(index, candles, ma, ma_slope, df):
         return flag
 
     if steady_on_ma() and has_support_patterns(index, df) and \
-            (low[index] < ma60[index] or low[index - 1] < ma60[index - 1]):
+            (low[index] <= ma60[index] or low[index - 1] <= ma60[index - 1]):
         return True
     else:
         return False
@@ -242,17 +242,17 @@ def is_ma120_support(index, candles, ma, ma_slope, df):
     close = candles[:, 3]
     ma120 = ma[:, 6]
 
-    # 最近21个交易日 收盘价稳定在MA120之上 MA120稳定向上运行
+    # 最近13个交易日 收盘价稳定在MA120之上 MA120上行
     def steady_on_ma():
         flag = True
-        for i in range(21):
+        for i in range(13):
             if close[index - i] < ma120[index - i] or ma120[index - i] < ma120[index - i - 1]:
                 flag = False
         return flag
 
     if steady_on_ma() and has_support_patterns(index, df) and \
             has_support_patterns(index - 1, df) and \
-            (low[index] < ma120[index] or low[index - 1] < ma120[index - 1]):
+            (low[index] <= ma120[index] or low[index - 1] <= ma120[index - 1]):
         return True
     else:
         return False
