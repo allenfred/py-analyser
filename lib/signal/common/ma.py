@@ -24,7 +24,7 @@ def is_ma_glue(index, ma, df):
     _sum = round(np.sum(ma5[index - _count: index]) + np.sum(ma10[index - _count: index]) + \
                  np.sum(ma20[index - _count: index]), 3)
     _avg = round(_sum / 21, 3)
-    _wave = round(_avg * 0.02, 3)
+    _wave = round(_avg * 0.018, 3)
 
     avg_wave = True
 
@@ -35,6 +35,7 @@ def is_ma_glue(index, ma, df):
             avg_wave = False
 
     if index > 20 and avg_wave:
+        # print(df['trade_date'][index], _wave)
         return True
     else:
         return False
