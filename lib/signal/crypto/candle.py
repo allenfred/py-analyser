@@ -3,7 +3,6 @@ import os
 import sys
 
 
-#
 # path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # sys.path.append(path)
 
@@ -15,6 +14,7 @@ def is_hammer(i, candles):
     1.市场处于清晰的下降趋势
     2.当前K线收出锤头线形态
     3.当前K线最低价为近期最低价
+    4..K线震幅大于6%
 
     :param i: 当前tick
     :param candles:
@@ -33,6 +33,7 @@ def is_hammer(i, candles):
     _high = high[i]
     _low = low[i]
     _close = close[i]
+    pre_close = close[i - 1]
 
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
@@ -45,7 +46,8 @@ def is_hammer(i, candles):
     # 开盘价和收盘价都位于k线上方1/3处 (即：下影线长度占k线长度的2/3以上）
     # 上影线长度需小于柱体长度的1/5
     if lowest_low == _low and _open > up_one_third and _close > up_one_third \
-            and up_shadow_len < bar_len / 5:
+            and up_shadow_len < bar_len / 5 \
+            and pre_close * 0.06 <= k_len:
         return True
 
     return False
@@ -58,6 +60,7 @@ def is_pour_hammer(i, candles):
     1.市场处于清晰的下降趋势
     2.当前K线收出倒锤头线形态
     3.当前K线最低价为近期最低价
+    4..K线震幅大于6%
 
     :param i: 当前tick
     :param candles:
@@ -76,6 +79,7 @@ def is_pour_hammer(i, candles):
     _high = high[i]
     _low = low[i]
     _close = close[i]
+    pre_close = close[i - 1]
 
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
@@ -89,7 +93,8 @@ def is_pour_hammer(i, candles):
     # 开盘价和收盘价都位于k线下方1/3处 (即：上影线长度占k线长度的2/3以上）
     # 下影线长度需小于柱体长度的1/5
     if lowest_low == _low and _open < bottom_one_third and _close < bottom_one_third \
-            and bottom_shadow_len < bar_len / 5:
+            and bottom_shadow_len < bar_len / 5 \
+            and pre_close * 0.06 <= k_len:
         return True
 
     return False
@@ -127,7 +132,7 @@ def is_hang_neck(i, candles):
     up_one_third = _high - (k_len / 3)
 
     # 最近21日最高价
-    highest_high = min(high[i - 20: i + 1])
+    highest_high = max(high[i - 20: i + 1])
 
     # 开盘价和收盘价都位于k线上方1/3处 (即：下影线长度占k线长度的2/3以上）
     # 上影线长度需小于柱体长度的1/5
@@ -449,6 +454,40 @@ def is_flat_base(i, candles):
     return False
 
 
+def is_down_rise(i, candles):
+    """
+    description: 下探上涨
+    有效标准：
+    1.市场处于短暂的下降趋势(回调)
+    3.第二根K线必须吞没第一根
+    4.第二根K线实体必须大于K线长度的 2/3
+    5.第二根实体必须与第一个实体颜色相反
+    6.第二根K线涨幅大于 3%
+
+    :param i: 当前tick
+    :param candles:
+    :return: boolean
+    """
+    if i < 20:
+        return False
+
+    _open = candles[:, 0][i]
+    _high = candles[:, 1][i]
+    _low = candles[:, 2][i]
+    _close = candles[:, 3][i]
+    k_len = _high - _low
+    bar_len = math.fabs(_open - _close)
+
+    pre_open = candles[:, 0][i - 1]
+    pre_close = candles[:, 3][i - 1]
+
+    if _open < pre_close < _close and _open < pre_open < _close and \
+            bar_len > k_len / 2 and candles[:, 4][i] >= 3:
+        return True
+
+    return False
+
+
 def is_swallow_up(i, candles):
     """
     description: 看涨吞没
@@ -484,7 +523,7 @@ def is_swallow_up(i, candles):
     # 今昨两日最低价为最近21日最低价 (最近20日呈下跌趋势)
     if (lowest_low == pre_low or lowest_low == _low) \
             and _open < pre_close < pre_open < _close and \
-            bar_len > k_len * 2 / 3 and candles[:, 4][i] >= 3:
+            bar_len > k_len / 2 and candles[:, 4][i] >= 3:
         return True
 
     return False
@@ -525,7 +564,7 @@ def is_swallow_down(i, candles):
     # 今昨两日最高价为最近21日最高价 (最近21日呈上涨趋势)
     if (highest_high == pre_high or highest_high == _high) \
             and _open > pre_close > pre_open > _close \
-            and bar_len > k_len * 2 / 3 and candles[:, 4][i] <= -3:
+            and bar_len > k_len / 2 and candles[:, 4][i] <= -3:
         return True
 
     return False
@@ -572,7 +611,7 @@ def is_jump_line(i, candles):
     return False
 
 
-def is_up_screw(i, candles, ma_slope):
+def is_up_screw(i, candles):
     """
     description: 看跌螺旋桨 (看跌)
     有效标准：
@@ -582,15 +621,14 @@ def is_up_screw(i, candles, ma_slope):
 
     :param i: 当前tick
     :param candles:
-    :param ma_slope:
     :return: boolean
     """
 
     _open = candles[:, 0][i]
-    _high = candles[:, 1][i]
+    high = candles[:, 1]
+    _high = high[i]
     _low = candles[:, 2][i]
     _close = candles[:, 3][i]
-    ma10_slope = ma_slope[:, 1]
 
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
@@ -598,7 +636,7 @@ def is_up_screw(i, candles, ma_slope):
     up_shadow_len = math.fabs(_open - _high if _open < _close else _close - _high)
     bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
 
-    if i > 30 and min(ma10_slope[i - 12: i - 1]) > 5 and \
+    if i > 30 and max(high[i - 9: i - 1]) < _high and \
             up_shadow_len > k_len / 3 and bottom_shadow_len > k_len / 3 and \
             _open * 1.03 < _high and _open * 0.93 > _low:
         return True
@@ -606,25 +644,25 @@ def is_up_screw(i, candles, ma_slope):
     return False
 
 
-def is_down_screw(i, candles, ma_slope):
+def is_down_screw(i, candles):
     """
     description: 看涨螺旋桨 (看涨)
     有效标准：
-    1.市场处于清晰的上涨趋势 连续13日沿MA10上涨
+    1.市场处于清晰的下跌趋势 连续13日沿MA10下跌
     2.K线震幅大于6%
     3.上下影线长度大于K线长度的1/3
 
     :param i: 当前tick
     :param candles:
-    :param ma_slope:
     :return: boolean
     """
 
     _open = candles[:, 0][i]
-    _high = candles[:, 1][i]
-    _low = candles[:, 2][i]
+    high = candles[:, 1]
+    low = candles[:, 2]
+    _high = high[i]
+    _low = low[i]
     _close = candles[:, 3][i]
-    ma10_slope = ma_slope[:, 1]
 
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
@@ -632,7 +670,7 @@ def is_down_screw(i, candles, ma_slope):
     up_shadow_len = math.fabs(_open - _high if _open < _close else _close - _high)
     bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
 
-    if i > 30 and min(ma10_slope[i - 12: i - 1]) > 5 and \
+    if i > 30 and min(low[i - 9: i - 1]) > _low and \
             up_shadow_len > k_len / 3 and bottom_shadow_len > k_len / 3 and \
             _open * 1.03 < _high and _open * 0.93 > _low:
         return True

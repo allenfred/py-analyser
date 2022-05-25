@@ -125,9 +125,8 @@ def is_ma60_third(index, candles, bias, ma, ma_slope, df):
                 flag = False
         return flag
 
-    if index > 90 and _close > _ma60 and ma_rise_steady() and \
-            candles[index - 1][3] < ma60[index - 1] and \
-            _bias60 < 8 and _low_bias60 < 0:
+    if index > 90 and _close > _ma60 > _low and _bias60 < 8 and \
+            ma_rise_steady() and candles[index - 1][2] < ma60[index - 1]:
         return True
     else:
         return False

@@ -24,7 +24,7 @@ def is_ma_glue(index, ma, df):
     _sum = round(np.sum(ma5[index - _count: index]) + np.sum(ma10[index - _count: index]) + \
                  np.sum(ma20[index - _count: index]), 3)
     _avg = round(_sum / 21, 3)
-    _wave = round(_avg * 0.03, 3)
+    _wave = round(_avg * 0.02, 3)
 
     avg_wave = True
 
@@ -247,14 +247,14 @@ def is_up_short_ma_arrange2(index, ma):
     return False
 
 
-def is_ma60_support(index, candles, ma, ma_slope, df):
+def is_ma60_support(index, candle, ma, ma_slope, df):
     if index < 90:
         return False
 
-    open = candles[:, 0]
-    high = candles[:, 1]
-    low = candles[:, 2]
-    close = candles[:, 3]
+    open = candle[:, 0]
+    high = candle[:, 1]
+    low = candle[:, 2]
+    close = candle[:, 3]
     ma60 = ma[:, 5]
 
     # 最近13个交易日 收盘价稳定在MA60之上 MA60上行
@@ -267,19 +267,20 @@ def is_ma60_support(index, candles, ma, ma_slope, df):
 
     if steady_on_ma() and has_support_patterns(index, df) and \
             (low[index] <= ma60[index] or low[index - 1] <= ma60[index - 1]):
+        # print(candle[5], 'support')
         return True
     else:
         return False
 
 
-def is_ma120_support(index, candles, ma, ma_slope, df):
+def is_ma120_support(index, candle, ma, ma_slope, df):
     if index < 150:
         return 0
 
-    open = candles[:, 0]
-    high = candles[:, 1]
-    low = candles[:, 2]
-    close = candles[:, 3]
+    open = candle[:, 0]
+    high = candle[:, 1]
+    low = candle[:, 2]
+    close = candle[:, 3]
     ma120 = ma[:, 6]
 
     # 最近13个交易日 收盘价稳定在MA120之上 MA120上行

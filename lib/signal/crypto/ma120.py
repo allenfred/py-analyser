@@ -1,11 +1,14 @@
+import numpy as np
+
 # MA120 葛南维买卖八大法则
 
-def is_ma120_first(index, candles, bias, ma, ma_slope):
+
+def is_ma120_first(index, candles, bias, ma, ma_slope, df):
     """
     葛南维第一大法则 (均线扭转)
     1.收盘价位于MA120之上
     2.MA120 开始拐头 (ma120_slope 连续3日 > 0)
-    3.最近21个交易日中前18个交易日 ma120_slope < 0
+    3.最近21个交易日中前34个交易日 ma120_slope < 0
     4.最近3个交易日 slope 呈上升趋势
     5.乖离率正常 不存在超买
 
@@ -14,6 +17,7 @@ def is_ma120_first(index, candles, bias, ma, ma_slope):
     :param bias:
     :param ma:
     :param ma_slope:
+    :param df: patterns df
     :return:
     """
 
@@ -35,7 +39,7 @@ def is_ma120_first(index, candles, bias, ma, ma_slope):
         return flag
 
     if index > 90 and _close > _ma120 and start_up_ma() and \
-            max(ma120_slope[index - 21: index - 2]) <= 0 and \
+            max(ma120_slope[index - 34: index - 2]) <= 0 and \
             0 < ma120_slope[index - 2] < ma120_slope[index - 1] < ma120_slope[index] and \
             _bias120 < 8:
         return True
@@ -43,11 +47,11 @@ def is_ma120_first(index, candles, bias, ma, ma_slope):
         return False
 
 
-def is_ma120_second(index, candles, bias, ma, ma_slope):
+def is_ma120_second(index, candles, bias, ma, ma_slope, df):
     """
     葛南维第二大法则 (均线服从)
-    1. 连续13个交易日 收盘价在MA120之上 / MA120上行 / ma120_slope > 0
-    2. 价格回落 未跌破MA120 且 K线出现止跌支撑信号 (看涨吞没/看涨锤头线/看涨螺旋桨/看涨孕线)
+    1. 连续13个交易日 收盘价在MA120之上 / MA120上行
+    2. 价格回落 未跌破MA120 且 K线出现止跌支撑信号 (看涨吞没/看涨锤头线/探水竿/看涨螺旋桨/看涨孕线/下探上涨)
     3. 价格回落未出现强势空头K线 （大阴线/倒锤头线）
 
     :param index:
@@ -55,6 +59,7 @@ def is_ma120_second(index, candles, bias, ma, ma_slope):
     :param bias:
     :param ma:
     :param ma_slope:
+    :param df: patterns df
     :return:
     """
 
@@ -73,17 +78,19 @@ def is_ma120_second(index, candles, bias, ma, ma_slope):
     def steady_on_ma():
         flag = True
         for i in range(13):
-            if candles[index - i][3] < ma120[index - i] or ma120[index] < ma120[index - 1]:
+            if candles[index - i][3] < ma120[index - i] or ma120[index - i] < ma120[index - i - 1]:
                 flag = False
         return flag
 
-    if index > 90 and steady_on_ma() and min(ma120_slope[index - 12: index]) > 0 and _low_bias120 < 2:
+    if index > 90 and steady_on_ma() and \
+            has_support_patterns(index, df) and _low_bias120 < 2:
+        # print(candle[5], '2')
         return True
     else:
         return False
 
 
-def is_ma120_third(index, candles, bias, ma, ma_slope):
+def is_ma120_third(index, candles, bias, ma, ma_slope, df):
     """
     葛南维第三大法则 (均线服从和黄金交叉)
     1. 连续13个交易日 收盘价在MA120之上 / MA120上行 / ma120_slope > 0
@@ -95,6 +102,7 @@ def is_ma120_third(index, candles, bias, ma, ma_slope):
     :param bias:
     :param ma:
     :param ma_slope:
+    :param df: patterns df
     :return:
     """
 
@@ -110,13 +118,6 @@ def is_ma120_third(index, candles, bias, ma, ma_slope):
     if index > 90 and _ma120 > 0:
         _low_bias120 = (_low - _ma120) * 100 / _ma120
 
-    def steady_on_ma():
-        flag = 0
-        for i in range(13):
-            if candles[index - i][3] < ma120[index - i]:
-                flag += 1
-        return 0 < flag < 3
-
     def ma_rise_steady():
         flag = True
         for i in range(13):
@@ -125,19 +126,18 @@ def is_ma120_third(index, candles, bias, ma, ma_slope):
                 flag = False
         return flag
 
-    if index > 90 and _close > _ma120 and steady_on_ma() and ma_rise_steady() and \
-            min(ma120_slope[index - 12: index]) > 0 and \
-            candles[index - 1][3] < ma120[index - 1] and \
-            _bias120 < 8 and _low_bias120 < 0:
+    if index > 90 and _close > _ma120 > _low and _bias120 < 8 and \
+            ma_rise_steady() and candles[index - 1][2] < ma120[index - 1]:
+        # print(candle[5], '3')
         return True
     else:
         return False
 
 
-def is_ma120_fourth(index, candles, bias, ma, ma_slope):
+def is_ma120_fourth(index, candles, bias, ma, ma_slope, df):
     """
     葛南维第四大法则 (均线修复)
-    1. 连续13个交易日 收盘价在MA120之下 / MA120下行 / ma120_slope < 0
+    1. 均线持续下行 - 连续13个交易日 收盘价在MA120之下 / MA120下行
     2. 乖离率出现超卖 bias120 < -16
     3. K线出现止跌支撑信号 (看涨吞没/看涨锤头线/看涨螺旋桨/看涨孕线)
 
@@ -146,6 +146,7 @@ def is_ma120_fourth(index, candles, bias, ma, ma_slope):
     :param bias:
     :param ma:
     :param ma_slope:
+    :param df: patterns df
     :return:
     """
 
@@ -155,7 +156,7 @@ def is_ma120_fourth(index, candles, bias, ma, ma_slope):
     ma120_slope = ma_slope[:, 5]
     ma120 = ma[:, 5]
     _ma120 = ma120[index]
-    bias120 = bias[:, 4]
+    bias120 = bias[:, 5]
     _bias120 = bias120[index]
 
     if index > 90 and _ma120 > 0:
@@ -176,14 +177,20 @@ def is_ma120_fourth(index, candles, bias, ma, ma_slope):
                 flag = False
         return flag
 
-    if index > 90 and ma_down_steady() and steady_under_ma() and _bias120 < -16 and \
-            max(ma120_slope[index - 12: index]) < 0:
+    def has_bottom_patterns_recently():
+        if has_bottom_patterns(index, df) or has_bottom_patterns(index - 1, df) or \
+                has_bottom_patterns(index - 2, df) or has_bottom_patterns(index - 3, df) or \
+                has_bottom_patterns(index - 4, df):
+            return True
+
+    if index > 90 and _bias120 < -16 and ma_down_steady() and \
+            steady_under_ma() and has_bottom_patterns_recently():
         return True
     else:
         return False
 
 
-def is_ma120_fifth(index, candles, bias, ma, ma_slope):
+def is_ma120_fifth(index, candles, bias, ma, ma_slope, df):
     """
     葛南维第五大法则 (均线修复)
     1. 连续13个交易日 MA120上行 / ma120_slope > 1
@@ -195,6 +202,7 @@ def is_ma120_fifth(index, candles, bias, ma, ma_slope):
     :param bias:
     :param ma:
     :param ma_slope:
+    :param df: patterns df
     :return:
     """
 
@@ -218,25 +226,27 @@ def is_ma120_fifth(index, candles, bias, ma, ma_slope):
         return flag
 
     if index > 90 and steady_on_ma() and _bias120 > 11 and \
+            has_short_patterns(index, df) and \
             min(ma120_slope[index - 12: index]) > 1:
         return True
     else:
         return False
 
 
-def is_ma120_sixth(index, candles, bias, ma, ma_slope):
+def is_ma120_sixth(index, candles, bias, ma, ma_slope, df):
     """
     葛南维第六大法则 (均线扭转)
-    1. MA120开始由上行逐渐走平: 连续18个交易日 MA120上行
+    1. 趋势异态 - MA120开始由上行逐渐走平: 连续18个交易日 MA120上行
     2. 最近3日 MA120开始拐头向下 ma120_slope < 1
     2. bias120 正常
-    3. K线出现短期见顶信号 (看跌吞没/看跌锤头线/看跌螺旋桨/看跌孕线/看跌尽头线)
+    3. K线出现短期见顶信号 >= 2 (看跌吞没/看跌锤头线/看跌螺旋桨/看跌孕线/看跌尽头线)
 
     :param index:
     :param candles:
     :param bias:
     :param ma:
     :param ma_slope:
+    :param df: patterns df
     :return:
     """
 
@@ -268,16 +278,18 @@ def is_ma120_sixth(index, candles, bias, ma, ma_slope):
                 flag = False
         return flag
 
-    if index > 90 and ma_rise_before() and ma_down_recently() and 11 > _bias120 > -11:
+    if index > 90 and _close < _ma120 and ma_rise_before() and ma_down_recently() and \
+            has_short_patterns(index, df) and \
+            8 > _bias120 > -7:
         return True
     else:
         return False
 
 
-def is_ma120_seventh(index, candles, bias, ma, ma_slope):
+def is_ma120_seventh(index, candles, bias, ma, ma_slope, df):
     """
     葛南维第七大法则 (均线服从)
-    1. 连续13个交易日: MA120下行 (ma120_slope < 0)
+    1. 均线持续下行 - 连续13个交易日: MA120下行 (ma120_slope < 0)
     2. 反弹时未站上MA120之后 继续下行
 
     :param index:
@@ -285,6 +297,7 @@ def is_ma120_seventh(index, candles, bias, ma, ma_slope):
     :param bias:
     :param ma:
     :param ma_slope:
+    :param df: patterns df
     :return:
     """
 
@@ -307,17 +320,18 @@ def is_ma120_seventh(index, candles, bias, ma, ma_slope):
                 flag = False
         return flag
 
-    if index > 90 and _bias120 > -1 and steady_under_ma():
+    if index > 90 and _bias120 > -1 and steady_under_ma() and \
+            has_short_patterns(index, df):
         return True
     else:
         return False
 
 
-def is_ma120_eighth(index, candles, bias, ma, ma_slope):
+def is_ma120_eighth(index, candles, bias, ma, ma_slope, df):
     """
     葛南维第八大法则 (均线服从和死亡交叉)
-    1. 连续21个交易日 MA120下行 (ma120_slope < 0)
-    2. 前几个交易日反弹站上MA120之后 又继续下行
+    1. 均线持续下行 - 连续21个交易日 MA120下行 (ma120_slope < 0)
+    2. 反弹短暂站上MA120之后 又继续下行
     3. 出现死亡交叉 (5/10 5/20 10/20 5/120 10/120)
 
     :param index:
@@ -325,6 +339,7 @@ def is_ma120_eighth(index, candles, bias, ma, ma_slope):
     :param bias:
     :param ma:
     :param ma_slope:
+    :param df: patterns df
     :return:
     """
 
@@ -342,7 +357,7 @@ def is_ma120_eighth(index, candles, bias, ma, ma_slope):
 
     def stand_on_ma_temp():
         tag = 0
-        for i in range(13):
+        for i in range(7):
             if candles[index - i - 1][3] > ma120[index - i - 1]:
                 tag += 1
         return tag >= 2
@@ -355,7 +370,98 @@ def is_ma120_eighth(index, candles, bias, ma, ma_slope):
                 flag = False
         return flag
 
-    if index > 90 and -2 < _bias120 < 0 and stand_on_ma_temp() and ma_down_steady():
+    if index > 90 and -2 < _bias120 < 0 and stand_on_ma_temp() and \
+            ma_down_steady() and has_short_patterns(index, df):
         return True
     else:
         return False
+
+
+def has_support_patterns(index, df):
+    """
+    当前Ticker 存在看涨K线形态
+    看涨吞没
+    下探上涨
+    锤头线
+    墓碑十字线
+    蜻蜓十字线
+    探水竿
+    孕线
+    十字孕线
+    刺透形态
+    梯底
+
+    :param index:
+    :param df:
+    :return:
+    """
+    if df.iloc[index]['swallow_up'] > 0 or df.iloc[index]['down_rise'] > 0 \
+            or df.iloc[index]['CDLHAMMER'] > 0 or df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 \
+            or df.iloc[index]['CDLDRAGONFLYDOJI'] > 0 or df.iloc[index]['CDLTAKURI'] > 0 \
+            or df.iloc[index]['CDLHARAMI'] > 0 or df.iloc[index]['CDLHARAMICROSS'] > 0 \
+            or df.iloc[index]['CDLPIERCING'] > 0 or df.iloc[index]['CDLLADDERBOTTOM'] > 0:
+        return True
+
+    return False
+
+
+def has_bottom_patterns(index, df):
+    """
+    判断当前是否存在di底部看涨K线形态
+    看涨吞没
+    刺透心态 (旭日东升 / 曙光初现 / 好友反攻)
+    看涨螺旋桨
+    梯底
+    锤头 (探水竿)
+    倒锤头
+
+    :param index: 当前时间
+    :param df:
+    :return:
+    """
+
+    if df.iloc[index]['swallow_up'] > 0 or df.iloc[index]['sunrise'] > 0 \
+            or df.iloc[index]['down_screw'] > 0 or df.iloc[index]['CDLLADDERBOTTOM'] > 0 \
+            or df.iloc[index]['hammer'] > 0 or df.iloc[index]['pour_hammer'] > 0:
+        return True
+
+    return False
+
+
+def has_short_patterns(index, df):
+    """
+    判断当前是否存在看跌K线形态信号个数 > 1
+
+    :param index: 当前时间
+    :param df:
+    :return:
+    """
+    patterns = get_patterns(df)
+    arr = patterns[index]
+    arr2 = np.argwhere(arr < 0)
+
+    return len(arr2) > 1
+
+
+def get_patterns(df):
+    patterns = df[['CDLCLOSINGMARUBOZU', 'CDLDOJI', 'CDLDOJISTAR', 'CDLDRAGONFLYDOJI',
+                   'CDLGRAVESTONEDOJI', 'CDLHAMMER', 'CDLHANGINGMAN',
+                   'CDLINVERTEDHAMMER', 'CDLLONGLEGGEDDOJI', 'CDLLONGLINE',
+                   'CDLMARUBOZU', 'CDLRICKSHAWMAN', 'CDLSHOOTINGSTAR', 'CDLSHORTLINE',
+                   'CDLTAKURI',
+                   'CDLCOUNTERATTACK', 'CDLDARKCLOUDCOVER', 'CDLGAPSIDESIDEWHITE',
+                   'CDLHARAMI', 'CDLHARAMICROSS', 'CDLHOMINGPIGEON', 'CDLINNECK',
+                   'CDLKICKING', 'CDLKICKINGBYLENGTH', 'CDLMATCHINGLOW', 'CDLONNECK',
+                   'CDLSEPARATINGLINES', 'CDLTHRUSTING', 'CDLBELTHOLD', 'CDLENGULFING',
+                   'CDLPIERCING',
+                   'CDL2CROWS', 'CDL3BLACKCROWS', 'CDL3INSIDE', 'CDL3OUTSIDE', 'CDL3STARSINSOUTH',
+                   'CDLABANDONEDBABY', 'CDLUNIQUE3RIVER', 'CDLMORNINGSTAR', 'CDLMORNINGDOJISTAR',
+                   'CDLEVENINGSTAR', 'CDLEVENINGDOJISTAR', 'CDL3WHITESOLDIERS', 'CDLADVANCEBLOCK',
+                   'CDLHIGHWAVE', 'CDLHIKKAKE', 'CDLHIKKAKEMOD', 'CDLIDENTICAL3CROWS',
+                   'CDLSPINNINGTOP', 'CDLSTALLEDPATTERN', 'CDLSTICKSANDWICH', 'CDLTASUKIGAP',
+                   'CDLTRISTAR', 'CDLUPSIDEGAP2CROWS',
+                   'CDL3LINESTRIKE', 'CDLCONCEALBABYSWALL',
+                   'CDLBREAKAWAY', 'CDLLADDERBOTTOM', 'CDLMATHOLD', 'CDLRISEFALL3METHODS', 'CDLXSIDEGAP3METHODS'
+                   ]].to_numpy()
+
+    return patterns
