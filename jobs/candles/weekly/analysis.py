@@ -6,19 +6,17 @@ import sys
 path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 sys.path.append(path)
 
-import numpy as np
 import tushare as ts
 import pandas as pd
 from models.weekly_candles import WeeklyCandleDao
 from models.weekly_indicators import WeeklyIndicatorDao
 from models.weekly_signals import WeeklySignalDao
 from models.stocks import StockDao
-from lib.analyze import analyze
+from lib.stock.analyze import analyze
 from lib.util import set_quota, used_time_fmt
 import time
 from datetime import datetime
 from config.common import TS_TOKEN
-from api.weekly_candle import get_candles
 
 pro = ts.pro_api(TS_TOKEN)
 weeklyCandleDao = WeeklyCandleDao()

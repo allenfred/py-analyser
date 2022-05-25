@@ -1,5 +1,5 @@
 # -- coding: utf-8 -
-from .signal.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma120_rise, is_up_ma_arrange, \
+from lib.signal.common.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma120_rise, is_up_ma_arrange, \
     is_up_short_ma_arrange1, is_up_short_ma_arrange2, is_ma60_support, is_ma120_support, is_ma_glue
 
 

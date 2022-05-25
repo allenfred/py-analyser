@@ -1,6 +1,6 @@
 # -- coding: utf-8 -
 
-from .signal.stock.ma60 import is_ma60_first, is_ma60_second, is_ma60_third, is_ma60_fourth, \
+from lib.signal.stock.ma60 import is_ma60_first, is_ma60_second, is_ma60_third, is_ma60_fourth, \
     is_ma60_fifth, is_ma60_sixth, is_ma60_seventh, is_ma60_eighth
 
 

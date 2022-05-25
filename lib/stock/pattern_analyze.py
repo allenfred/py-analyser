@@ -1,6 +1,6 @@
 # -- coding: utf-8 -
 import talib as lib
-from .signal.stock.candle import is_hammer, is_pour_hammer, is_short_end, is_swallow_up, \
+from lib.signal.stock.candle import is_hammer, is_pour_hammer, is_short_end, is_swallow_up, \
     is_sunrise, is_first_light, is_attack_short, is_flat_base, is_rise_line, is_down_screw, \
     is_long_end, is_swallow_down, is_hang_neck, is_shooting, is_jump_line, is_up_screw, is_down_rise
 

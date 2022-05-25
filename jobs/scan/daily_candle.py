@@ -7,7 +7,6 @@ path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 sys.path.append(path)
 
 import pandas as pd
-from models.db import DBSession
 from models.cn_daily_candles import CNDailyCandleDao
 from models.daily_indicators import DailyIndicatorDao
 
@@ -17,13 +16,9 @@ from models.stock_signals import StockSignalDao
 
 from models.stocks import StockDao
 from sqlalchemy import text
-from lib.analyze import analyze
-from lib.short_analyze import short_analyze
+from lib.stock.analyze import analyze
 from lib.util import set_quota, used_time_fmt
-import time
-from datetime import datetime, date, timedelta
-import numpy as np
-from api.daily_candle import get_cn_candles
+from datetime import date, timedelta
 import time
 
 stockDao = StockDao()
