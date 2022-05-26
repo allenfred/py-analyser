@@ -19,23 +19,37 @@ def is_ma_glue(index, ma, df):
     ma5 = ma[:, 0]
     ma10 = ma[:, 1]
     ma20 = ma[:, 2]
+    pct_chg = df['pct_chg'].to_numpy()
 
     _count = 7
     _sum = round(np.sum(ma5[index - _count: index]) + np.sum(ma10[index - _count: index]) + \
                  np.sum(ma20[index - _count: index]), 3)
     _avg = round(_sum / 21, 3)
-    _wave = round(_avg * 0.018, 3)
+    _wave = round(_avg * 0.015, 3)
+    ma_wave = []
 
     avg_wave = True
 
     for i in range(_count):
+        ma_wave.append(math.fabs(ma5[index - i] - _avg))
+        ma_wave.append(math.fabs(ma10[index - i] - _avg))
+        ma_wave.append(math.fabs(ma20[index - i] - _avg))
+
         if math.fabs(ma5[index - i] - _avg) > _wave or \
                 math.fabs(ma10[index - i] - _avg) > _wave or \
                 math.fabs(ma20[index - i] - _avg) > _wave:
             avg_wave = False
 
+    # if index > 20 and avg_wave and \
+    #         max(pct_chg[index - _count - 2: index + 1]) < 3 and \
+    #         min(pct_chg[index - _count - 2: index + 1]) > -3:
+    #     print(df['trade_date'][index], pct_chg[index - _count - 2: index + 1] , pct_chg[index])
+    #     return True
+    # else:
+    #     return False
+
     if index > 20 and avg_wave:
-        # print(df['trade_date'][index], _wave)
+        # print(df['trade_date'][index], _wave, ma_wave, pct_chg[index])
         return True
     else:
         return False
