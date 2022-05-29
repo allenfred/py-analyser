@@ -47,11 +47,11 @@ module.exports = {
     {
       name: 'cn-weekly',
       log_date_format：'YYYY-MM-DD HH:mm:ss',
-      script: 'jobs/candles/weekly/cn.py',
+      script: 'jobs/candles/weekly/analysis.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '30 22 * * 5', // 每周五下午 22:30
+      cron_restart: '30 22 * * *', // 每天下午 22:30
       watch: false,
       autorestart: false,
     },

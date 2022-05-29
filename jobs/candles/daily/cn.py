@@ -28,11 +28,9 @@ stockDao = StockDao()
 
 
 def ready_weekly_klines():
-    today = datetime.now().strftime("%Y%m%d")
-    trade_dte = today
-    start = time.time()
+    trade_dte = datetime.now().strftime("%Y%m%d")
+    _start_time = time.time()
     is_last_req = False
-    total_got_count = 0
     offset = 0
 
     while not is_last_req:
@@ -55,7 +53,7 @@ def ready_weekly_klines():
                 weeklyCandleDao.bulk_insert(new_df)
 
                 print('已更新 CN weekly_candles :', len(new_df), ' 条数据，用时 ',
-                      used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start, time.time()))
+                      used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(_start_time, time.time()))
             else:
                 print(trade_dte, '没有周K线')
 
@@ -63,7 +61,7 @@ def ready_weekly_klines():
             print(trade_dte, 'Error:', e)
             break
 
-    print(today, '更新周K用时', used_time_fmt(start, time.time()))
+    print(today, '更新周K用时', used_time_fmt(_start_time, time.time()))
 
 
 def ready_daily_klines():
@@ -148,6 +146,7 @@ if __name__ == "__main__":
     today = datetime.now().strftime("%Y-%m-%d")
     start = time.time()
     ready_daily_klines()
+    ready_weekly_klines()
     end = time.time()
 
     print(today, '用时', used_time_fmt(start, end))

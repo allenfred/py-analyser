@@ -418,9 +418,7 @@ def is_general_ma_glue(index, df):
                 math.fabs(ma20[index - i] - _avg) > _wave:
             avg_wave = False
 
-    if index > 20 and avg_wave and \
-            max(pct_chg[index - _count - 2: index]) < 3 and \
-            min(pct_chg[index - _count - 2: index]) > -3:
+    if index > 20 and avg_wave:
         return True
     else:
         return False
@@ -536,8 +534,9 @@ def is_ma_over_gate(index, df):
                 flag = False
         return flag
 
-    if index > 20 and not is_ma_glue(index - 1, df) and is_upward_jump(index, candle) and \
+    if index > 20 and is_general_ma_glue(index, df) and is_upward_jump(index, candle) and \
             is_stand_up_all_ma(index, df) and (ma60_rise_steady() or ma30_rise_steady()):
+        print(df['trade_date'][index], 'is_ma_over_gate')
         return True
     else:
         return False
@@ -768,6 +767,20 @@ def is_ma120_support(index, df):
         return True
     else:
         return False
+
+
+def is_up_hill(index, df):
+    """
+    上山爬坡
+    MA20/MA30 持续上行
+    价格回落MA 未有效跌破
+    出现看涨形态
+
+    :param index:
+    :param df:
+    :return:
+    """
+    return False
 
 
 def has_support_patterns(index, df):
