@@ -16,7 +16,7 @@ from lib.util import used_time_fmt
 import time
 from datetime import datetime
 from config.common import TS_TOKEN
-from api.weekly_candle import get_candles
+from api.weekly_candle import get_weekly_candles
 
 pro = ts.pro_api(TS_TOKEN)
 weeklyCandleDao = WeeklyCandleDao()
@@ -24,40 +24,41 @@ weeklyIndicatorDao = WeeklyIndicatorDao()
 weeklySignalDao = WeeklySignalDao()
 stockDao = StockDao()
 
+
 if __name__ == "__main__":
-    today = datetime.now().strftime("%Y-%m-%d")
+    today = datetime.now().strftime("%Y%m%d")
+    trade_dte = today
     start = time.time()
+    is_last_req = False
+    total_got_count = 0
+    offset = 0
 
-    while True:
+    while not is_last_req:
         circle_start = time.time()
-        ts_code = stockDao.find_one_weekly_not_ready(today)
-
-        if ts_code is None:
-            break
-
-        df = get_candles({"ts_code": ts_code, "limit": 20, "offset": 0})
+        df = get_weekly_candles({"trade_date": trade_dte, "limit": 2000, "offset": offset})
         df_len = len(df)
+        if len(df) < 2000:
+            is_last_req = True
+        else:
+            offset += len(df)
 
         try:
             if df_len > 0:
                 df['trade_date'] = pd.to_datetime(df["trade_date"], format='%Y-%m-%d')
 
                 # 过滤出最新candle数据 (相较于db)
-                db_df = weeklyCandleDao.find_by_ts_code(ts_code, 20)
-                new_df = df.loc[~df["trade_date"].isin(db_df["trade_date"].to_numpy())]
+                db_df = weeklyCandleDao.find_by_trade_date(df['trade_date'][0])
+                new_df = df.loc[~df["ts_code"].isin(db_df["ts_code"])]
 
                 weeklyCandleDao.bulk_insert(new_df)
 
-                print('已更新 CN weekly_candles :', ts_code, ': ', len(new_df), ' 条数据，用时 ',
+                print('已更新 CN weekly_candles :', len(new_df), ' 条数据，用时 ',
                       used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start, time.time()))
             else:
-                print('新股没有周K线')
-
-            stockDao.update({'ts_code': ts_code, 'weekly_date': today})
+                print(trade_dte, '没有周K线')
 
         except Exception as e:
-            print(ts_code, 'Error:', e)
+            print(trade_dte, 'Error:', e)
             break
-            stockDao.update({'ts_code': ts_code, 'weekly_date': today})
 
-    print(today, '用时', used_time_fmt(start, time.time()))
+    print(today, '更新周K用时', used_time_fmt(start, time.time()))

@@ -84,6 +84,7 @@ def is_ma60_second(index, candles, bias, ma, ma_slope, df):
 
     if index > 90 and steady_on_ma() and \
             has_support_patterns(index, df) and _low_bias60 < 2:
+        # print(candle[5], 2)
         return True
     else:
         return False

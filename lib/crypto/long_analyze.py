@@ -1,6 +1,12 @@
 # -- coding: utf-8 -
-from lib.signal.common.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma120_rise, is_up_ma_arrange, \
-    is_up_short_ma_arrange1, is_up_short_ma_arrange2, is_ma60_support, is_ma120_support, is_ma_glue
+from lib.signal.common.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma120_rise, \
+    is_up_ma_arrange, is_up_short_ma_arrange, is_up_middle_ma_arrange, is_up_long_ma_arrange, \
+    is_gold_cross, \
+    is_ma60_support, is_ma120_support, is_stand_up_ma60, is_stand_up_ma120, \
+    is_ma_glue, is_ma_out_sea, is_ma_hold_moon, is_ma_over_gate, is_ma_up_ground, \
+    is_ma_gold_valley, is_ma_silver_valley, is_ma_spider, \
+    is_ma_up_arrange51020, is_ma_up_arrange5102030, is_ma_up_arrange510203060, \
+    is_ma_up_arrange203060, is_ma_up_arrange2060120
 
 
 def long_analyze(org_df):
@@ -167,254 +173,83 @@ def long_analyze(org_df):
         _ema120_slope = ema120_slope[index]
 
         # set_yearly_price_position
-        if index >= 260:
-            high_price = max(high[index - 259: index + 1])
-            low_price = min(low[index - 259: index + 1])
-        else:
-            high_price = max(high)
-            low_price = min(low)
+        high_price = max(high[index - 259: index + 1]) if index >= 260 else max(high)
+        low_price = min(low[index - 259: index + 1]) if index >= 260 else min(low)
 
         price_range = high_price - low_price
         price_pct_position = round((_close - low_price) * 100 / price_range, 1)
         yearly_price_position.insert(index, price_pct_position)
 
-        # yearly_price_position10
-        if 10 >= yearly_price_position[index]:
-            yearly_price_position10.insert(index, 1)
-        else:
-            yearly_price_position10.insert(index, 0)
+        # yearly_price_position
+        yearly_price_position10.insert(index, 1 if 10 >= yearly_price_position[index] else 0)
+        yearly_price_position20.insert(index, 1 if 20 >= yearly_price_position[index] else 0)
+        yearly_price_position30.insert(index, 1 if 30 >= yearly_price_position[index] else 0)
+        yearly_price_position50.insert(index, 1 if 50 >= yearly_price_position[index] else 0)
+        yearly_price_position70.insert(index, 1 if 70 >= yearly_price_position[index] else 0)
 
-        # yearly_price_position20
-        if 20 >= yearly_price_position[index]:
-            yearly_price_position20.insert(index, 0)
-        else:
-            yearly_price_position20.insert(index, 0)
-
-        # yearly_price_position30
-        if 30 >= yearly_price_position[index]:
-            yearly_price_position30.insert(index, 1)
-        else:
-            yearly_price_position30.insert(index, 0)
-
-        # yearly_price_position50
-        if 50 >= yearly_price_position[index]:
-            yearly_price_position50.insert(index, 1)
-        else:
-            yearly_price_position50.insert(index, 0)
-
-        # yearly_price_position70
-        if 70 >= yearly_price_position[index]:
-            yearly_price_position70.insert(index, 1)
-        else:
-            yearly_price_position70.insert(index, 0)
-
-        # MA20上行
-        if is_ma20_rise(index, ma):
-            ma20_up.insert(index, 1)
-        else:
-            ma20_up.insert(index, 0)
-
-        # EMA20上行
-        if is_ma20_rise(index, ema):
-            ema20_up.insert(index, 1)
-        else:
-            ema20_up.insert(index, 0)
-
-        # MA30上行
-        if is_ma30_rise(index, ma):
-            ma30_up.insert(index, 1)
-        else:
-            ma30_up.insert(index, 0)
-
-        # EMA30上行
-        if is_ma30_rise(index, ema):
-            ema30_up.insert(index, 1)
-        else:
-            ema30_up.insert(index, 0)
-
-        # MA60上行
-        if is_ma60_rise(index, ma):
-            ma60_up.insert(index, 1)
-        else:
-            ma60_up.insert(index, 0)
-
-        # EMA60上行
-        if is_ma60_rise(index, ema):
-            ema60_up.insert(index, 1)
-        else:
-            ema60_up.insert(index, 0)
-
-        # MA120上行
-        if is_ma120_rise(index, ma):
-            ma120_up.insert(index, 1)
-        else:
-            ma120_up.insert(index, 0)
-
-        # EMA120上行
-        if is_ma120_rise(index, ema):
-            ema120_up.insert(index, 1)
-        else:
-            ema120_up.insert(index, 0)
+        # MA上行
+        ma20_up.insert(index, 1 if is_ma20_rise(index, ma) else 0)
+        ema20_up.insert(index, 1 if is_ma20_rise(index, ema) else 0)
+        ma30_up.insert(index, 1 if is_ma30_rise(index, ma) else 0)
+        ema30_up.insert(index, 1 if is_ma30_rise(index, ema) else 0)
+        ma60_up.insert(index, 1 if is_ma60_rise(index, ma) else 0)
+        ema60_up.insert(index, 1 if is_ma60_rise(index, ema) else 0)
+        ma120_up.insert(index, 1 if is_ma120_rise(index, ma) else 0)
+        ema120_up.insert(index, 1 if is_ma120_rise(index, ema) else 0)
 
         # MA多头排列（5/10/20/60）
-        if is_up_ma_arrange(index, ma):
-            up_ma_arrange.insert(index, 1)
-        else:
-            up_ma_arrange.insert(index, 0)
-
+        up_ma_arrange.insert(index, 1 if is_up_ma_arrange(index, ma) else 0)
         # EMA多头排列（5/10/20/60）
-        if is_up_ma_arrange(index, ema):
-            up_ema_arrange.insert(index, 1)
-        else:
-            up_ema_arrange.insert(index, 0)
-
+        up_ema_arrange.insert(index, 1 if is_up_ma_arrange(index, ema) else 0)
         # MA短期组合多头排列（5/10/20）
-        if is_up_short_ma_arrange1(index, ma):
-            up_short_ma_arrange1.insert(index, 1)
-        else:
-            up_short_ma_arrange1.insert(index, 0)
-
+        up_short_ma_arrange1.insert(index, 1 if is_up_short_ma_arrange(index, ma5, ma10, ma20) else 0)
         # MA短期组合多头排列（5/10/30）
-        if is_up_short_ma_arrange2(index, ma):
-            up_short_ma_arrange2.insert(index, 1)
-        else:
-            up_short_ma_arrange2.insert(index, 0)
-
+        up_short_ma_arrange2.insert(index, 1 if is_up_short_ma_arrange(index, ma5, ma10, ma30) else 0)
         # EMA短期组合多头排列（5/10/20）
-        if is_up_short_ma_arrange1(index, ema):
-            up_short_ema_arrange1.insert(index, 1)
-        else:
-            up_short_ema_arrange1.insert(index, 0)
-
+        up_short_ema_arrange1.insert(index, 1 if is_up_short_ma_arrange(index, ema5, ema10, ema20) else 0)
         # EMA短期组合多头排列（5/10/30）
-        if is_up_short_ma_arrange2(index, ema):
-            up_short_ema_arrange2.insert(index, 1)
-        else:
-            up_short_ema_arrange2.insert(index, 0)
-
+        up_short_ema_arrange2.insert(index, 1 if is_up_short_ma_arrange(index, ema5, ema10, ema30) else 0)
         # MA中期组合多头排列（10/20/60）
-        if _ma10_slope > 0 and _ma20_slope > 0 and _ma60_slope > 0 \
-                and _ma10 > _ma20 > _ma60:
-            up_middle_ma_arrange1.insert(index, 1)
-        else:
-            up_middle_ma_arrange1.insert(index, 0)
-
+        up_middle_ma_arrange1.insert(index, 1 if is_up_middle_ma_arrange(index, ma10, ma20, ma60) else 0)
         # MA中期组合多头排列（10/20/55）
-        if _ma10_slope > 0 and _ma20_slope > 0 and _ma55_slope > 0 \
-                and _ma10 > _ma20 > _ma55:
-            up_middle_ma_arrange2.insert(index, 1)
-        else:
-            up_middle_ma_arrange2.insert(index, 0)
-
+        up_middle_ma_arrange2.insert(index, 1 if is_up_middle_ma_arrange(index, ma10, ma20, ma55) else 0)
         # EMA中期组合多头排列（10/20/60）
-        if _ema10_slope > 0 and _ema20_slope > 0 and _ema60_slope > 0 \
-                and _ema10 > _ema20 > _ema60:
-            up_middle_ema_arrange1.insert(index, 1)
-        else:
-            up_middle_ema_arrange1.insert(index, 0)
-
+        up_middle_ema_arrange1.insert(index, 1 if is_up_middle_ma_arrange(index, ema10, ema20, ema60) else 0)
         # EMA中期组合多头排列（10/20/55）
-        if _ema10_slope > 0 and _ema20_slope > 0 and _ema55_slope > 0 \
-                and _ema10 > _ema20 > _ema55:
-            up_middle_ema_arrange2.insert(index, 1)
-        else:
-            up_middle_ema_arrange2.insert(index, 0)
-
+        up_middle_ema_arrange2.insert(index, 1 if is_up_middle_ma_arrange(index, ema10, ema20, ema55) else 0)
         # MA长期组合多头排列（20/55/120）
-        if _ma20_slope > 0 and _ma55_slope > 0 and _ma120_slope > 0 \
-                and _ma20 > _ma55 > _ma120:
-            up_long_ma_arrange1.insert(index, 1)
-        else:
-            up_long_ma_arrange1.insert(index, 0)
-
+        up_long_ma_arrange1.insert(index, 1 if is_up_long_ma_arrange(index, ma20, ma55, ma120) else 0)
         # MA长期组合多头排列（30/60/120）
-        if _ma30_slope > 0 and _ma60_slope > 0 and _ma120_slope > 0 \
-                and _ma30 > _ma60 > _ma120:
-            up_long_ma_arrange2.insert(index, 1)
-        else:
-            up_long_ma_arrange2.insert(index, 0)
-
+        up_long_ma_arrange2.insert(index, 1 if is_up_long_ma_arrange(index, ma30, ma60, ma120) else 0)
         # EMA长期组合多头排列（20/55/120）
-        if _ema20_slope > 0 and _ema55_slope > 0 and _ema120_slope > 0 \
-                and _ema20 > _ema55 > _ema120:
-            up_long_ema_arrange1.insert(index, 1)
-        else:
-            up_long_ema_arrange1.insert(index, 0)
-
+        up_long_ema_arrange1.insert(index, 1 if is_up_long_ma_arrange(index, ema20, ema55, ema120) else 0)
         # EMA长期组合多头排列（30/60/120）
-        if _ema30_slope > 0 and _ema60_slope > 0 and _ema120_slope > 0 \
-                and _ema30 > _ema60 > _ema120:
-            up_long_ema_arrange2.insert(index, 1)
-        else:
-            up_long_ema_arrange2.insert(index, 0)
+        up_long_ema_arrange2.insert(index, 1 if is_up_long_ma_arrange(index, ema30, ema60, ema120) else 0)
 
         # MA黄金交叉（5/10）
-        if ma[index][0] > ma[index][1] and ma[index - 1][0] < ma[index - 1][1] and \
-                ma_slope[index][0] > 0 and ma_slope[index][1] > 0:
-            ma_gold_cross1.insert(index, 1)
-        else:
-            ma_gold_cross1.insert(index, 0)
-
+        ma_gold_cross1.insert(index, 1 if is_gold_cross(index, ma5, ma10) else 0)
         # MA黄金交叉（5/20）
-        if ma[index][0] > ma[index][2] and ma[index - 1][0] < ma[index - 1][2] and \
-                ma_slope[index][0] > 0 and ma_slope[index][2] > 0:
-            ma_gold_cross2.insert(index, 1)
-        else:
-            ma_gold_cross2.insert(index, 0)
-
+        ma_gold_cross2.insert(index, 1 if is_gold_cross(index, ma5, ma20) else 0)
         # MA黄金交叉（10/20）
-        if ma[index][1] > ma[index][2] and ma[index - 1][1] < ma[index - 1][2] and \
-                ma_slope[index][1] > 0 and ma_slope[index][2] > 0:
-            ma_gold_cross3.insert(index, 1)
-        else:
-            ma_gold_cross3.insert(index, 0)
-
+        ma_gold_cross3.insert(index, 1 if is_gold_cross(index, ma10, ma20) else 0)
         # MA黄金交叉（10/30）
-        if ma[index][1] > ma[index][3] and ma[index - 1][1] < ma[index - 1][3] and \
-                ma_slope[index][1] > 0 and ma_slope[index][3] > 0:
-            ma_gold_cross4.insert(index, 1)
-        else:
-            ma_gold_cross4.insert(index, 0)
+        ma_gold_cross4.insert(index, 1 if is_gold_cross(index, ma10, ma30) else 0)
 
         # MA银山谷
-        if is_ma_silver_valley(index, ma_gold_cross1, ma_gold_cross2, ma_gold_cross3):
-            ma_silver_valley.insert(index, 1)
-        else:
-            ma_silver_valley.insert(index, 0)
-
+        ma_silver_valley.insert(index, 1 if is_ma_silver_valley(index,
+                                                                ma_gold_cross1, ma_gold_cross2, ma_gold_cross3) else 0)
         # MA金山谷
-        if is_ma_gold_valley(index, ma, ma_slope, ma_silver_valley):
-            ma_gold_valley.insert(index, 1)
-        else:
-            ma_gold_valley.insert(index, 0)
-
+        ma_gold_valley.insert(index, 1 if is_ma_gold_valley(index, ma, ma_slope, ma_silver_valley) else 0)
         # MA金蜘蛛
-        if is_ma_spider(index, ma, ma_gold_cross1, ma_gold_cross2, ma_gold_cross3, ma_gold_cross4):
-            up_ma_spider.insert(index, 1)
-        else:
-            up_ma_spider.insert(index, 0)
+        up_ma_spider.insert(index, 1 if is_ma_spider(index, ma, ma_gold_cross1,
+                                                     ma_gold_cross2, ma_gold_cross3, ma_gold_cross4) else 0)
 
-        # MA蛟龙出海(5/10/20)
-        # 大阳线 贯穿ma5/ma10/ma20
-        # ma20 上行
-        if _pct_chg >= 4 and _open < _ma5 and _open < _ma10 and _open < _ma20 and \
-                _close > _ma5 and _close > _ma10 and _close > _ma20 and _ma60_slope > 0:
-            ma_out_sea.insert(index, 1)
-        else:
-            ma_out_sea.insert(index, 0)
-
+        # MA蛟龙出海(5/10/20) 大阳线 贯穿ma5/ma10/ma20 ma20上行
+        ma_out_sea.insert(index, 1 if is_ma_out_sea(index, org_df) else 0)
         # MA均线粘合(5/10/20)
-        if is_ma_glue(index, ma, org_df):
-            ma_glue.insert(index, 1)
-        else:
-            ma_glue.insert(index, 0)
-
+        ma_glue.insert(index, 1 if is_ma_glue(index, org_df) else 0)
         # MA烘云托月(5/10/20)
-        if is_ma_hold_moon(index, candle, bias, ma, ma_slope):
-            ma_hold_moon.insert(index, 1)
-        else:
-            ma_hold_moon.insert(index, 0)
-
+        ma_hold_moon.insert(index, 1 if is_ma_hold_moon(index, candle, bias, ma, ma_slope) else 0)
         # MA鱼跃龙门(5/10/20)
         if is_ma_over_gate(index, _close, _pct_chg, candle, ma, _ma5, _ma10, _ma20, ma_slope):
             ma_over_gate.insert(index, 1)
@@ -428,52 +263,21 @@ def long_analyze(org_df):
             ma_up_ground.insert(index, 0)
 
         # TD_8
-        if td[index][1] == 8:
-            down_td8.insert(index, 1)
-        else:
-            down_td8.insert(index, 0)
-
+        down_td8.insert(index, 1 if td[index][1] == 8 else 0)
         # TD_9
-        if td[index][1] == 9:
-            down_td9.insert(index, 1)
-        else:
-            down_td9.insert(index, 0)
-
+        down_td9.insert(index, 1 if td[index][1] == 9 else 0)
         # bias6
-        if bias[index][0] < -3:
-            down_bias6.insert(index, 1)
-        else:
-            down_bias6.insert(index, 0)
-
+        down_bias6.insert(index, 1 if bias[index][0] < -3 else 0)
         # bias12
-        if bias[index][1] < -4.5:
-            down_bias12.insert(index, 1)
-        else:
-            down_bias12.insert(index, 0)
-
+        down_bias12.insert(index, 1 if bias[index][1] < -4.5 else 0)
         # bias24
-        if bias[index][2] < -7:
-            down_bias24.insert(index, 1)
-        else:
-            down_bias24.insert(index, 0)
-
+        down_bias24.insert(index, 1 if bias[index][2] < -7 else 0)
         # bias72
-        if bias[index][4] < -11:
-            down_bias72.insert(index, 1)
-        else:
-            down_bias72.insert(index, 0)
-
+        down_bias72.insert(index, 1 if bias[index][4] < -11 else 0)
         # bias60 不作为单独信号 需结合趋势判断上涨回踩形态
-        if 1.5 >= bias[index][3] >= -1.5:
-            down_bias60.insert(index, 1)
-        else:
-            down_bias60.insert(index, 0)
-
+        down_bias60.insert(index, 1 if 1.5 >= bias[index][3] >= -1.5 else 0)
         # bias120 不作为单独信号 需结合趋势判断上涨回踩形态
-        if 1 >= bias[index][5] >= -1:
-            down_bias120.insert(index, 1)
-        else:
-            down_bias120.insert(index, 0)
+        down_bias120.insert(index, 1 if 1 >= bias[index][5] >= -1 else 0)
 
         # 最近3个交易日站上 ma60/ma120 ema60/ema120
         if is_stand_up_ma60(index, open, close, ma60, ma60_slope):
@@ -597,310 +401,3 @@ def long_analyze(org_df):
     return org_df
 
 
-def stand_on_ma(open, high, low, close, ma, ma_slope):
-    # K线收出下影线
-    # K线收盘站稳ma
-
-    # 下影线的最高处
-    bottom_shadow_line_high = 0
-    # 下影线的最低处
-    bottom_shadow_line_low = low
-
-    if close >= open > low:
-        bottom_shadow_line_high = open
-
-    if open >= close > low:
-        bottom_shadow_line_high = close
-
-    # ma上行
-    # 收盘价高于ma
-    # ma位于下影线之间
-    if ma_slope > 0 and close > ma and \
-            bottom_shadow_line_high > ma > bottom_shadow_line_low:
-        return True
-    else:
-        return False
-
-
-def ma_hold(ma5, ma10, ma20, ma5_slope, ma10_slope):
-    if ma5 > ma20 and ma10 > ma20 and ma5_slope < 5 and ma10_slope < 5:
-        return True
-    return False
-
-
-def is_stand_up_ma60(index, open, close, ma60, ma60_slope):
-    if index < 90:
-        return False
-
-    # 前55个交易日(除最近3个交易日外) ma60向下运行
-    ma60_down_still = True
-    close_down_still = True
-    ma60_up_recently = False
-
-    if max(ma60_slope[index - 55: index - 2]) >= 0:
-        ma60_down_still = False
-
-    # 最近3个交易日收盘价高于 ma60
-    # 最近3个交易日 ma60 开始向上
-    if close[index] > ma60[index] and close[index - 1] > ma60[index - 1] and \
-            close[index - 2] > ma60[index - 2] and \
-            ma60[index] > ma60[index - 1] > ma60[index - 2]:
-        ma60_up_recently = True
-
-    if close_down_still and ma60_down_still and ma60_up_recently:
-        return True
-    else:
-        return False
-
-
-def is_stand_up_ma120(index, open, close, ma120, ma120_slope):
-    if index < 160:
-        return 0
-
-    # 前89个交易日(除最近3个交易日外) ma120向下运行
-    ma120_down_still = True
-    close_down_still = True
-    ma120_up_recently = False
-
-    if max(ma120_slope[index - 89: index - 2]) >= 0:
-        ma120_down_still = False
-
-    # 最近3个交易日收盘价高于 ma120
-    # 最近3个交易日 ma120 开始向上
-    if close[index] > ma120[index] and close[index - 1] > ma120[index - 1] and \
-            close[index - 2] > ma120[index - 2] and \
-            ma120_slope[index] > 0 and ma120_slope[index - 1] > 0 and \
-            ma120[index] > ma120[index - 1] > ma120[index - 2] > ma120[index - 3]:
-        ma120_up_recently = True
-
-    if close_down_still and ma120_down_still and ma120_up_recently:
-        return True
-    else:
-        return False
-
-
-def is_ma_up_arrange51020(index, ma5, ma10, ma20, ma5_slope, ma10_slope, ma20_slope):
-    # ma5/ma10/ma20 出现多头排列
-    if index < 1:
-        return False
-
-    pre_index = index - 1
-    # 前一交易日 未形成多头排列
-    # 当前交易日 形成多头排列
-    if (not (ma5[pre_index] > ma10[pre_index] > ma20[pre_index] and
-             ma5_slope[pre_index] > 0 and ma10_slope[pre_index] > 0 and
-             ma20_slope[pre_index] > 0)) \
-            and ma5[index] > ma10[index] > ma20[index] \
-            and ma5_slope[index] > 0 and ma10_slope[index] > 0 and ma20_slope[index] > 0:
-        return True
-    else:
-        return False
-
-
-def is_ma_up_arrange5102030(index, ma5, ma10, ma20, ma30, ma5_slope, ma10_slope, ma20_slope, ma30_slope):
-    # ma5/ma10/ma20/ma30 出现多头排列
-    if index < 1:
-        return False
-
-    pre_index = index - 1
-    # 前一交易日 未形成多头排列
-    # 当前交易日 形成多头排列
-    if (not (ma5[pre_index] > ma10[pre_index] > ma20[pre_index] > ma30[pre_index] and
-             ma5_slope[pre_index] > 0 and ma10_slope[pre_index] > 0 and
-             ma20_slope[pre_index] > 0 and ma30_slope[pre_index] > 0)) \
-            and ma5[index] > ma10[index] > ma20[index] > ma30[index] \
-            and ma5_slope[index] > 0 and ma10_slope[index] > 0 and ma20_slope[index] > 0 \
-            and ma30_slope[index] > 0:
-        return True
-    else:
-        return False
-
-
-def is_ma_up_arrange510203060(index, ma5, ma10, ma20, ma30, ma60, ma5_slope, ma10_slope, ma20_slope,
-                              ma30_slope, ma60_slope):
-    # ma5/ma10/ma20/ma30/ma60 出现多头排列
-    if index < 1:
-        return False
-
-    pre_index = index - 1
-    # 前一交易日 未形成多头排列
-    # 当前交易日 形成多头排列
-    if (not (ma5[pre_index] > ma10[pre_index] > ma20[pre_index] > ma30[pre_index] > ma60[pre_index] and
-             ma5_slope[pre_index] > 0 and ma10_slope[pre_index] > 0 and
-             ma20_slope[pre_index] > 0 and ma30_slope[pre_index] > 0 and ma60_slope[pre_index] > 0)) \
-            and ma5[index] > ma10[index] > ma20[index] > ma30[index] > ma60[index] \
-            and ma5_slope[index] > 0 and ma10_slope[index] > 0 and ma20_slope[index] > 0 \
-            and ma30_slope[index] > 0 and ma60_slope[index] > 0:
-        return True
-    else:
-        return False
-
-
-def is_ma_up_arrange203060(index, ma20, ma30, ma60, ma20_slope, ma30_slope, ma60_slope):
-    # ma20/ma30/ma60 出现多头排列
-    if index == 0:
-        return False
-
-    pre_index = index - 1
-    # 前一交易日 未形成多头排列
-    # 当前交易日 形成多头排列
-    if (not (ma20[pre_index] > ma30[pre_index] > ma60[pre_index] and
-             ma20_slope[pre_index] > 0 and ma30_slope[pre_index] > 0 and ma60_slope[pre_index] > 0)) \
-            and ma20[index] > ma30[index] > ma60[index] \
-            and ma20_slope[index] > 0 and ma30_slope[index] > 0 and ma60_slope[index] > 0:
-        return True
-    else:
-        return False
-
-
-def is_ma_up_arrange2060120(index, ma20, ma60, ma120, ma20_slope, ma60_slope, ma120_slope):
-    # ma20/ma60/ma120 出现多头排列
-    if index < 1:
-        return False
-
-    pre_index = index - 1
-    # 前一交易日 未形成多头排列
-    # 当前交易日 形成多头排列
-    if (not (ma20[pre_index] > ma60[pre_index] > ma120[pre_index] and
-             ma20_slope[pre_index] > 0 and ma60_slope[pre_index] > 0 and ma120_slope[pre_index] > 0)) \
-            and ma20[index] > ma60[index] > ma120[index] \
-            and ma20_slope[index] > 0 and ma60_slope[index] > 0 and ma120_slope[index] > 0:
-        return True
-    else:
-        return False
-
-
-def is_ma_spider(index, ma, ma_gold_cross1, ma_gold_cross2, ma_gold_cross3, ma_gold_cross4):
-    # MA金蜘蛛
-    # 最近3个交易日ma5/ma10/ma20交叉于一点 (即出现至少1个金叉)
-    # 今日ma5/ma10/ma20多头发散
-    gold_cross_cnt = 0
-    if max(ma_gold_cross1[index - 2: index + 1]) == 1:
-        gold_cross_cnt += 1
-    if max(ma_gold_cross2[index - 2: index + 1]) == 1:
-        gold_cross_cnt += 1
-    if max(ma_gold_cross3[index - 2: index + 1]) == 1:
-        gold_cross_cnt += 1
-    if max(ma_gold_cross4[index - 2: index + 1]) == 1:
-        gold_cross_cnt += 1
-
-    flag = False
-
-    # MA金蜘蛛
-    if index > 20 and gold_cross_cnt > 0 and \
-     (ma[index - 1][0] == ma[index - 1][1] == ma[index - 1][2] or
-            ma[index - 1][0] == ma[index - 1][1] == ma[index - 1][3]) :
-        flag = True
-
-    return flag
-
-
-def is_ma_hold_moon(index, candles, bias, ma, ma_slope):
-    # MA烘云托月(5/10/20)
-
-    # 最近 7 个交易日
-    # 不能有波动大于4%
-    # ma20向上 / ma30向上
-    # ma5/ma10 在ma20之上
-    # 乖离率正常区间 bias12 < 5 / bias24 < 8
-    # 均线缓慢上行 ma10_slope < 1.5 / ma20_slope < 2 / ma30_slope < 2
-
-    _count = 8 - 1
-
-    if index > 50:
-        min_bias6 = min(bias[:, 0][index - _count: index + 1])
-        max_bias6 = max(bias[:, 0][index - _count: index + 1])
-        min_bias12 = min(bias[:, 1][index - _count: index + 1])
-        max_bias12 = max(bias[:, 1][index - _count: index + 1])
-        min_bias24 = min(bias[:, 2][index - _count: index + 1])
-        max_bias24 = max(bias[:, 2][index - _count: index + 1])
-
-        min_ma10_slope = min(ma_slope[:, 1][index - _count: index + 1])
-        max_ma10_slope = max(ma_slope[:, 1][index - _count: index + 1])
-        min_ma20_slope = min(ma_slope[:, 2][index - _count: index + 1])
-        max_ma20_slope = max(ma_slope[:, 2][index - _count: index + 1])
-
-    ma20 = ma[:, 2]
-
-    def ma20_rise_steady():
-        flag = True
-        for i in range(7):
-            # 如果 当前 MA20 < 前值
-            if ma20[index - i] < ma20[index - i - 1]:
-                flag = False
-        return flag
-
-    if index > 50 and ma20_rise_steady() and min(candles[:, 4][index - _count: index + 1]) >= -3 and \
-            max(candles[:, 4][index - _count: index + 1]) <= 3 \
-            and min_bias6 > -1 and max_bias6 < 3 \
-            and min_bias12 > -1 and max_bias12 < 3 \
-            and min_bias24 > -1 and max_bias24 < 4 \
-            and min_ma10_slope >= -1 and max_ma10_slope <= 2 \
-            and  max_ma20_slope < 2:
-        return True
-    else:
-        return False
-
-
-def is_ma_over_gate(index, _close, _pct_chg, candle, ma, _ma5, _ma10, _ma20, ma_slope):
-    # MA鱼跃龙门(5/10/20)
-    # 大阳线
-    # K线站上ma5/ma10/ma20
-    # 昨日K线未站上ma5/ma10/ma20
-    # 昨日出现均线粘合
-    if _pct_chg >= 4 and _close > _ma5 and _close > _ma10 and _close > _ma20 and \
-            (candle[index - 1][2] < ma[index - 1][0]
-             or candle[index - 1][2] < ma[index - 1][1]
-             or candle[index - 1][2] < ma[index - 1][2]) and \
-            ma_slope[index - 1][2] > 0 and ma[index - 1][0] > ma[index - 1][2] \
-            and ma[index - 1][1] > ma[index - 1][2]:
-        return True
-    else:
-        return False
-
-
-def is_ma_up_ground(index, _pct_chg, open, high, low, close, ma5, ma10, ma20):
-    # MA旱地拔葱(5/10/20)
-    # 大阳线
-    # 跳空阳线
-    # K线站上ma5/ma10/ma20
-    # 昨日K线未站上ma5/ma10/ma20
-    if _pct_chg >= 4 and \
-            low[index] > high[index - 1] and \
-            close[index] > ma5[index] and close[index] > ma10[index] and close[index] > ma20[index] and \
-            (low[index - 1] < ma5[index - 1] or
-             low[index - 1] < ma10[index - 1] or
-             low[index - 1] < ma20[index - 1]) and \
-            (open[index - 1] < ma20[index - 1] or
-             close[index - 1] < ma20[index - 1]):
-        return True
-    else:
-        return False
-
-
-def is_ma_silver_valley(index, ma_gold_cross1, ma_gold_cross2, ma_gold_cross3):
-    # MA银山谷
-    if index >= 10 and (ma_gold_cross2[index] == 1 or ma_gold_cross3[index] == 1):
-        gold_cross_cnt = 0
-        if max(ma_gold_cross1[index - 9: index + 1]) == 1:
-            gold_cross_cnt += 1
-        if max(ma_gold_cross2[index - 9: index + 1]) == 1:
-            gold_cross_cnt += 1
-        if max(ma_gold_cross3[index - 9: index + 1]) == 1:
-            gold_cross_cnt += 1
-
-        if gold_cross_cnt >= 2:
-            return True
-
-    return False
-
-
-def is_ma_gold_valley(index, ma, ma_slope, ma_silver_valley):
-    # MA金山谷
-    # 最近30个交易日内形成两次银山谷视为金山谷
-    if index >= 30 and max(ma_silver_valley[index - 29: index - 1]) == 1 and \
-            ma_silver_valley[index] == 1 and ma[index - 30][2] < ma[index][2] and \
-            ma_slope[index][2] > 0:
-        return True
-    else:
-        return False

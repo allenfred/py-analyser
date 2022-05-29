@@ -10,21 +10,65 @@ import numpy as np
 import tushare as ts
 import pandas as pd
 from models.cn_daily_candles import CNDailyCandleDao
+from models.weekly_candles import WeeklyCandleDao
 from models.trade_calendar import TradeCalendarDao
 from models.stocks import StockDao
 import time
 from datetime import datetime
 from config.common import TS_TOKEN
 from api.daily_candle import get_cn_candles
+from api.weekly_candle import get_weekly_candles
 from lib.util import used_time_fmt
 
 pro = ts.pro_api(TS_TOKEN)
 dailyCandleDao = CNDailyCandleDao()
+weeklyCandleDao = WeeklyCandleDao()
 calendarDao = TradeCalendarDao()
 stockDao = StockDao()
 
 
-def ready_candles_by_date(start_time):
+def ready_weekly_klines():
+    today = datetime.now().strftime("%Y%m%d")
+    trade_dte = today
+    start = time.time()
+    is_last_req = False
+    total_got_count = 0
+    offset = 0
+
+    while not is_last_req:
+        circle_start = time.time()
+        df = get_weekly_candles({"trade_date": trade_dte, "limit": 2000, "offset": offset})
+        df_len = len(df)
+        if len(df) < 2000:
+            is_last_req = True
+        else:
+            offset += len(df)
+
+        try:
+            if df_len > 0:
+                df['trade_date'] = pd.to_datetime(df["trade_date"], format='%Y-%m-%d')
+
+                # 过滤出最新candle数据 (相较于db)
+                db_df = weeklyCandleDao.find_by_trade_date(df['trade_date'][0])
+                new_df = df.loc[~df["ts_code"].isin(db_df["ts_code"])]
+
+                weeklyCandleDao.bulk_insert(new_df)
+
+                print('已更新 CN weekly_candles :', len(new_df), ' 条数据，用时 ',
+                      used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start, time.time()))
+            else:
+                print(trade_dte, '没有周K线')
+
+        except Exception as e:
+            print(trade_dte, 'Error:', e)
+            break
+
+    print(today, '更新周K用时', used_time_fmt(start, time.time()))
+
+
+def ready_daily_klines():
+    start_time = time.time()
+
     while True:
         item = calendarDao.find_one_candle_not_ready('CN')
 
@@ -65,45 +109,45 @@ def ready_candles_by_date(start_time):
               used_time_fmt(circle_start, time.time()), ', 总用时 ',  used_time_fmt(start_time, time.time()))
         calendarDao.set_cn_candle_ready(item.cal_date)
 
-
-def ready_candles_by_stock(start_time):
-    today = datetime.now().strftime("%Y-%m-%d")
-    df = get_cn_candles({"ts_code": ts_code, "limit": 1, "offset": 0})
-    latest_candle_date = datetime.strftime(datetime.strptime(df["trade_date"][0], "%Y%m%d"), '%Y-%m-%d')
-
-    if not latest_candle_date == today:
-        print('tushare 尚未同步最新行情数据:', today)
-        quit()
-
-    while True:
-        circle_start = time.time()
-        ts_code = stockDao.find_one_candle_not_ready('CN', today)
-
-        if ts_code is None:
-            break
-
-        try:
-            df = get_cn_candles({"ts_code": ts_code, "limit": 2000, "offset": 0})
-            df = df.sort_values(by='trade_date', ascending=False)
-
-            # 过滤出最新candle数据 (相较于db)
-            db_df = dailyCandleDao.find_by_ts_code(ts_code)
-            new_df = df.loc[~pd.to_datetime(df["trade_date"], format='%Y-%m-%d').isin(db_df["trade_date"].to_numpy())]
-
-            dailyCandleDao.bulk_insert(new_df)
-            stockDao.update({'ts_code': ts_code, 'candle_date': today})
-
-            print('已更新 CN daily_candles :', ts_code, ': ', len(new_df), ' 条数据，用时 ',
-                  used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start_time, time.time()))
-        except Exception as e:
-            stockDao.update({'ts_code': ts_code, 'candle_date': today})
-            print('Error:', e)
+#
+# def ready_candles_by_stock(start_time):
+#     today = datetime.now().strftime("%Y-%m-%d")
+#     df = get_cn_candles({"ts_code": ts_code, "limit": 1, "offset": 0})
+#     latest_candle_date = datetime.strftime(datetime.strptime(df["trade_date"][0], "%Y%m%d"), '%Y-%m-%d')
+#
+#     if not latest_candle_date == today:
+#         print('tushare 尚未同步最新行情数据:', today)
+#         quit()
+#
+#     while True:
+#         circle_start = time.time()
+#         ts_code = stockDao.find_one_candle_not_ready('CN', today)
+#
+#         if ts_code is None:
+#             break
+#
+#         try:
+#             df = get_cn_candles({"ts_code": ts_code, "limit": 2000, "offset": 0})
+#             df = df.sort_values(by='trade_date', ascending=False)
+#
+#             # 过滤出最新candle数据 (相较于db)
+#             db_df = dailyCandleDao.find_by_ts_code(ts_code)
+#             new_df = df.loc[~pd.to_datetime(df["trade_date"], format='%Y-%m-%d').isin(db_df["trade_date"].to_numpy())]
+#
+#             dailyCandleDao.bulk_insert(new_df)
+#             stockDao.update({'ts_code': ts_code, 'candle_date': today})
+#
+#             print('已更新 CN daily_candles :', ts_code, ': ', len(new_df), ' 条数据，用时 ',
+#                   used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start_time, time.time()))
+#         except Exception as e:
+#             stockDao.update({'ts_code': ts_code, 'candle_date': today})
+#             print('Error:', e)
 
 
 if __name__ == "__main__":
     today = datetime.now().strftime("%Y-%m-%d")
     start = time.time()
-    ready_candles_by_date(start)
+    ready_daily_klines()
     end = time.time()
 
     print(today, '用时', used_time_fmt(start, end))

@@ -5,7 +5,7 @@ from config.common import TS_TOKEN
 pro = ts.pro_api(TS_TOKEN)
 
 
-def get_candles(options):
+def get_weekly_candles(options):
     onging = True
     retry_times = 0
     df = []
@@ -15,11 +15,11 @@ def get_candles(options):
             retry_times += 1
             df = pro.weekly(**{
                 "ts_code": options.get("ts_code", ""),
-                "trade_date": "",
+                "trade_date": options.get("trade_date", ""),
                 "start_date": "",
                 "end_date": "",
                 "limit": options.get("limit", 500),
-                "offset": ""
+                "offset": options.get("offset", ""),
             }, fields=[
                 "ts_code",
                 "trade_date",

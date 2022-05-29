@@ -121,18 +121,6 @@ class StockSignal(Base):
     ma60_support = Column(SmallInteger)
     ma120_support = Column(SmallInteger)
 
-    ma_up_arrange51020 = Column(SmallInteger)
-    ma_up_arrange5102030 = Column(SmallInteger)
-    ma_up_arrange510203060 = Column(SmallInteger)
-    ma_up_arrange203060 = Column(SmallInteger)
-    ma_up_arrange2060120 = Column(SmallInteger)
-
-    ma_down_arrange51020 = Column(SmallInteger)
-    ma_down_arrange5102030 = Column(SmallInteger)
-    ma_down_arrange510203060 = Column(SmallInteger)
-    ma_down_arrange203060 = Column(SmallInteger)
-    ma_down_arrange2060120 = Column(SmallInteger)
-
     stand_up_ma60 = Column(SmallInteger)
     stand_up_ma120 = Column(SmallInteger)
 
@@ -149,10 +137,19 @@ class StockSignal(Base):
     hang_neck = Column(SmallInteger)
     shooting = Column(SmallInteger)
     rise_line = Column(SmallInteger)
-    jump_line = Column(SmallInteger)
+    drop_line = Column(SmallInteger)
     up_screw = Column(SmallInteger)
     down_screw = Column(SmallInteger)
     down_rise = Column(SmallInteger)
+
+    upward_jump = Column(SmallInteger)
+    downward_jump = Column(SmallInteger)
+    rise_limit = Column(SmallInteger)
+    drop_limit = Column(SmallInteger)
+    up_cross3ma = Column(SmallInteger)
+    up_cross4ma = Column(SmallInteger)
+    drop_cross3ma = Column(SmallInteger)
+    drop_cross4ma = Column(SmallInteger)
 
     ma55_first = Column(SmallInteger)
     ma55_second = Column(SmallInteger)
@@ -290,18 +287,6 @@ def get_obj(signal):
         ma60_support=signal.get('ma60_support', None),
         ma120_support=signal.get('ma120_support', None),
 
-        ma_up_arrange51020=signal.get('ma_up_arrange51020', None),
-        ma_up_arrange5102030=signal.get('ma_up_arrange5102030', None),
-        ma_up_arrange510203060=signal.get('ma_up_arrange510203060', None),
-        ma_up_arrange203060=signal.get('ma_up_arrange203060', None),
-        ma_up_arrange2060120=signal.get('ma_up_arrange2060120', None),
-
-        ma_down_arrange51020=signal.get('ma_down_arrange51020', None),
-        ma_down_arrange5102030=signal.get('ma_down_arrange5102030', None),
-        ma_down_arrange510203060=signal.get('ma_down_arrange510203060', None),
-        ma_down_arrange203060=signal.get('ma_down_arrange203060', None),
-        ma_down_arrange2060120=signal.get('ma_down_arrange2060120', None),
-
         stand_up_ma60=signal.get('stand_up_ma60', None),
         stand_up_ma120=signal.get('stand_up_ma120', None),
 
@@ -318,10 +303,19 @@ def get_obj(signal):
         hang_neck=signal.get('hang_neck', None),
         shooting=signal.get('shooting', None),
         rise_line=signal.get('rise_line', None),
-        jump_line=signal.get('jump_line', None),
+        drop_line=signal.get('drop_line', None),
         up_screw=signal.get('up_screw', None),
         down_screw=signal.get('down_screw', None),
         down_rise=signal.get('down_rise', None),
+
+        upward_jump=signal.get('upward_jump', None),
+        downward_jump=signal.get('downward_jump', None),
+        rise_limit=signal.get('rise_limit', None),
+        drop_limit=signal.get('drop_limit', None),
+        up_cross3ma=signal.get('up_cross3ma', None),
+        up_cross4ma=signal.get('up_cross4ma', None),
+        drop_cross3ma=signal.get('drop_cross3ma', None),
+        drop_cross4ma=signal.get('drop_cross4ma', None),
 
         ma55_first=signal.get('ma55_first', None),
         ma55_second=signal.get('ma55_second', None),
@@ -559,28 +553,6 @@ class StockSignalDao:
                 if obj.ma120_support is not None:
                     row.ma120_support = obj.ma120_support
 
-                if obj.ma_up_arrange51020 is not None:
-                    row.ma_up_arrange51020 = obj.ma_up_arrange51020
-                if obj.ma_up_arrange5102030 is not None:
-                    row.ma_up_arrange5102030 = obj.ma_up_arrange5102030
-                if obj.ma_up_arrange510203060 is not None:
-                    row.ma_up_arrange510203060 = obj.ma_up_arrange510203060
-                if obj.ma_up_arrange203060 is not None:
-                    row.ma_up_arrange203060 = obj.ma_up_arrange203060
-                if obj.ma_up_arrange2060120 is not None:
-                    row.ma_up_arrange2060120 = obj.ma_up_arrange2060120
-
-                if obj.ma_down_arrange51020 is not None:
-                    row.ma_down_arrange51020 = obj.ma_down_arrange51020
-                if obj.ma_down_arrange5102030 is not None:
-                    row.ma_down_arrange5102030 = obj.ma_down_arrange5102030
-                if obj.ma_down_arrange510203060 is not None:
-                    row.ma_down_arrange510203060 = obj.ma_down_arrange510203060
-                if obj.ma_down_arrange203060 is not None:
-                    row.ma_down_arrange203060 = obj.ma_down_arrange203060
-                if obj.ma_down_arrange2060120 is not None:
-                    row.ma_down_arrange2060120 = obj.ma_down_arrange2060120
-
                 if obj.stand_up_ma60 is not None:
                     row.stand_up_ma60 = obj.stand_up_ma60
                 if obj.stand_up_ma120 is not None:
@@ -609,14 +581,31 @@ class StockSignalDao:
                     row.shooting = obj.shooting
                 if obj.rise_line is not None:
                     row.rise_line = obj.rise_line
-                if obj.jump_line is not None:
-                    row.jump_line = obj.jump_line
+                if obj.drop_line is not None:
+                    row.drop_line = obj.drop_line
                 if obj.up_screw is not None:
                     row.up_screw = obj.up_screw
                 if obj.down_screw is not None:
                     row.down_screw = obj.down_screw
                 if obj.down_rise is not None:
                     row.down_rise = obj.down_rise
+
+                if obj.upward_jump is not None:
+                    row.upward_jump = obj.upward_jump
+                if obj.downward_jump is not None:
+                    row.downward_jump = obj.downward_jump
+                if obj.rise_limit is not None:
+                    row.rise_limit = obj.rise_limit
+                if obj.drop_limit is not None:
+                    row.drop_limit = obj.drop_limit
+                if obj.up_cross3ma is not None:
+                    row.up_cross3ma = obj.up_cross3ma
+                if obj.up_cross4ma is not None:
+                    row.up_cross4ma = obj.up_cross4ma
+                if obj.drop_cross3ma is not None:
+                    row.drop_cross3ma = obj.drop_cross3ma
+                if obj.drop_cross4ma is not None:
+                    row.drop_cross4ma = obj.drop_cross4ma
 
                 if obj.ma55_first is not None:
                     row.ma55_first = obj.ma55_first

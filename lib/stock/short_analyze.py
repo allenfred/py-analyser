@@ -67,12 +67,6 @@ def short_analyze(org_df):
     down_ma_arrange = []
     down_ema_arrange = []
 
-    ma_down_arrange51020 = []
-    ma_down_arrange5102030 = []
-    ma_down_arrange510203060 = []
-    ma_down_arrange203060 = []
-    ma_down_arrange2060120 = []
-
     down_short_ma_arrange1 = []
     down_short_ma_arrange2 = []
     down_short_ema_arrange1 = []
@@ -403,38 +397,6 @@ def short_analyze(org_df):
         else:
             up_bias120.insert(index, 0)
 
-        # ma5/ma10/ma20 出现空头排列
-        if is_ma_down_arrange51020(index, ma5, ma10, ma20, ma5_slope, ma10_slope, ma20_slope):
-            ma_down_arrange51020.insert(index, 1)
-        else:
-            ma_down_arrange51020.insert(index, 0)
-
-        # ma5/ma10/ma20/ma30 出现空头排列
-        if is_ma_down_arrange5102030(index, ma5, ma10, ma20, ma30, ma5_slope, ma10_slope, ma20_slope, ma30_slope):
-            ma_down_arrange5102030.insert(index, 1)
-        else:
-            ma_down_arrange5102030.insert(index, 0)
-
-        # ma5/ma10/ma20/ma30/ma60 出现空头排列
-        if is_ma_down_arrange510203060(index, ma5, ma10, ma20, ma30, ma60, ma5_slope, ma10_slope, ma20_slope,
-                                       ma30_slope,
-                                       ma60_slope):
-            ma_down_arrange510203060.insert(index, 1)
-        else:
-            ma_down_arrange510203060.insert(index, 0)
-
-        # ma20/ma30/ma60 出现空头排列
-        if is_ma_down_arrange203060(index, ma20, ma30, ma60, ma20_slope, ma30_slope, ma60_slope):
-            ma_down_arrange203060.insert(index, 1)
-        else:
-            ma_down_arrange203060.insert(index, 0)
-
-        # ma20/ma60/ma120 出现空头排列
-        if is_ma_down_arrange2060120(index, ma20, ma60, ma120, ma20_slope, ma60_slope, ma120_slope):
-            ma_down_arrange2060120.insert(index, 1)
-        else:
-            ma_down_arrange2060120.insert(index, 0)
-
     org_df['ma20_down'] = ma20_down
     org_df['ema20_down'] = ema20_down
     org_df['ma30_down'] = ma30_down
@@ -499,104 +461,7 @@ def short_analyze(org_df):
     org_df['up_bias72'] = up_bias72
     org_df['up_bias120'] = up_bias120
 
-    org_df['ma_down_arrange51020'] = ma_down_arrange51020
-    org_df['ma_down_arrange5102030'] = ma_down_arrange5102030
-    org_df['ma_down_arrange510203060'] = ma_down_arrange510203060
-    org_df['ma_down_arrange203060'] = ma_down_arrange203060
-    org_df['ma_down_arrange2060120'] = ma_down_arrange2060120
-
     return org_df
-
-
-def is_ma_down_arrange51020(index, ma5, ma10, ma20, ma5_slope, ma10_slope, ma20_slope):
-    # ma5/ma10/ma20 出现空头排列
-    if index < 1:
-        return False
-
-    pre_index = index - 1
-    # 前一交易日 未形成空头排列
-    # 当前交易日 形成空头排列
-    if (not (ma5[pre_index] > ma10[pre_index] > ma20[pre_index] and
-             ma5_slope[pre_index] > 0 and ma10_slope[pre_index] > 0 and
-             ma20_slope[pre_index] > 0)) \
-            and ma5[index] > ma10[index] > ma20[index] \
-            and ma5_slope[index] > 0 and ma10_slope[index] > 0 and ma20_slope[index] > 0:
-        return True
-    else:
-        return False
-
-
-def is_ma_down_arrange5102030(index, ma5, ma10, ma20, ma30, ma5_slope, ma10_slope, ma20_slope, ma30_slope):
-    # ma5/ma10/ma20/ma30 出现空头排列
-    if index < 1:
-        return False
-
-    pre_index = index - 1
-    # 前一交易日 未形成空头排列
-    # 当前交易日 形成空头排列
-    if (not (ma5[pre_index] > ma10[pre_index] > ma20[pre_index] > ma30[pre_index] and
-             ma5_slope[pre_index] > 0 and ma10_slope[pre_index] > 0 and
-             ma20_slope[pre_index] > 0 and ma30_slope[pre_index] > 0)) \
-            and ma5[index] > ma10[index] > ma20[index] > ma30[index] \
-            and ma5_slope[index] > 0 and ma10_slope[index] > 0 and ma20_slope[index] > 0 \
-            and ma30_slope[index] > 0:
-        return True
-    else:
-        return False
-
-
-def is_ma_down_arrange510203060(index, ma5, ma10, ma20, ma30, ma60, ma5_slope, ma10_slope, ma20_slope,
-                                ma30_slope, ma60_slope):
-    # ma5/ma10/ma20/ma30/ma60 出现空头排列
-    if index < 1:
-        return False
-
-    pre_index = index - 1
-    # 前一交易日 未形成空头排列
-    # 当前交易日 形成空头排列
-    if (not (ma5[pre_index] > ma10[pre_index] > ma20[pre_index] > ma30[pre_index] > ma60[pre_index] and
-             ma5_slope[pre_index] > 0 and ma10_slope[pre_index] > 0 and
-             ma20_slope[pre_index] > 0 and ma30_slope[pre_index] > 0 and ma60_slope[pre_index] > 0)) \
-            and ma5[index] > ma10[index] > ma20[index] > ma30[index] > ma60[index] \
-            and ma5_slope[index] > 0 and ma10_slope[index] > 0 and ma20_slope[index] > 0 \
-            and ma30_slope[index] > 0 and ma60_slope[index] > 0:
-        return True
-    else:
-        return False
-
-
-def is_ma_down_arrange203060(index, ma20, ma30, ma60, ma20_slope, ma30_slope, ma60_slope):
-    # ma20/ma30/ma60 出现空头排列
-    if index == 0:
-        return False
-
-    pre_index = index - 1
-    # 前一交易日 未形成空头排列
-    # 当前交易日 形成空头排列
-    if (not (ma20[pre_index] > ma30[pre_index] > ma60[pre_index] and
-             ma20_slope[pre_index] > 0 and ma30_slope[pre_index] > 0 and ma60_slope[pre_index] > 0)) \
-            and ma20[index] > ma30[index] > ma60[index] \
-            and ma20_slope[index] > 0 and ma30_slope[index] > 0 and ma60_slope[index] > 0:
-        return True
-    else:
-        return False
-
-
-def is_ma_down_arrange2060120(index, ma20, ma60, ma120, ma20_slope, ma60_slope, ma120_slope):
-    # ma20/ma60/ma120 出现空头排列
-    if index < 1:
-        return False
-
-    pre_index = index - 1
-    # 前一交易日 未形成空头排列
-    # 当前交易日 形成空头排列
-    if (not (ma20[pre_index] > ma60[pre_index] > ma120[pre_index] and
-             ma20_slope[pre_index] > 0 and ma60_slope[pre_index] > 0 and ma120_slope[pre_index] > 0)) \
-            and ma20[index] > ma60[index] > ma120[index] \
-            and ma20_slope[index] > 0 and ma60_slope[index] > 0 and ma120_slope[index] > 0:
-        return True
-    else:
-        return False
 
 
 def is_ma_spider(index, ma, ma_gold_cross1, ma_gold_cross2, ma_gold_cross3, ma_gold_cross4):

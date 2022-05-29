@@ -29,10 +29,16 @@ if __name__ == "__main__":
     # ts_code = '600557.SH'
     # ts_code = '600502.SH'
     # ts_code = '600898.SH'
-    ts_code = '000722.SZ'
+    # ts_code = '000722.SZ'
     # ts_code = '603056.SH'
     # ts_code = '600697.SH'
     # ts_code = '002319.SZ'
-    scan_daily_candles(ts_code, 'CN', '2022-05-25')
+    ts_code = '600502.SH'
+    ts_code = '600470.SH'
+    ts_code = '002561.SZ' # 徐家汇
+    ts_code = '000722.SZ' # 湖南发展
+    ts_code = '600502.SH' # 安徽建工
+    # ts_code = '600313.SH' # 农发种业
+    scan_daily_candles(ts_code, 'CN', '2022-05-28')
     print('扫描成功')
 

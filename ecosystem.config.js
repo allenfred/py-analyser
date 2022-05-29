@@ -2,6 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'klines_CN',
+      log_date_format：'YYYY-MM-DD HH:mm:ss',
       script: 'jobs/candles/daily/cn.py',
       interpreter: 'python3',
       instances: 1,
@@ -12,6 +13,7 @@ module.exports = {
     },
     {
       name: 'cn-dividend',
+      log_date_format：'YYYY-MM-DD HH:mm:ss',
       script: 'jobs/candles/daily/cn_dividend.py',
       interpreter: 'python3',
       instances: 1,
@@ -22,6 +24,7 @@ module.exports = {
     },
     {
       name: 'klines_HK',
+      log_date_format：'YYYY-MM-DD HH:mm:ss',
       script: 'jobs/candles/daily/hk.py',
       interpreter: 'python3',
       instances: 1,
@@ -32,6 +35,7 @@ module.exports = {
     },
     {
       name: 'klines_US',
+      log_date_format：'YYYY-MM-DD HH:mm:ss',
       script: 'jobs/candles/daily/us.py',
       interpreter: 'python3',
       instances: 1,
@@ -42,6 +46,7 @@ module.exports = {
     },
     {
       name: 'cn-weekly',
+      log_date_format：'YYYY-MM-DD HH:mm:ss',
       script: 'jobs/candles/weekly/cn.py',
       interpreter: 'python3',
       instances: 1,
@@ -52,6 +57,7 @@ module.exports = {
     },
     {
       name: 'cn-basic',
+      log_date_format：'YYYY-MM-DD HH:mm:ss',
       script: 'jobs/candles/daily/cn_basic.py',
       interpreter: 'python3',
       instances: 1,
@@ -62,6 +68,7 @@ module.exports = {
     },
     {
       name: 'analysis_CN',
+      log_date_format：'YYYY-MM-DD HH:mm:ss',
       script: 'jobs/analysis/daily/cn.py',
       interpreter: 'python3',
       instances: 1,
@@ -72,6 +79,7 @@ module.exports = {
     },
     {
       name: 'analysis_HK',
+      log_date_format：'YYYY-MM-DD HH:mm:ss',
       script: 'jobs/analysis/daily/hk.py',
       interpreter: 'python3',
       instances: 1,
@@ -82,6 +90,7 @@ module.exports = {
     },
     {
       name: 'analysis_US',
+      log_date_format：'YYYY-MM-DD HH:mm:ss',
       script: 'jobs/analysis/daily/us.py',
       interpreter: 'python3',
       instances: 1,
