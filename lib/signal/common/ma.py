@@ -424,6 +424,44 @@ def is_general_ma_glue(index, df):
         return False
 
 
+def is_ma510_glue(index, df):
+    """
+    均线粘合 (5/10)
+    最近7个交易日
+    模拟计算方差 波动1%内
+
+    :param index:
+    :param ma:
+    :param df:
+    :return:
+    """
+    ma = df[['ma5', 'ma10']].to_numpy()
+    ma5 = ma[:, 0]
+    ma10 = ma[:, 1]
+
+    _count = 7
+    _sum = round(np.sum(ma5[index - _count: index]) + np.sum(ma10[index - _count: index]), 3)
+    _avg = round(_sum / 14, 3)
+    _wave = round(_avg * 0.015, 3)
+    ma_wave = []
+
+    avg_wave = True
+
+    for i in range(_count):
+        ma_wave.append(math.fabs(ma5[index - i] - _avg))
+        ma_wave.append(math.fabs(ma10[index - i] - _avg))
+
+        if math.fabs(ma5[index - i] - _avg) > _wave or \
+                math.fabs(ma10[index - i] - _avg) > _wave:
+            avg_wave = False
+
+    if index > 20 and avg_wave:
+        # print(df['trade_date'][index], pct_chg[index - _count - 2: index + 1] , pct_chg[index])
+        return True
+    else:
+        return False
+
+
 def is_ma_hold_moon(index, df):
     """
     MA烘云托月 (5/10/20) / (5/10/30)
@@ -456,7 +494,9 @@ def is_ma_hold_moon(index, df):
                 flag = False
         return flag
 
-    if index > 60 and (ma20_rise_steady() or ma30_rise_steady()) and is_ma_glue(index, df):
+    # if index > 60 and (ma20_rise_steady() or ma30_rise_steady()) and is_ma_glue(index, df):
+    if index > 60 and ma20_rise_steady() and is_ma510_glue(index, df):
+        # print(df['trade_date'][index])
         return True
     else:
         return False
@@ -491,7 +531,7 @@ def is_ma_out_sea(index, df):
                 flag = False
         return flag
 
-    if index > 50 and ma_rise() and \
+    if index > 50 and ma_rise() and is_general_ma_glue(index, df) and \
             ((_open < _ma5 and _open < _ma10 and _open < _ma20 and
               _close > _ma5 and _close > _ma10 and _close > _ma20) or
              (_open < _ma5 and _open < _ma10 and _open < _ma30 and
@@ -536,7 +576,7 @@ def is_ma_over_gate(index, df):
 
     if index > 20 and is_general_ma_glue(index, df) and is_upward_jump(index, candle) and \
             is_stand_up_all_ma(index, df) and (ma60_rise_steady() or ma30_rise_steady()):
-        print(df['trade_date'][index], 'is_ma_over_gate')
+        # print(df['trade_date'][index], 'is_ma_over_gate')
         return True
     else:
         return False
@@ -710,7 +750,8 @@ def is_stand_up_ma120(index, df):
 def is_ma60_support(index, df):
     """
     MA60支撑
-    最近13个交易日 收盘价稳定在MA60之上 MA60上行
+    最近13个交易日MA60上行
+    最近2个交易日跌破MA60 K线收出支撑形态
 
     :param index:
     :param df:
@@ -726,7 +767,7 @@ def is_ma60_support(index, df):
     def steady_on_ma():
         flag = True
         for i in range(13):
-            if close[index - i] < ma60[index - i] or ma60[index - i] < ma60[index - i - 1]:
+            if ma60[index - i] < ma60[index - i - 1]:
                 flag = False
         return flag
 
@@ -741,7 +782,8 @@ def is_ma60_support(index, df):
 def is_ma120_support(index, df):
     """
     MA120支撑
-    最近13个交易日 收盘价稳定在MA120之上 MA120上行
+    最近13个交易日 MA120上行
+    最近2个交易日跌破MA120 K线收出支撑形态
 
     :param index:
     :param df:
@@ -757,7 +799,7 @@ def is_ma120_support(index, df):
     def steady_on_ma():
         flag = True
         for i in range(13):
-            if close[index - i] < ma120[index - i] or ma120[index - i] < ma120[index - i - 1]:
+            if ma120[index - i] < ma120[index - i - 1]:
                 flag = False
         return flag
 

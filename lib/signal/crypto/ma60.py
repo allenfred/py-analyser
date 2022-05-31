@@ -84,7 +84,7 @@ def is_ma60_second(index, candles, bias, ma, ma_slope, df):
 
     if index > 90 and steady_on_ma() and \
             has_support_patterns(index, df) and _low_bias60 < 2:
-        print(index, candle[5], '2')
+        # print(index, candle[5], '2')
         return True
     else:
         return False
@@ -128,7 +128,7 @@ def is_ma60_third(index, candles, bias, ma, ma_slope, df):
 
     if index > 90 and _close > _ma60 > _low and _bias60 < 8 and \
             ma_rise_steady() and candles[index - 1][2] < ma60[index - 1]:
-        print(index, candle[5], _low, '3')
+        # print(index, candle[5], '3')
         return True
     else:
         return False
@@ -185,7 +185,7 @@ def is_ma60_fourth(index, candles, bias, ma, ma_slope, df):
 
     if index > 90 and _bias60 < -16 and ma_down_steady() and \
             steady_under_ma() and has_bottom_patterns_recently():
-        print(index, candle[5], _low, '4')
+        # print(index, candle[5], '4')
         return True
     else:
         return False
@@ -229,7 +229,7 @@ def is_ma60_fifth(index, candles, bias, ma, ma_slope, df):
     if index > 90 and steady_on_ma() and _bias60 > 11 and \
             has_short_patterns(index, df) and \
             min(ma60_slope[index - 12: index]) > 1:
-        print(index, candle[5], _low, '5')
+        print(index, candle[5], '5')
         return True
     else:
         return False
@@ -283,7 +283,7 @@ def is_ma60_sixth(index, candles, bias, ma, ma_slope, df):
     if index > 90 and _close < _ma60 and ma_rise_before() and ma_down_recently() and \
             has_short_patterns(index, df) and \
             8 > _bias60 > -7:
-        print(index, candle[5], _low, '6')
+        print(index, candle[5], '6')
         return True
     else:
         return False
@@ -323,8 +323,9 @@ def is_ma60_seventh(index, candles, bias, ma, ma_slope, df):
                 flag = False
         return flag
 
-    if index > 90 and _bias60 > -1 and steady_under_ma() and \
-            has_short_patterns(index, df):
+    # if index > 90 and _bias60 > -1 and steady_under_ma() and \
+    #         has_top_patterns(index, df):
+    if index > 90 and _bias60 > -1 and steady_under_ma():
         print(index, candle[5], '7')
         return True
     else:
@@ -375,7 +376,7 @@ def is_ma60_eighth(index, candles, bias, ma, ma_slope, df):
         return flag
 
     if index > 90 and -2 < _bias60 < 0 and stand_on_ma_temp() and \
-            ma_down_steady() and has_short_patterns(index, df):
+            ma_down_steady() and has_top_patterns(index, df):
         print(index, candle[5], '8')
         return True
     else:
@@ -412,7 +413,7 @@ def has_support_patterns(index, df):
 
 def has_bottom_patterns(index, df):
     """
-    判断当前是否存在di底部看涨K线形态
+    判断当前是否存在底部看涨K线形态
     看涨吞没
     刺透心态 (旭日东升 / 曙光初现 / 好友反攻)
     看涨螺旋桨
@@ -428,6 +429,25 @@ def has_bottom_patterns(index, df):
     if df.iloc[index]['swallow_up'] > 0 or df.iloc[index]['sunrise'] > 0 \
             or df.iloc[index]['down_screw'] > 0 or df.iloc[index]['CDLLADDERBOTTOM'] > 0 \
             or df.iloc[index]['hammer'] > 0 or df.iloc[index]['pour_hammer'] > 0:
+        return True
+
+    return False
+
+
+def has_top_patterns(index, df):
+    """
+    判断当前是否存在顶部看涨K线形态
+    看跌吞没
+    看跌螺旋桨
+    射击之星
+
+    :param index:
+    :param df:
+    :return:
+    """
+
+    if df.iloc[index]['up_screw'] > 0 or df.iloc[index]['shooting'] > 0 \
+            and df.iloc[index]['hang_neck'] > 0:
         return True
 
     return False

@@ -4,9 +4,7 @@ from lib.signal.common.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma
     is_gold_cross, \
     is_ma60_support, is_ma120_support, is_stand_up_ma60, is_stand_up_ma120, \
     is_ma_glue, is_ma_out_sea, is_ma_hold_moon, is_ma_over_gate, is_ma_up_ground, \
-    is_ma_gold_valley, is_ma_silver_valley, is_ma_spider, \
-    is_ma_up_arrange51020, is_ma_up_arrange5102030, is_ma_up_arrange510203060, \
-    is_ma_up_arrange203060, is_ma_up_arrange2060120
+    is_ma_gold_valley, is_ma_silver_valley, is_ma_spider
 
 
 def long_analyze(org_df):
@@ -34,14 +32,6 @@ def long_analyze(org_df):
     ma60 = ma[:, 5]
     ma120 = ma[:, 6]
 
-    ma5_slope = ma_slope[:, 0]
-    ma10_slope = ma_slope[:, 1]
-    ma20_slope = ma_slope[:, 2]
-    ma30_slope = ma_slope[:, 3]
-    ma55_slope = ma_slope[:, 4]
-    ma60_slope = ma_slope[:, 5]
-    ma120_slope = ma_slope[:, 6]
-
     ema5 = ema[:, 0]
     ema10 = ema[:, 1]
     ema20 = ema[:, 2]
@@ -49,21 +39,6 @@ def long_analyze(org_df):
     ema55 = ema[:, 4]
     ema60 = ema[:, 5]
     ema120 = ema[:, 6]
-
-    ema5_slope = ema_slope[:, 0]
-    ema10_slope = ema_slope[:, 1]
-    ema20_slope = ema_slope[:, 2]
-    ema30_slope = ema_slope[:, 3]
-    ema55_slope = ema_slope[:, 4]
-    ema60_slope = ema_slope[:, 5]
-    ema120_slope = ema_slope[:, 6]
-
-    yearly_price_position = []
-    yearly_price_position10 = []
-    yearly_price_position20 = []
-    yearly_price_position30 = []
-    yearly_price_position50 = []
-    yearly_price_position70 = []
 
     ma20_up = []
     ema20_up = []
@@ -124,69 +99,7 @@ def long_analyze(org_df):
     stand_up_ma60 = []
     stand_up_ma120 = []
 
-    ma_up_arrange51020 = []
-    ma_up_arrange5102030 = []
-    ma_up_arrange510203060 = []
-    ma_up_arrange203060 = []
-    ma_up_arrange2060120 = []
-
-    # 连续两日K线在ma120上方止跌
-    # 最近20个交易日 沿着ma30上行 未曾跌破ma30
-
     for index in range(len(candle)):
-        _open = open[index]
-        _high = high[index]
-        _low = low[index]
-        _close = close[index]
-        _pct_chg = pct_chg[index]
-
-        _ma5 = ma5[index]
-        _ma10 = ma10[index]
-        _ma20 = ma20[index]
-        _ma30 = ma30[index]
-        _ma55 = ma55[index]
-        _ma60 = ma60[index]
-        _ma120 = ma120[index]
-
-        _ma5_slope = ma5_slope[index]
-        _ma10_slope = ma10_slope[index]
-        _ma20_slope = ma20_slope[index]
-        _ma30_slope = ma30_slope[index]
-        _ma55_slope = ma55_slope[index]
-        _ma60_slope = ma60_slope[index]
-        _ma120_slope = ma120_slope[index]
-
-        _ema5 = ema5[index]
-        _ema10 = ema10[index]
-        _ema20 = ema20[index]
-        _ema30 = ema30[index]
-        _ema55 = ema55[index]
-        _ema60 = ema60[index]
-        _ema120 = ema120[index]
-
-        _ema5_slope = ema5_slope[index]
-        _ema10_slope = ema10_slope[index]
-        _ema20_slope = ema20_slope[index]
-        _ema30_slope = ema30_slope[index]
-        _ema55_slope = ema55_slope[index]
-        _ema60_slope = ema60_slope[index]
-        _ema120_slope = ema120_slope[index]
-
-        # set_yearly_price_position
-        high_price = max(high[index - 259: index + 1]) if index >= 260 else max(high)
-        low_price = min(low[index - 259: index + 1]) if index >= 260 else min(low)
-
-        price_range = high_price - low_price
-        price_pct_position = round((_close - low_price) * 100 / price_range, 1)
-        yearly_price_position.insert(index, price_pct_position)
-
-        # yearly_price_position
-        yearly_price_position10.insert(index, 1 if 10 >= yearly_price_position[index] else 0)
-        yearly_price_position20.insert(index, 1 if 20 >= yearly_price_position[index] else 0)
-        yearly_price_position30.insert(index, 1 if 30 >= yearly_price_position[index] else 0)
-        yearly_price_position50.insert(index, 1 if 50 >= yearly_price_position[index] else 0)
-        yearly_price_position70.insert(index, 1 if 70 >= yearly_price_position[index] else 0)
-
         # MA上行
         ma20_up.insert(index, 1 if is_ma20_rise(index, ma) else 0)
         ema20_up.insert(index, 1 if is_ma20_rise(index, ema) else 0)
@@ -244,23 +157,16 @@ def long_analyze(org_df):
         up_ma_spider.insert(index, 1 if is_ma_spider(index, ma, ma_gold_cross1,
                                                      ma_gold_cross2, ma_gold_cross3, ma_gold_cross4) else 0)
 
-        # MA蛟龙出海(5/10/20) 大阳线 贯穿ma5/ma10/ma20 ma20上行
+        # MA蛟龙出海(5/10/20)
         ma_out_sea.insert(index, 1 if is_ma_out_sea(index, org_df) else 0)
         # MA均线粘合(5/10/20)
         ma_glue.insert(index, 1 if is_ma_glue(index, org_df) else 0)
         # MA烘云托月(5/10/20)
-        ma_hold_moon.insert(index, 1 if is_ma_hold_moon(index, candle, bias, ma, ma_slope) else 0)
+        ma_hold_moon.insert(index, 1 if is_ma_hold_moon(index, org_df) else 0)
         # MA鱼跃龙门(5/10/20)
-        if is_ma_over_gate(index, _close, _pct_chg, candle, ma, _ma5, _ma10, _ma20, ma_slope):
-            ma_over_gate.insert(index, 1)
-        else:
-            ma_over_gate.insert(index, 0)
-
+        ma_over_gate.insert(index, 1 if is_ma_over_gate(index, org_df) else 0)
         # MA旱地拔葱(5/10/20)
-        if is_ma_up_ground(index, _pct_chg, open, high, low, close, ma5, ma10, ma20):
-            ma_up_ground.insert(index, 1)
-        else:
-            ma_up_ground.insert(index, 0)
+        ma_up_ground.insert(index, 1 if is_ma_up_ground(index, org_df) else 0)
 
         # TD_8
         down_td8.insert(index, 1 if td[index][1] == 8 else 0)
@@ -279,67 +185,11 @@ def long_analyze(org_df):
         # bias120 不作为单独信号 需结合趋势判断上涨回踩形态
         down_bias120.insert(index, 1 if 1 >= bias[index][5] >= -1 else 0)
 
-        # 最近3个交易日站上 ma60/ma120 ema60/ema120
-        if is_stand_up_ma60(index, open, close, ma60, ma60_slope):
-            stand_up_ma60.insert(index, 1)
-        else:
-            stand_up_ma60.insert(index, 0)
+        stand_up_ma60.insert(index, 1 if is_stand_up_ma60(index, org_df) else 0)
+        stand_up_ma120.insert(index, 1 if is_stand_up_ma120(index, org_df) else 0)
 
-        if is_stand_up_ma120(index, open, close, ma120, ma120_slope):
-            stand_up_ma120.insert(index, 1)
-        else:
-            stand_up_ma120.insert(index, 0)
-
-        # 连续两日K线在ma60上方收出下影线 / 或遇支撑
-        if is_ma60_support(index, candle, ma, ma_slope, org_df):
-            ma60_support.insert(index, 1)
-        else:
-            ma60_support.insert(index, 0)
-
-        # 连续两日K线在ma120上方收出下影线 / 或遇支撑
-        if is_ma120_support(index, candle, ma, ma_slope, org_df):
-            ma120_support.insert(index, 1)
-        else:
-            ma120_support.insert(index, 0)
-
-        # ma5/ma10/ma20 出现多头排列
-        if is_ma_up_arrange51020(index, ma5, ma10, ma20, ma5_slope, ma10_slope, ma20_slope):
-            ma_up_arrange51020.insert(index, 1)
-        else:
-            ma_up_arrange51020.insert(index, 0)
-
-        # ma5/ma10/ma20/ma30 出现多头排列
-        if is_ma_up_arrange5102030(index, ma5, ma10, ma20, ma30, ma5_slope, ma10_slope, ma20_slope, ma30_slope):
-            ma_up_arrange5102030.insert(index, 1)
-        else:
-            ma_up_arrange5102030.insert(index, 0)
-
-        # ma5/ma10/ma20/ma30/ma60 出现多头排列
-        if is_ma_up_arrange510203060(index, ma5, ma10, ma20, ma30, ma60, ma5_slope, ma10_slope, ma20_slope,
-                                     ma30_slope,
-                                     ma60_slope):
-            ma_up_arrange510203060.insert(index, 1)
-        else:
-            ma_up_arrange510203060.insert(index, 0)
-
-        # ma20/ma30/ma60 出现多头排列
-        if is_ma_up_arrange203060(index, ma20, ma30, ma60, ma20_slope, ma30_slope, ma60_slope):
-            ma_up_arrange203060.insert(index, 1)
-        else:
-            ma_up_arrange203060.insert(index, 0)
-
-        # ma20/ma60/ma120 出现多头排列
-        if is_ma_up_arrange2060120(index, ma20, ma60, ma120, ma20_slope, ma60_slope, ma120_slope):
-            ma_up_arrange2060120.insert(index, 1)
-        else:
-            ma_up_arrange2060120.insert(index, 0)
-
-    org_df['yearly_price_position'] = yearly_price_position
-    org_df['yearly_price_position10'] = yearly_price_position10
-    org_df['yearly_price_position20'] = yearly_price_position20
-    org_df['yearly_price_position30'] = yearly_price_position30
-    org_df['yearly_price_position50'] = yearly_price_position50
-    org_df['yearly_price_position70'] = yearly_price_position70
+        ma60_support.insert(index, 1 if is_ma60_support(index, org_df) else 0)
+        ma120_support.insert(index, 1 if is_ma120_support(index, org_df) else 0)
 
     org_df['ma20_up'] = ma20_up
     org_df['ema20_up'] = ema20_up
@@ -399,5 +249,3 @@ def long_analyze(org_df):
     org_df['ma120_support'] = ma120_support
 
     return org_df
-
-

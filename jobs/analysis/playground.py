@@ -40,6 +40,9 @@ if __name__ == "__main__":
     # ts_code = '600502.SH' # 安徽建工
     # ts_code = '600313.SH' # 农发种业
     ts_code = '002207.SZ'
-    scan_daily_candles(ts_code, 'CN', '2022-05-28')
+    ts_code = '600470.SH'
+    ts_code = '600724.SH'
+    ts_code = '600082.SH'
+    scan_daily_candles(ts_code, 'CN', '2022-05-31')
     print('扫描成功')
 

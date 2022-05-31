@@ -50,7 +50,7 @@ def is_ma60_first(index, candles, bias, ma, ma_slope, df):
 def is_ma60_second(index, candles, bias, ma, ma_slope, df):
     """
     葛南维第二大法则 (均线服从)
-    1. 连续13个交易日 收盘价在MA60之上 / MA60上行
+    1. 连续21个交易日 收盘价在MA60之上 / MA60上行
     2. 价格回落 未跌破MA60 且 K线出现止跌支撑信号 (看涨吞没/看涨锤头线/探水竿/看涨螺旋桨/看涨孕线/下探上涨)
     3. 价格回落未出现强势空头K线 （大阴线/倒锤头线）
 
@@ -77,7 +77,7 @@ def is_ma60_second(index, candles, bias, ma, ma_slope, df):
 
     def steady_on_ma():
         flag = True
-        for i in range(13):
+        for i in range(21):
             if candles[index - i][3] < ma60[index - i] or ma60[index - i] < ma60[index - i - 1]:
                 flag = False
         return flag
@@ -93,8 +93,8 @@ def is_ma60_second(index, candles, bias, ma, ma_slope, df):
 def is_ma60_third(index, candles, bias, ma, ma_slope, df):
     """
     葛南维第三大法则 (均线服从和黄金交叉)
-    1. 连续13个交易日 收盘价在MA60之上 / MA60上行 / ma60_slope > 0
-    2. 价格回落 跌破MA60之后 收盘又站上MA60 K线出现止跌支撑信号 (看涨吞没/看涨锤头线/看涨螺旋桨/看涨孕线)
+    1. 连续21个交易日 收盘价在MA60之上 / MA60上行 / ma60_slope > 0
+    2. 价格回落 短暂跌破MA60之后 收盘又站上MA60 K线出现止跌支撑信号 (看涨吞没/看涨锤头线/看涨螺旋桨/看涨孕线)
     3. 随后出现黄金交叉 (5/10 5/20 10/20 5/60 10/60)
 
     :param index:
@@ -108,6 +108,7 @@ def is_ma60_third(index, candles, bias, ma, ma_slope, df):
 
     candle = candles[index]
     _low = candle[2]
+    close = candles[:, 3]
     _close = candle[3]
     ma60_slope = ma_slope[:, 5]
     ma60 = ma[:, 5]
@@ -118,16 +119,21 @@ def is_ma60_third(index, candles, bias, ma, ma_slope, df):
     if index > 90 and _ma60 > 0:
         _low_bias60 = (_low - _ma60) * 100 / _ma60
 
-    def ma_rise_steady():
+    def rise_steady():
         flag = True
-        for i in range(13):
+        beneath_ma60_cnt = 0
+        for i in range(21):
             # 如果 当前MA60 < 前值
             if ma60[index - i] < ma60[index - i - 1]:
                 flag = False
-        return flag
+
+            if close[index - 1] < ma60[index - i]:
+                beneath_ma60_cnt += 1
+
+        return flag and 1 < beneath_ma60_cnt < 5
 
     if index > 90 and _close > _ma60 > _low and _bias60 < 8 and \
-            ma_rise_steady() and candles[index - 1][2] < ma60[index - 1]:
+            rise_steady() and candles[index - 1][2] < ma60[index - 1]:
         return True
     else:
         return False

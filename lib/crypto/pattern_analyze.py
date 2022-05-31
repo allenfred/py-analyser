@@ -2,7 +2,9 @@
 import talib as lib
 from lib.signal.crypto.candle import is_hammer, is_pour_hammer, is_short_end, is_swallow_up, \
     is_sunrise, is_first_light, is_attack_short, is_flat_base, is_rise_line, is_down_screw, \
-    is_long_end, is_swallow_down, is_hang_neck, is_shooting, is_jump_line, is_up_screw, is_down_rise
+    is_long_end, is_swallow_down, is_hang_neck, is_shooting, is_drop_line, is_up_screw, \
+    is_down_rise, is_upward_jump, is_downward_jump, is_rise_limit, is_drop_limit, \
+    is_up_cross3ma, is_up_cross4ma, is_drop_cross3ma, is_drop_cross4ma
 
 
 def pattern_analyze(df):
@@ -27,112 +29,70 @@ def pattern_analyze(df):
     swallow_down = []
     hang_neck = []
     shooting = []
-    jump_line = []
+    drop_line = []
     up_screw = []
     down_rise = []
 
+    upward_jump = []
+    downward_jump = []
+    rise_limit = []
+    drop_limit = []
+    up_cross3ma = []
+    up_cross4ma = []
+    drop_cross3ma = []
+    drop_cross4ma = []
+
     for index in range(len(candle)):
         # 锤子线
-        if is_hammer(index, candle):
-            hammer.insert(index, 1)
-        else:
-            hammer.insert(index, 0)
-
+        hammer.insert(index, 1 if is_hammer(index, candle) else 0)
         # 倒锤子线
-        if is_pour_hammer(index, candle):
-            pour_hammer.insert(index, 1)
-        else:
-            pour_hammer.insert(index, 0)
-
+        pour_hammer.insert(index, 1 if is_pour_hammer(index, candle) else 0)
         # 看涨尽头线
-        if is_short_end(index, candle):
-            short_end.insert(index, 1)
-        else:
-            short_end.insert(index, 0)
-
+        short_end.insert(index, 1 if is_short_end(index, candle) else 0)
         # 下探上涨
-        if is_down_rise(index, candle):
-            down_rise.insert(index, 1)
-        else:
-            down_rise.insert(index, 0)
-
+        down_rise.insert(index, 1 if is_down_rise(index, candle) else 0)
         # 看涨吞没
-        if is_swallow_up(index, candle):
-            swallow_up.insert(index, 1)
-        else:
-            swallow_up.insert(index, 0)
-
+        swallow_up.insert(index, 1 if is_swallow_up(index, candle) else 0)
         # 好友反攻
-        if is_attack_short(index, candle):
-            attack_short.insert(index, 1)
-        else:
-            attack_short.insert(index, 0)
-
+        attack_short.insert(index, 1 if is_attack_short(index, candle) else 0)
         # 曙光初现
-        if is_first_light(index, candle):
-            first_light.insert(index, 1)
-        else:
-            first_light.insert(index, 0)
-
+        first_light.insert(index, 1 if is_first_light(index, candle) else 0)
         # 旭日东升
-        if is_sunrise(index, candle):
-            sunrise.insert(index, 1)
-        else:
-            sunrise.insert(index, 0)
-
+        sunrise.insert(index, 1 if is_sunrise(index, candle) else 0)
         # 平底
-        if is_flat_base(index, candle):
-            flat_base.insert(index, 1)
-        else:
-            flat_base.insert(index, 0)
-
+        flat_base.insert(index, 1 if is_flat_base(index, candle) else 0)
         # 涨停一字板
-        if is_rise_line(index, candle):
-            rise_line.insert(index, 1)
-        else:
-            rise_line.insert(index, 0)
-
+        rise_line.insert(index, 1 if is_rise_line(index, candle) else 0)
         # 下跌螺旋桨
-        if is_down_screw(index, candle):
-            down_screw.insert(index, 1)
-        else:
-            down_screw.insert(index, 0)
-
+        down_screw.insert(index, 1 if is_down_screw(index, candle) else 0)
         # 看跌尽头线
-        if is_long_end(index, candle):
-            long_end.insert(index, 1)
-        else:
-            long_end.insert(index, 0)
-
+        long_end.insert(index, 1 if is_long_end(index, candle) else 0)
         # 看跌吞没
-        if is_swallow_down(index, candle):
-            swallow_down.insert(index, 1)
-        else:
-            swallow_down.insert(index, 0)
-
+        swallow_down.insert(index, 1 if is_swallow_down(index, candle) else 0)
         # 吊颈线
-        if is_hang_neck(index, candle):
-            hang_neck.insert(index, 1)
-        else:
-            hang_neck.insert(index, 0)
-
+        hang_neck.insert(index, 1 if is_hang_neck(index, candle) else 0)
         # 射击之星
-        if is_shooting(index, candle):
-            shooting.insert(index, 1)
-        else:
-            shooting.insert(index, 0)
-
+        shooting.insert(index, 1 if is_shooting(index, candle) else 0)
         # 跌停一字板
-        if is_jump_line(index, candle):
-            jump_line.insert(index, 1)
-        else:
-            jump_line.insert(index, 0)
-
+        drop_line.insert(index, 1 if is_drop_line(index, candle) else 0)
         # 看跌螺旋桨
-        if is_up_screw(index, candle):
-            up_screw.insert(index, 1)
-        else:
-            up_screw.insert(index, 0)
+        up_screw.insert(index, 1 if is_up_screw(index, candle) else 0)
+        # 向上跳空
+        upward_jump.insert(index, 1 if is_upward_jump(index, candle) else 0)
+        # 向下跳空
+        downward_jump.insert(index, 1 if is_downward_jump(index, candle) else 0)
+        # 涨停板
+        rise_limit.insert(index, 1 if is_rise_limit(index, candle) else 0)
+        # 跌停板
+        drop_limit.insert(index, 1 if is_drop_limit(index, candle) else 0)
+        # 一阳穿三线
+        up_cross3ma.insert(index, 1 if is_up_cross3ma(index, candle, df) else 0)
+        # 一阳穿四线
+        up_cross4ma.insert(index, 1 if is_up_cross4ma(index, candle, df) else 0)
+        # 一阴穿三线
+        drop_cross3ma.insert(index, 1 if is_drop_cross3ma(index, candle, df) else 0)
+        # 一阴穿四线
+        drop_cross4ma.insert(index, 1 if is_drop_cross4ma(index, candle, df) else 0)
 
     df['hammer'] = hammer
     df['pour_hammer'] = pour_hammer
@@ -148,9 +108,17 @@ def pattern_analyze(df):
     df['swallow_down'] = swallow_down
     df['hang_neck'] = hang_neck
     df['shooting'] = shooting
-    df['jump_line'] = jump_line
+    df['drop_line'] = drop_line
     df['up_screw'] = up_screw
     df['down_rise'] = down_rise
+    df['upward_jump'] = upward_jump
+    df['downward_jump'] = downward_jump
+    df['rise_limit'] = rise_limit
+    df['drop_limit'] = drop_limit
+    df['up_cross3ma'] = up_cross3ma
+    df['up_cross4ma'] = up_cross4ma
+    df['drop_cross3ma'] = drop_cross3ma
+    df['drop_cross4ma'] = drop_cross4ma
 
     """
     +200 bullish pattern with confirmation

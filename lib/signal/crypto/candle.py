@@ -14,7 +14,7 @@ def is_hammer(i, candles):
     1.市场处于清晰的下降趋势
     2.当前K线收出锤头线形态
     3.当前K线最低价为近期最低价
-    4..K线震幅大于6%
+    4..K线震幅大于5%
 
     :param i: 当前tick
     :param candles:
@@ -47,7 +47,7 @@ def is_hammer(i, candles):
     # 上影线长度需小于柱体长度的1/5
     if lowest_low == _low and _open > up_one_third and _close > up_one_third \
             and up_shadow_len < bar_len / 5 \
-            and pre_close * 0.06 <= k_len:
+            and pre_close * 0.05 <= k_len:
         return True
 
     return False
@@ -60,7 +60,7 @@ def is_pour_hammer(i, candles):
     1.市场处于清晰的下降趋势
     2.当前K线收出倒锤头线形态
     3.当前K线最低价为近期最低价
-    4..K线震幅大于6%
+    4..K线震幅大于5%
 
     :param i: 当前tick
     :param candles:
@@ -94,7 +94,7 @@ def is_pour_hammer(i, candles):
     # 下影线长度需小于柱体长度的1/5
     if lowest_low == _low and _open < bottom_one_third and _close < bottom_one_third \
             and bottom_shadow_len < bar_len / 5 \
-            and pre_close * 0.06 <= k_len:
+            and pre_close * 0.05 <= k_len:
         return True
 
     return False
@@ -582,16 +582,18 @@ def is_rise_line(i, candles):
     """
 
     _open = candles[:, 0][i]
+    _high = candles[:, 1][i]
+    _low = candles[:, 2][i]
     _close = candles[:, 3][i]
     _chg = candles[:, 4][i]
 
-    if _open == _close and _chg >= 9.99:
+    if _open == _high == _low == _close and _chg > 9.5:
         return True
 
     return False
 
 
-def is_jump_line(i, candles):
+def is_drop_line(i, candles):
     """
     description: 跌停一字板
     1.跌幅大于 9.99%
@@ -600,12 +602,13 @@ def is_jump_line(i, candles):
     :param candles:
     :return: boolean
     """
-
     _open = candles[:, 0][i]
+    _high = candles[:, 1][i]
+    _low = candles[:, 2][i]
     _close = candles[:, 3][i]
     _chg = candles[:, 4][i]
 
-    if _open == _close and _chg <= -9.99:
+    if _open == _high == _low == _close and _chg < -9.5:
         return True
 
     return False
@@ -673,6 +676,208 @@ def is_down_screw(i, candles):
     if i > 30 and min(low[i - 9: i - 1]) > _low and \
             up_shadow_len > k_len / 3 and bottom_shadow_len > k_len / 3 and \
             _open * 1.03 < _high and _open * 0.93 > _low:
+        return True
+
+    return False
+
+
+def is_upward_jump(i, candles):
+    """
+    description: 向上跳空
+    有效标准：
+
+    :param i: 当前tick
+    :param candles:
+    :return: boolean
+    """
+    if i < 60:
+        return False
+
+    _open = candles[:, 0][i]
+    _pre_high = candles[:, 1][i - 1]
+    _low = candles[:, 2][i]
+    _close = candles[:, 3][i]
+    _chg = candles[:, 4][i]
+
+    if _low > _pre_high:
+        return True
+
+    return False
+
+
+def is_downward_jump(i, candles):
+    """
+    description: 向下跳空
+    有效标准：
+
+    :param i: 当前tick
+    :param candles:
+    :return: boolean
+    """
+    if i < 60:
+        return False
+
+    _open = candles[:, 0][i]
+    _high = candles[:, 1][i]
+    _pre_low = candles[:, 2][i - 1]
+    _close = candles[:, 3][i]
+    _chg = candles[:, 4][i]
+
+    if _high < _pre_low:
+        return True
+
+    return False
+
+
+def is_rise_limit(i, candles):
+    """
+    description: 涨停板(A股)
+    有效标准：
+
+    :param i: 当前tick
+    :param candles:
+    :return: boolean
+    """
+    if i < 60:
+        return False
+
+    _open = candles[:, 0][i]
+    _high = candles[:, 1][i]
+    _low = candles[:, 2][i]
+    _close = candles[:, 3][i]
+    _chg = candles[:, 4][i]
+
+    if _high == _close and _chg > 9.5:
+        return True
+
+    return False
+
+
+def is_drop_limit(i, candles):
+    """
+    description: 跌停板(A股)
+    有效标准：
+
+    :param i: 当前tick
+    :param candles:
+    :return: boolean
+    """
+    if i < 60:
+        return False
+
+    _open = candles[:, 0][i]
+    _high = candles[:, 1][i]
+    _low = candles[:, 2][i]
+    _close = candles[:, 3][i]
+    _chg = candles[:, 4][i]
+
+    if _low == _close and _chg < -9.5:
+        return True
+
+    return False
+
+
+def is_up_cross3ma(i, candles, df):
+    """
+    description: 一阳穿三线 (看涨)
+    有效标准：
+
+    :param i: 当前tick
+    :param candles:
+    :param df:
+    :return: boolean
+    """
+    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+    _open = candles[:, 0][i]
+    _close = candles[:, 3][i]
+    _ma5 = ma[:, 0][i]
+    _ma10 = ma[:, 1][i]
+    _ma20 = ma[:, 2][i]
+    _ma30 = ma[:, 3][i]
+
+    if i > 10 and ((_open < _ma5 and _open < _ma10 and _open < _ma20 and
+                    _close > _ma5 and _close > _ma10 and _close > _ma20) or
+                   (_open < _ma5 and _open < _ma10 and _open < _ma30 and
+                    _close > _ma5 and _close > _ma10 and _close > _ma30)):
+        return True
+
+    return False
+
+
+def is_up_cross4ma(i, candles, df):
+    """
+    description: 一阳穿四线 (看涨)
+    有效标准：
+
+    :param i: 当前tick
+    :param candles:
+    :param df:
+    :return: boolean
+    """
+    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+    _open = candles[:, 0][i]
+    _close = candles[:, 3][i]
+    _ma5 = ma[:, 0][i]
+    _ma10 = ma[:, 1][i]
+    _ma20 = ma[:, 2][i]
+    _ma60 = ma[:, 5][i]
+
+    if i > 10 and \
+            (_open < _ma5 and _open < _ma10 and _open < _ma20 and _open < _ma60 and
+             _close > _ma5 and _close > _ma10 and _close > _ma20 and _close > _ma60):
+        return True
+
+    return False
+
+
+def is_drop_cross3ma(i, candles, df):
+    """
+    description: 一阴穿三线 (看跌)
+    有效标准：
+
+    :param i: 当前tick
+    :param candles:
+    :param df:
+    :return: boolean
+    """
+    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+    _open = candles[:, 0][i]
+    _close = candles[:, 3][i]
+    _ma5 = ma[:, 0][i]
+    _ma10 = ma[:, 1][i]
+    _ma20 = ma[:, 2][i]
+    _ma30 = ma[:, 3][i]
+
+    if i > 10 and ((_open > _ma5 and _open > _ma10 and _open > _ma20 and
+                    _close < _ma5 and _close < _ma10 and _close < _ma20) or
+                   (_open > _ma5 and _open > _ma10 and _open > _ma30 and
+                    _close < _ma5 and _close < _ma10 and _close < _ma30)):
+        return True
+
+    return False
+
+
+def is_drop_cross4ma(i, candles, df):
+    """
+    description: 一阴穿四线 (看跌)
+    有效标准：
+
+    :param i: 当前tick
+    :param candles:
+    :param df:
+    :return: boolean
+    """
+    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+    _open = candles[:, 0][i]
+    _close = candles[:, 3][i]
+    _ma5 = ma[:, 0][i]
+    _ma10 = ma[:, 1][i]
+    _ma20 = ma[:, 2][i]
+    _ma60 = ma[:, 5][i]
+
+    if i > 10 and \
+            (_open > _ma5 and _open > _ma10 and _open > _ma20 and _open > _ma60 and
+             _close < _ma5 and _close < _ma10 and _close < _ma20 and _close < _ma60):
         return True
 
     return False
