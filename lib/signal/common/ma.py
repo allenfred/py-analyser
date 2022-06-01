@@ -764,14 +764,14 @@ def is_ma60_support(index, df):
     close = df['close'].to_numpy()
     ma60 = df['ma60'].to_numpy()
 
-    def steady_on_ma():
+    def ma_rise_steady():
         flag = True
         for i in range(13):
             if ma60[index - i] < ma60[index - i - 1]:
                 flag = False
         return flag
 
-    if steady_on_ma() and has_support_patterns(index, df) and \
+    if ma_rise_steady() and has_support_patterns(index, df) and close[index] > ma60[index] and \
             (low[index] <= ma60[index] or low[index - 1] <= ma60[index - 1]):
         # print(candle[5], 'support')
         return True
@@ -803,7 +803,7 @@ def is_ma120_support(index, df):
                 flag = False
         return flag
 
-    if steady_on_ma() and has_support_patterns(index, df) and \
+    if steady_on_ma() and has_support_patterns(index, df) and close[index] > ma120[index] and \
             has_support_patterns(index - 1, df) and \
             (low[index] <= ma120[index] or low[index - 1] <= ma120[index - 1]):
         return True

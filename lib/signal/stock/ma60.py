@@ -77,7 +77,7 @@ def is_ma60_second(index, candles, bias, ma, ma_slope, df):
 
     def steady_on_ma():
         flag = True
-        for i in range(21):
+        for i in range(15):
             if candles[index - i][3] < ma60[index - i] or ma60[index - i] < ma60[index - i - 1]:
                 flag = False
         return flag
@@ -122,7 +122,7 @@ def is_ma60_third(index, candles, bias, ma, ma_slope, df):
     def rise_steady():
         flag = True
         beneath_ma60_cnt = 0
-        for i in range(21):
+        for i in range(15):
             # 如果 当前MA60 < 前值
             if ma60[index - i] < ma60[index - i - 1]:
                 flag = False
@@ -130,7 +130,7 @@ def is_ma60_third(index, candles, bias, ma, ma_slope, df):
             if close[index - 1] < ma60[index - i]:
                 beneath_ma60_cnt += 1
 
-        return flag and 1 < beneath_ma60_cnt < 5
+        return flag and 1 < beneath_ma60_cnt <= 5
 
     if index > 90 and _close > _ma60 > _low and _bias60 < 8 and \
             rise_steady() and candles[index - 1][2] < ma60[index - 1]:
