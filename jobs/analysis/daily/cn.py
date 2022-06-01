@@ -68,7 +68,7 @@ if __name__ == "__main__":
         stockDao.session.commit()
 
         if len(stock_result) == 0:
-            print(today, 'CN 没有需要扫描的股票')
+            print(today, 'CN 扫描完成: ', ",总用时", used_time_fmt(job_start, time.time()))
             break
 
         multi_scan(stock_result)

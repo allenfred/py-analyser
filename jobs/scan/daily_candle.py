@@ -64,8 +64,6 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
     last_amount = 0
     list_status = 'L'
 
-    print('查询K线用时: ', str(used_time_fmt(start, time.time())))
-
     if len(df) > 1:
         last_amount = get_amount(exchange_type, df.iloc[0].amount)
 
@@ -86,9 +84,8 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
 
             _analyze_start = time.time()
             df = analyze(df)
-            print('analyze 用时: ', str(used_time_fmt(_analyze_start, time.time())))
 
-            small_df = df.iloc[df_len - 10: df_len]
+            small_df = df.iloc[df_len - 5: df_len]
             signal = df.iloc[df_len - 1].to_dict()
 
             dailyIndicatorDao.bulk_insert(small_df, ts_code)
