@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 import datetime
 from json import dumps, loads
-from config.common import API_KEY, API_SECRET, PASSPHRASE
 from database import (
     InstrumentInfos,
     UsdtSwapKlines,
@@ -52,7 +51,7 @@ def get_usdt_swap_klines(inst_id, granularity, limit=500):
     ]
 
 
-def get_df(klines):
+def clean_klines(klines):
     """
     获取k线对应的DataFrame
     klines 默认为根据时间升序排序
@@ -76,6 +75,15 @@ def get_df(klines):
     return df
 
 
-def get_swap_df(inst_id, granularity, limit=1000):
+def get_klines_df(inst_id, granularity, limit=1000):
     klines = get_usdt_swap_klines(inst_id, granularity, limit)
-    return get_df(klines)
+    return clean_klines(klines)
+
+
+def get_inst_df():
+    return [
+        loads(dumps(doc, default=convert_date))
+        for doc in InstrumentInfos.find(
+            {"exchange": 'biance'}
+        ).sort("instrument_id", -1)
+    ]

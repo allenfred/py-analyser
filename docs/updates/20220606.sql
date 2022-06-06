@@ -1,0 +1,21 @@
+alter table stock_signals add COLUMN max_vol tinyint DEFAULT null COMMENT '天量';
+alter table stock_signals add COLUMN huge_vol tinyint DEFAULT null COMMENT '巨量';
+alter table stock_signals add COLUMN large_vol tinyint DEFAULT null COMMENT '大量';
+alter table stock_signals add COLUMN high_vol tinyint DEFAULT null COMMENT '异常量';
+alter table stock_signals add COLUMN common_vol tinyint DEFAULT null COMMENT '常量';
+alter table stock_signals add COLUMN low_vol tinyint DEFAULT null COMMENT '地量';
+alter table stock_signals add COLUMN increase_vol tinyint DEFAULT null COMMENT '放量';
+alter table stock_signals add COLUMN decrease_vol tinyint DEFAULT null COMMENT '缩量';
+alter table stock_signals add COLUMN increasingly_vol tinyint DEFAULT null COMMENT '持续放量';
+alter table stock_signals add COLUMN decreasingly_vol tinyint DEFAULT null COMMENT '持续缩量';
+
+alter table stock_daily_signals add COLUMN max_vol tinyint DEFAULT null COMMENT '天量';
+alter table stock_daily_signals add COLUMN huge_vol tinyint DEFAULT null COMMENT '巨量';
+alter table stock_daily_signals add COLUMN large_vol tinyint DEFAULT null COMMENT '大量';
+alter table stock_daily_signals add COLUMN high_vol tinyint DEFAULT null COMMENT '异常量';
+alter table stock_daily_signals add COLUMN common_vol tinyint DEFAULT null COMMENT '常量';
+alter table stock_daily_signals add COLUMN low_vol tinyint DEFAULT null COMMENT '地量';
+alter table stock_daily_signals add COLUMN increase_vol tinyint DEFAULT null COMMENT '放量';
+alter table stock_daily_signals add COLUMN decrease_vol tinyint DEFAULT null COMMENT '缩量';
+alter table stock_daily_signals add COLUMN increasingly_vol tinyint DEFAULT null COMMENT '持续放量';
+alter table stock_daily_signals add COLUMN decreasingly_vol tinyint DEFAULT null COMMENT '持续缩量';

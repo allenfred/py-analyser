@@ -56,7 +56,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
                                                       "and close is not null and high is not null and"
                                                     + " low is not null "
                                                     + "order by trade_date desc "
-                                                      "limit 300").params(ts_code=ts_code))
+                                                      "limit 250").params(ts_code=ts_code))
 
     df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'high', 'close',
                                                      'low', 'pct_chg', 'vol', 'amount'])
@@ -88,7 +88,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
             small_df = df.iloc[df_len - 5: df_len]
             signal = df.iloc[df_len - 1].to_dict()
 
-            dailyIndicatorDao.bulk_insert(small_df, ts_code)
+            # dailyIndicatorDao.bulk_insert(small_df, ts_code)
             stockSignalDao.upsert(signal)
             stockDailySignalDao.reinsert(small_df, ts_code)
             dailyPatternSignalDao.bulk_insert(small_df, ts_code)
@@ -103,4 +103,3 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
             stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount, 'list_status': 'L'})
     else:
         stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'amount': last_amount, 'list_status': list_status})
-        print('股票代码: ', ts_code, ' 不满足扫描条件')

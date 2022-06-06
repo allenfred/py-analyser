@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Float, select, text, update, bindparam
+from sqlalchemy import Column, Integer, String, Date, DateTime, Float, select, text, update, bindparam
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import literal_column
 from .db import engine, DBSession
@@ -14,32 +14,20 @@ class CNDailyCandle(Base):
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     ts_code = Column(String)  # TS代码
+    name = Column(String)  # 股票名称
     trade_date = Column(Date)  # 交易日期
-    open = Column(Float)  # 开盘价
-    high = Column(Float)  # 最高价
-    low = Column(Float)  # 最低价
     close = Column(Float)  # 收盘价
-    pre_close = Column(Float)  # 昨收价
-    change = Column(Float)  # 涨跌额
     pct_chg = Column(Float)  # 涨跌幅
+    amp = Column(Float)  # 振幅
     vol = Column(Float)  # 成交量
-    amount = Column(Float)  # 成交额
-    # 每日行情指标数据
-    turnover_rate = Column(Float)  # 换手率
-    turnover_rate_f = Column(Float)  # 换手率(自由流通股)
-    volume_ratio = Column(Float)  # 量比
-    pe = Column(Float)  # 市盈率（总市值/净利润）
-    pe_ttm = Column(Float)  # 市盈率（TTM）
-    pb = Column(Float)  # 市净率（总市值/净资产）
-    ps = Column(Float)  # 市销率
-    ps_ttm = Column(Float)  # 市销率（TTM）
-    dv_ratio = Column(Float)  # 股息率（%）
-    dv_ttm = Column(Float)  # 股息率（TTM)（%）
-    total_share = Column(Float)  # 总股本
-    float_share = Column(Float)  # 流通股本
-    free_share = Column(Float)  # 自由流通股本
-    total_mv = Column(Float)  # 总市值
-    circ_mv = Column(Float)  # 流通市值
+    fc_ratio = Column(Float)  # 封单金额/日成交金额
+    fl_ratio = Column(Float)  # 封单手数/流通股本
+    fd_amount = Column(Float)  # 封单金额
+    first_time = Column(DateTime)  # 首次涨停时间
+    last_time = Column(DateTime)  # 最后封板时间
+    open_times = Column(Integer)  # 打开次数
+    strth = Column(Float)  # 涨跌停强度
+    limit = Column(String)  # D跌停U涨停
 
 
 def get_obj(candle):

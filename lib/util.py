@@ -24,7 +24,17 @@ def used_time_fmt(start, end):
     return str(round(end - start, 1)) + ' s'
 
 
+def decimal_digits(val: float):
+    val_str = str(val)
+    digits_location = val_str.find('.')
+
+    if digits_location:
+        return len(val_str[digits_location + 1:])
+
+
 def set_quota(df):
+    df = df.astype({"open": 'float', "high": 'float', "low": 'float', "close": 'float'})
+
     open = df.open.to_numpy()
     high = df.high.to_numpy()
     low = df.low.to_numpy()
@@ -109,8 +119,17 @@ def set_quota(df):
     df['low_td'] = low_td
 
     df['atr'] = ATR(high, low, close, timeperiod=14)
+    # 振幅
+    pct_range = []
+    for index in range(len(df)):
+        chg = 0
+        if index > 0:
+            chg = round(((df.iloc[index]['high'] - df.iloc[index]['low']) / df.iloc[index - 1]['close']) * 100, 2)
+        pct_range.insert(index, chg)
+    df['pct_range'] = pct_range
 
     df = df.fillna(0)
-    df = df.round(3)
+
+    df = df.round(decimal_digits(min(low)) + 1)
 
     return df

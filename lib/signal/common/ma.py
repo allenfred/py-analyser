@@ -214,6 +214,54 @@ def is_up_short_ma_arrange(index, ma1, ma2, ma3):
     return False
 
 
+def is_down_short_ma_arrange(index, ma1, ma2, ma3):
+    """
+    MA/EMA 短期组合空头排列（5/10/20）/（5/10/30）
+
+    :param index:
+    :param ma1:
+    :param ma2:
+    :param ma3:
+    :return:
+    """
+
+    _count = 7
+    _sum = round(np.sum(ma1[index - _count: index]) +
+                 np.sum(ma2[index - _count: index]) +
+                 np.sum(ma3[index - _count: index]), 3)
+    _avg = round(_sum / (3 * _count), 3)
+    _wave = round(_avg * 0.03, 3)
+    ma_wave = []
+
+    is_wave_steady = True
+
+    for i in range(_count):
+        ma_wave.append(math.fabs(ma1[index - i] - _avg))
+        ma_wave.append(math.fabs(ma2[index - i] - _avg))
+        ma_wave.append(math.fabs(ma3[index - i] - _avg))
+
+        if math.fabs(ma1[index - i] - _avg) > _wave or \
+                math.fabs(ma2[index - i] - _avg) > _wave or \
+                math.fabs(ma3[index - i] - _avg) > _wave:
+            is_wave_steady = False
+
+    def ma_rise():
+        flag = True
+        for i in range(_count):
+            # 如果当前 MA <= 前值
+            if ma1[index - i] < ma1[index - i - 1] \
+                    or ma2[index - i] < ma2[index - i - 1] \
+                    or ma3[index - i] < ma3[index - i - 1] \
+                    or not (ma1[index - i] > ma2[index - i] > ma3[index - i]):
+                flag = False
+        return flag
+
+    if index > 60 and ma_rise() and is_wave_steady:
+        return True
+
+    return False
+
+
 def is_up_middle_ma_arrange(index, ma1, ma2, ma3):
     """
     MA/EMA 中期组合多头排列（10/20/60）/ 10/20/55）

@@ -11,7 +11,7 @@ from models.cn_daily_candles import CNDailyCandleDao
 from models.daily_indicators import DailyIndicatorDao
 from models.stocks import StockDao
 from sqlalchemy import text
-from lib.util import wrap_technical_indicator, used_time_fmt
+from lib.util import set_quota, used_time_fmt
 import time
 
 stockDao = StockDao()
@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
         if len(df):
             try:
-                df = wrap_technical_indicator(df)
+                df = set_quota(df)
                 df_len = len(df)
                 # 只更新最新30天的指标
                 small_df = df.iloc[df_len - 30: df_len]

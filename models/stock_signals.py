@@ -169,6 +169,17 @@ class StockSignal(Base):
     ma60_seventh = Column(SmallInteger)
     ma60_eighth = Column(SmallInteger)
 
+    max_vol = Column(SmallInteger)
+    huge_vol = Column(SmallInteger)
+    large_vol = Column(SmallInteger)
+    high_vol = Column(SmallInteger)
+    common_vol = Column(SmallInteger)
+    low_vol = Column(SmallInteger)
+    increase_vol = Column(SmallInteger)
+    decrease_vol = Column(SmallInteger)
+    increasingly_vol = Column(SmallInteger)
+    decreasingly_vol = Column(SmallInteger)
+
 
 def get_obj(signal):
     signal = {k: v if not pd.isna(v) else None for k, v in signal.items()}
@@ -335,6 +346,16 @@ def get_obj(signal):
         ma60_seventh=signal.get('ma60_seventh', None),
         ma60_eighth=signal.get('ma60_eighth', None),
 
+        max_vol=signal.get('max_vol', None),
+        huge_vol=signal.get('huge_vol', None),
+        large_vol=signal.get('large_vol', None),
+        high_vol=signal.get('high_vol', None),
+        common_vol=signal.get('common_vol', None),
+        low_vol=signal.get('low_vol', None),
+        increase_vol=signal.get('increase_vol', None),
+        decrease_vol=signal.get('decrease_vol', None),
+        increasingly_vol=signal.get('increasingly_vol', None),
+        decreasingly_vol=signal.get('decreasingly_vol', None),
     )
 
 
@@ -640,6 +661,27 @@ class StockSignalDao:
                     row.ma60_seventh = obj.ma60_seventh
                 if obj.ma60_eighth is not None:
                     row.ma60_eighth = obj.ma60_eighth
+
+                if obj.max_vol is not None:
+                    row.max_vol = obj.max_vol
+                if obj.huge_vol is not None:
+                    row.huge_vol = obj.huge_vol
+                if obj.large_vol is not None:
+                    row.large_vol = obj.large_vol
+                if obj.high_vol is not None:
+                    row.high_vol = obj.high_vol
+                if obj.common_vol is not None:
+                    row.common_vol = obj.common_vol
+                if obj.low_vol is not None:
+                    row.low_vol = obj.low_vol
+                if obj.increase_vol is not None:
+                    row.increase_vol = obj.increase_vol
+                if obj.decrease_vol is not None:
+                    row.decrease_vol = obj.decrease_vol
+                if obj.increasingly_vol is not None:
+                    row.increasingly_vol = obj.increasingly_vol
+                if obj.decreasingly_vol is not None:
+                    row.decreasingly_vol = obj.decreasingly_vol
 
         except Exception as e:
             print('Error:', e)

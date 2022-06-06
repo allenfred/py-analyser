@@ -14,10 +14,11 @@ from models.weekly_candles import WeeklyCandleDao
 from models.trade_calendar import TradeCalendarDao
 from models.stocks import StockDao
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from config.common import TS_TOKEN
 from api.daily_candle import get_cn_candles
 from api.weekly_candle import get_weekly_candles
+from api.daily_basic import get_cn_daily_basic
 from lib.util import used_time_fmt
 
 pro = ts.pro_api(TS_TOKEN)
@@ -27,15 +28,87 @@ calendarDao = TradeCalendarDao()
 stockDao = StockDao()
 
 
+def daily_limit_list():
+    _start = time.time()
+    _today = datetime.now().strftime("%Y%m%d")
+    # 获取单日统计数据
+    df = pro.limit_list(trade_date=_today)
+    print(df)
+
+
+def daily_basic_quota():
+    _start = time.time()
+    _today = datetime.now().strftime("%Y%m%d")
+    df = get_cn_daily_basic(_today)
+    for index, row in df.iterrows():
+        time.sleep(0.2)
+        stockDao.update(row.to_dict())
+        print('更新每日指标完成: ', row.ts_code, '已更新股票', index + 1, '只')
+
+    _end = time.time()
+    print('每日指标 更新总用时', round(_end - _start, 2), 's')
+
+
+def check_daily():
+    _start = time.time()
+    _today = datetime.now().strftime("%Y%m%d")
+
+    # 获取当天是除权除息日的股票
+    df = pro.dividend(ex_date=_today, fields='ts_code,div_proc,stk_div,record_date,ex_date')
+    df = df.loc[~df['ts_code'].str.contains('BJ')]
+    year_ago = (datetime.now() - timedelta(days=600)).strftime("%Y%m%d")
+    print(_today, '当日除权除息股票(除BJ): ', len(df), '只')
+
+    for row in df.itertuples():
+        _t = time.time()
+        time.sleep(0.2)
+        k_df = ts.pro_bar(ts_code=row.ts_code, adj='qfq', start_date=year_ago, end_date=today)
+        print(row.ts_code, '获取K线用时', round(time.time() - _t, 2), 's')
+        k_df = k_df.round(2)
+
+        stockDao.update({'ts_code': row.ts_code, 'ex_date': row.ex_date})
+        cnt = dailyCandleDao.reinsert(k_df)
+        print(row.ts_code, '更新K线完成: ', cnt, ',当前用时', round(time.time() - _start, 2), 's')
+
+    _end = time.time()
+    print('除权除息 更新总用时', round(_end - _start, 2), 's')
+
+
+def check_all():
+    _start = time.time()
+    _today = datetime.now().strftime("%Y%m%d")
+    year_ago = (datetime.now() - timedelta(days=360)).strftime("%Y%m%d")
+
+    check_days = 200
+    while check_days < 360:
+        ex_date = (datetime.now() - timedelta(days=check_days)).strftime("%Y%m%d")
+        # 获取除权除息日的股票
+        df = pro.dividend(ex_date=ex_date, fields='ts_code,div_proc,stk_div,record_date,ex_date')
+        print(ex_date, df['ts_code'].to_numpy())
+
+        for row in df.itertuples():
+            k_df = ts.pro_bar(ts_code=row.ts_code, adj='qfq', start_date=year_ago, end_date=_today)
+            print(row.ts_code, '获取行情完成, 当前用时', round(time.time() - start, 2), 's')
+
+            stockDao.update({'ts_code': row.ts_code, 'ex_date': row.ex_date})
+            dailyCandleDao.bulk_update(k_df)
+            print(row.ts_code, '更新行情完成, 当前用时', round(time.time() - _start, 2), 's')
+
+        check_days += 1
+
+    _end = time.time()
+    print('除权除息 更新总用时', round(_end - _start, 2), 's')
+
+
 def ready_weekly_klines():
-    trade_dte = datetime.now().strftime("%Y%m%d")
+    _today = datetime.now().strftime("%Y%m%d")
     _start_time = time.time()
     is_last_req = False
     offset = 0
 
     while not is_last_req:
         circle_start = time.time()
-        df = get_weekly_candles({"trade_date": trade_dte, "limit": 2000, "offset": offset})
+        df = get_weekly_candles({"trade_date": _today, "limit": 2000, "offset": offset})
         df_len = len(df)
         if len(df) < 2000:
             is_last_req = True
@@ -52,16 +125,16 @@ def ready_weekly_klines():
 
                 weeklyCandleDao.bulk_insert(new_df)
 
-                print('已更新 CN weekly_candles :', len(new_df), ' 条数据，用时 ',
+                print('已更新 CN weekly_candles :', len(new_df), ' 条，用时 ',
                       used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(_start_time, time.time()))
             else:
-                print(trade_dte, '没有周K线')
+                print(_today, '没有周K线')
 
         except Exception as e:
-            print(trade_dte, 'Error:', e)
+            print(_today, 'Error:', e)
             break
 
-    print(today, '更新周K用时', used_time_fmt(_start_time, time.time()))
+    print(_today, '更新周K用时', used_time_fmt(_start_time, time.time()))
 
 
 def ready_daily_klines():
@@ -145,8 +218,13 @@ def ready_daily_klines():
 if __name__ == "__main__":
     today = datetime.now().strftime("%Y-%m-%d")
     start = time.time()
+
     ready_daily_klines()
     ready_weekly_klines()
+    check_daily()
+    daily_basic_quota()
+    daily_limit_list()
+
     end = time.time()
 
-    print(today, '用时', used_time_fmt(start, end))
+    print(today, '总用时', used_time_fmt(start, end))

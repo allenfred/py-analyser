@@ -1,53 +1,67 @@
 import numpy as np
+from .patterns import has_long_patterns, has_short_patterns, \
+    has_bottom_patterns, has_top_patterns, \
+    has_long_break_patterns, has_short_break_patterns
+
+"""
+MA60 葛南维买卖八大法则
+"""
 
 
-# MA60 葛南维买卖八大法则
-
-def is_ma60_first(index, candles, bias, ma, ma_slope, df):
+def first(index, candles, bias, ma, df):
     """
     葛南维第一大法则 (均线扭转)
     1.收盘价位于MA60之上
-    2.MA60 开始拐头 (ma60_slope 连续3日 > 0)
-    3.最近21个交易日中前34个交易日 ma60_slope < 0
-    4.最近3个交易日 slope 呈上升趋势
-    5.乖离率正常 不存在超买
+    3.最近55个交易日中前21个交易日下行
+    4.最近几个交易日上行且出现放量
 
     :param index:
     :param candles:
     :param bias:
     :param ma:
-    :param ma_slope:
     :param df: patterns df
     :return:
     """
 
     candle = candles[index]
     _close = candle[3]
-    ma60_slope = ma_slope[:, 5]
     ma60 = ma[:, 5]
     _ma60 = ma60[index]
     bias60 = bias[:, 4]
     _bias60 = bias60[index]
 
-    # MA60 开始拐头向上
+    def ma60_down_steady():
+        flag = True
+        for i in range(55):
+            # 如果 当前MA60 > 前值
+            if ma60[index - i - 9] > ma60[index - i - 1 - 9]:
+                flag = False
+        return flag
+
     def start_up_ma():
         flag = True
-        for i in range(3):
+        for i in range(7):
             if candles[index - i][3] < ma60[index - i] or \
                     ma60[index - i] < ma60[index - i - 1]:
                 flag = False
         return flag
 
-    if index > 90 and _close > _ma60 and start_up_ma() and \
-            max(ma60_slope[index - 34: index - 2]) <= 0 and \
-            0 < ma60_slope[index - 2] < ma60_slope[index - 1] < ma60_slope[index] and \
-            _bias60 < 8:
-        return True
-    else:
+    def has_vol(i):
+        if df.iloc[i]['max_vol'] > 0 or df.iloc[i]['huge_vol'] > 0 or \
+                df.iloc[i]['large_vol'] > 0 or df.iloc[i]['high_vol'] > 0 or \
+                df.iloc[i]['increasingly_vol'] > 0:
+            return True
         return False
 
+    if index > 90 and _close > _ma60 and ma60_down_steady() and start_up_ma() and \
+            (has_vol(index) or has_vol(index - 1) or has_vol(index - 2)):
+        print(index, candle[5], '1')
+        return 1
 
-def is_ma60_second(index, candles, bias, ma, ma_slope, df):
+    return 0
+
+
+def second(index, candles, bias, ma, df):
     """
     葛南维第二大法则 (均线服从)
     1. 连续13个交易日 收盘价在MA60之上 / MA60上行
@@ -58,7 +72,6 @@ def is_ma60_second(index, candles, bias, ma, ma_slope, df):
     :param candles:
     :param bias:
     :param ma:
-    :param ma_slope:
     :param df: patterns df
     :return:
     """
@@ -66,7 +79,9 @@ def is_ma60_second(index, candles, bias, ma, ma_slope, df):
     candle = candles[index]
     _low = candle[2]
     _close = candle[3]
-    ma60_slope = ma_slope[:, 5]
+    ma5 = ma[:, 0]
+    ma10 = ma[:, 1]
+    ma20 = ma[:, 2]
     ma60 = ma[:, 5]
     _ma60 = ma60[index]
     bias60 = bias[:, 4]
@@ -80,17 +95,28 @@ def is_ma60_second(index, candles, bias, ma, ma_slope, df):
         for i in range(13):
             if candles[index - i][3] < ma60[index - i] or ma60[index - i] < ma60[index - i - 1]:
                 flag = False
+
         return flag
 
-    if index > 90 and steady_on_ma() and \
-            has_support_patterns(index, df) and _low_bias60 < 2:
-        # print(index, candle[5], '2')
-        return True
-    else:
-        return False
+    # MA10/MA20 空头排列
+    def ma_down():
+        flag = True
+        for i in range(5):
+            if ma10[index - i] > ma10[index - i - 1] \
+                    or ma20[index - i] > ma20[index - i - 1] \
+                    or ma10[index - i] > ma20[index - i]:
+                flag = False
+        return flag
+
+    if index > 90 and _low_bias60 < 1 and steady_on_ma() and not ma_down() and \
+            (has_long_break_patterns(index, df) or has_long_patterns(index, df)):
+        print(index, candle[5], '2')
+        return 1
+
+    return 0
 
 
-def is_ma60_third(index, candles, bias, ma, ma_slope, df):
+def third(index, candles, bias, ma, df):
     """
     葛南维第三大法则 (均线服从和黄金交叉)
     1. 连续13个交易日 收盘价在MA60之上 / MA60上行 / ma60_slope > 0
@@ -101,7 +127,6 @@ def is_ma60_third(index, candles, bias, ma, ma_slope, df):
     :param candles:
     :param bias:
     :param ma:
-    :param ma_slope:
     :param df: patterns df
     :return:
     """
@@ -109,7 +134,6 @@ def is_ma60_third(index, candles, bias, ma, ma_slope, df):
     candle = candles[index]
     _low = candle[2]
     _close = candle[3]
-    ma60_slope = ma_slope[:, 5]
     ma60 = ma[:, 5]
     _ma60 = ma60[index]
     bias60 = bias[:, 4]
@@ -120,21 +144,22 @@ def is_ma60_third(index, candles, bias, ma, ma_slope, df):
 
     def ma_rise_steady():
         flag = True
-        for i in range(13):
+        for i in range(21):
             # 如果 当前MA60 < 前值
             if ma60[index - i] < ma60[index - i - 1]:
                 flag = False
         return flag
 
     if index > 90 and _close > _ma60 > _low and _bias60 < 8 and \
-            ma_rise_steady() and candles[index - 1][2] < ma60[index - 1]:
-        # print(index, candle[5], '3')
-        return True
-    else:
-        return False
+            ma_rise_steady() and candles[index - 1][2] < ma60[index - 1] and \
+            (has_long_break_patterns(index, df) or has_long_patterns(index, df)):
+        print(index, candle[5], '3')
+        return 1
+
+    return 0
 
 
-def is_ma60_fourth(index, candles, bias, ma, ma_slope, df):
+def fourth(index, candles, bias, ma, df):
     """
     葛南维第四大法则 (均线修复)
     1. 均线持续下行 - 连续13个交易日 收盘价在MA60之下 / MA60下行
@@ -145,7 +170,6 @@ def is_ma60_fourth(index, candles, bias, ma, ma_slope, df):
     :param candles:
     :param bias:
     :param ma:
-    :param ma_slope:
     :param df: patterns df
     :return:
     """
@@ -153,7 +177,6 @@ def is_ma60_fourth(index, candles, bias, ma, ma_slope, df):
     candle = candles[index]
     _low = candle[2]
     _close = candle[3]
-    ma60_slope = ma_slope[:, 5]
     ma60 = ma[:, 5]
     _ma60 = ma60[index]
     bias60 = bias[:, 5]
@@ -164,14 +187,14 @@ def is_ma60_fourth(index, candles, bias, ma, ma_slope, df):
 
     def steady_under_ma():
         flag = True
-        for i in range(13):
+        for i in range(21):
             if candles[index - i][3] > ma60[index - i]:
                 flag = False
         return flag
 
     def ma_down_steady():
         flag = True
-        for i in range(13):
+        for i in range(21):
             # 如果 当前MA60 > 前值
             if ma60[index - i] > ma60[index - i - 1]:
                 flag = False
@@ -185,16 +208,16 @@ def is_ma60_fourth(index, candles, bias, ma, ma_slope, df):
 
     if index > 90 and _bias60 < -16 and ma_down_steady() and \
             steady_under_ma() and has_bottom_patterns_recently():
-        # print(index, candle[5], '4')
-        return True
-    else:
-        return False
+        print(index, candle[5], '4')
+        return 1
+
+    return 0
 
 
-def is_ma60_fifth(index, candles, bias, ma, ma_slope, df):
+def fifth(index, candles, bias, ma, df):
     """
     葛南维第五大法则 (均线修复)
-    1. 连续13个交易日 MA60上行 / ma60_slope > 1
+    1. 连续13个交易日 MA60上行
     2. 乖离率出现超买 bias60 > 11%
     3. K线出现短期见顶信号 (看跌吞没/看跌锤头线/看跌螺旋桨/看跌孕线/看跌尽头线)
 
@@ -202,7 +225,6 @@ def is_ma60_fifth(index, candles, bias, ma, ma_slope, df):
     :param candles:
     :param bias:
     :param ma:
-    :param ma_slope:
     :param df: patterns df
     :return:
     """
@@ -210,7 +232,6 @@ def is_ma60_fifth(index, candles, bias, ma, ma_slope, df):
     candle = candles[index]
     _low = candle[2]
     _close = candle[3]
-    ma60_slope = ma_slope[:, 5]
     ma60 = ma[:, 5]
     _ma60 = ma60[index]
     bias60 = bias[:, 4]
@@ -221,25 +242,24 @@ def is_ma60_fifth(index, candles, bias, ma, ma_slope, df):
 
     def steady_on_ma():
         flag = True
-        for i in range(13):
+        for i in range(9):
             if candles[index - i][3] < ma60[index - i] or ma60[index - i] < ma60[index - i - 1]:
                 flag = False
         return flag
 
     if index > 90 and steady_on_ma() and _bias60 > 11 and \
-            has_short_patterns(index, df) and \
-            min(ma60_slope[index - 12: index]) > 1:
+            has_top_patterns(index, df):
         print(index, candle[5], '5')
-        return True
-    else:
-        return False
+        return 1
+
+    return 0
 
 
-def is_ma60_sixth(index, candles, bias, ma, ma_slope, df):
+def sixth(index, candles, bias, ma, df):
     """
     葛南维第六大法则 (均线扭转)
     1. 趋势异态 - MA60开始由上行逐渐走平: 连续18个交易日 MA60上行
-    2. 最近3日 MA60开始拐头向下 ma60_slope < 1
+    2. 最近3日 MA60开始拐头向下
     2. bias60 正常
     3. K线出现短期见顶信号 >= 2 (看跌吞没/看跌锤头线/看跌螺旋桨/看跌孕线/看跌尽头线)
 
@@ -247,7 +267,6 @@ def is_ma60_sixth(index, candles, bias, ma, ma_slope, df):
     :param candles:
     :param bias:
     :param ma:
-    :param ma_slope:
     :param df: patterns df
     :return:
     """
@@ -255,7 +274,6 @@ def is_ma60_sixth(index, candles, bias, ma, ma_slope, df):
     candle = candles[index]
     _low = candle[2]
     _close = candle[3]
-    ma60_slope = ma_slope[:, 5]
     ma60 = ma[:, 5]
     _ma60 = ma60[index]
     bias60 = bias[:, 4]
@@ -284,58 +302,63 @@ def is_ma60_sixth(index, candles, bias, ma, ma_slope, df):
             has_short_patterns(index, df) and \
             8 > _bias60 > -7:
         print(index, candle[5], '6')
-        return True
-    else:
-        return False
+        return 1
+
+    return 0
 
 
-def is_ma60_seventh(index, candles, bias, ma, ma_slope, df):
+def seventh(index, candles, bias, ma, df):
     """
     葛南维第七大法则 (均线服从)
-    1. 均线持续下行 - 连续13个交易日: MA60下行 (ma60_slope < 0)
+    1. 均线持续下行 - 连续21个交易日: MA60下行
     2. 反弹时未站上MA60之后 继续下行
 
     :param index:
     :param candles:
     :param bias:
     :param ma:
-    :param ma_slope:
     :param df: patterns df
     :return:
     """
 
     candle = candles[index]
+    _high = candle[1]
     _low = candle[2]
     _close = candle[3]
-    ma60_slope = ma_slope[:, 5]
     ma60 = ma[:, 5]
     _ma60 = ma60[index]
     bias60 = bias[:, 4]
     _bias60 = bias60[index]
 
     if index > 90 and _ma60 > 0:
-        _low_bias60 = (_low - _ma60) * 100 / _ma60
+        _high_bias60 = (_high - _ma60) * 100 / _ma60
 
     def steady_under_ma():
         flag = True
-        for i in range(13):
+        for i in range(21):
             if candles[index - i][3] > ma60[index - i] or ma60[index - i] > ma60[index - i - 1]:
                 flag = False
         return flag
 
-    # if index > 90 and _bias60 > -1 and steady_under_ma() and \
-    #         has_top_patterns(index, df):
-    if index > 90 and _bias60 > -1 and steady_under_ma():
-        print(index, candle[5], '7')
-        return True
-    else:
+    def has_resistance():
+        if _high < _ma60:
+            if has_top_patterns(index, df) and has_top_patterns(index - 1, df):
+                return True
+        elif _high_bias60 > -1 and has_top_patterns(index, df):
+            return True
         return False
 
+    if index > 90 and _bias60 > -1 and has_resistance() and steady_under_ma():
+        print(index, candle[5], '7')
+        return 1
 
-def is_ma60_eighth(index, candles, bias, ma, ma_slope, df):
+    return 0
+
+
+def eighth(index, candles, bias, ma, df):
     """
     葛南维第八大法则 (均线服从和死亡交叉)
-    1. 均线持续下行 - 连续21个交易日 MA60下行 (ma60_slope < 0)
+    1. 均线持续下行 - 连续21个交易日 MA60下行
     2. 反弹短暂站上MA60之后 又继续下行
     3. 出现死亡交叉 (5/10 5/20 10/20 5/60 10/60)
 
@@ -343,7 +366,6 @@ def is_ma60_eighth(index, candles, bias, ma, ma_slope, df):
     :param candles:
     :param bias:
     :param ma:
-    :param ma_slope:
     :param df: patterns df
     :return:
     """
@@ -351,7 +373,6 @@ def is_ma60_eighth(index, candles, bias, ma, ma_slope, df):
     candle = candles[index]
     _low = candle[2]
     _close = candle[3]
-    ma60_slope = ma_slope[:, 5]
     ma60 = ma[:, 5]
     _ma60 = ma60[index]
     bias60 = bias[:, 4]
@@ -375,118 +396,10 @@ def is_ma60_eighth(index, candles, bias, ma, ma_slope, df):
                 flag = False
         return flag
 
-    if index > 90 and -2 < _bias60 < 0 and stand_on_ma_temp() and \
-            ma_down_steady() and has_top_patterns(index, df):
+    if index > 90 and candles[index - 1][3] > ma60[index - 1] and -1 < _bias60 < 0 and \
+            ma_down_steady() and stand_on_ma_temp() and \
+            (has_top_patterns(index, df) or has_short_break_patterns(index, df)):
         print(index, candle[5], '8')
-        return True
-    else:
-        return False
+        return 1
 
-
-def has_support_patterns(index, df):
-    """
-    当前Ticker 存在看涨K线形态
-    看涨吞没
-    下探上涨
-    锤头线
-    墓碑十字线
-    蜻蜓十字线
-    探水竿
-    孕线
-    十字孕线
-    刺透形态
-    梯底
-
-    :param index:
-    :param df:
-    :return:
-    """
-    if df.iloc[index]['swallow_up'] > 0 or df.iloc[index]['down_rise'] > 0 \
-            or df.iloc[index]['CDLHAMMER'] > 0 or df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 \
-            or df.iloc[index]['CDLDRAGONFLYDOJI'] > 0 or df.iloc[index]['CDLTAKURI'] > 0 \
-            or df.iloc[index]['CDLHARAMI'] > 0 or df.iloc[index]['CDLHARAMICROSS'] > 0 \
-            or df.iloc[index]['CDLPIERCING'] > 0 or df.iloc[index]['CDLLADDERBOTTOM'] > 0:
-        return True
-
-    return False
-
-
-def has_bottom_patterns(index, df):
-    """
-    判断当前是否存在底部看涨K线形态
-    看涨吞没
-    刺透心态 (旭日东升 / 曙光初现 / 好友反攻)
-    看涨螺旋桨
-    梯底
-    锤头 (探水竿)
-    倒锤头
-
-    :param index: 当前时间
-    :param df:
-    :return:
-    """
-
-    if df.iloc[index]['swallow_up'] > 0 or df.iloc[index]['sunrise'] > 0 \
-            or df.iloc[index]['down_screw'] > 0 or df.iloc[index]['CDLLADDERBOTTOM'] > 0 \
-            or df.iloc[index]['hammer'] > 0 or df.iloc[index]['pour_hammer'] > 0:
-        return True
-
-    return False
-
-
-def has_top_patterns(index, df):
-    """
-    判断当前是否存在顶部看涨K线形态
-    看跌吞没
-    看跌螺旋桨
-    射击之星
-
-    :param index:
-    :param df:
-    :return:
-    """
-
-    if df.iloc[index]['up_screw'] > 0 or df.iloc[index]['shooting'] > 0 \
-            and df.iloc[index]['hang_neck'] > 0:
-        return True
-
-    return False
-
-
-def has_short_patterns(index, df):
-    """
-    判断当前是否存在看跌K线形态信号个数 > 1
-
-    :param index: 当前时间
-    :param df:
-    :return:
-    """
-    patterns = get_patterns(df)
-    arr = patterns[index]
-    arr2 = np.argwhere(arr < 0)
-
-    return len(arr2) > 1
-
-
-def get_patterns(df):
-    patterns = df[['CDLCLOSINGMARUBOZU', 'CDLDOJI', 'CDLDOJISTAR', 'CDLDRAGONFLYDOJI',
-                   'CDLGRAVESTONEDOJI', 'CDLHAMMER', 'CDLHANGINGMAN',
-                   'CDLINVERTEDHAMMER', 'CDLLONGLEGGEDDOJI', 'CDLLONGLINE',
-                   'CDLMARUBOZU', 'CDLRICKSHAWMAN', 'CDLSHOOTINGSTAR', 'CDLSHORTLINE',
-                   'CDLTAKURI',
-                   'CDLCOUNTERATTACK', 'CDLDARKCLOUDCOVER', 'CDLGAPSIDESIDEWHITE',
-                   'CDLHARAMI', 'CDLHARAMICROSS', 'CDLHOMINGPIGEON', 'CDLINNECK',
-                   'CDLKICKING', 'CDLKICKINGBYLENGTH', 'CDLMATCHINGLOW', 'CDLONNECK',
-                   'CDLSEPARATINGLINES', 'CDLTHRUSTING', 'CDLBELTHOLD', 'CDLENGULFING',
-                   'CDLPIERCING',
-                   'CDL2CROWS', 'CDL3BLACKCROWS', 'CDL3INSIDE', 'CDL3OUTSIDE', 'CDL3STARSINSOUTH',
-                   'CDLABANDONEDBABY', 'CDLUNIQUE3RIVER', 'CDLMORNINGSTAR', 'CDLMORNINGDOJISTAR',
-                   'CDLEVENINGSTAR', 'CDLEVENINGDOJISTAR', 'CDL3WHITESOLDIERS', 'CDLADVANCEBLOCK',
-                   'CDLHIGHWAVE', 'CDLHIKKAKE', 'CDLHIKKAKEMOD', 'CDLIDENTICAL3CROWS',
-                   'CDLSPINNINGTOP', 'CDLSTALLEDPATTERN', 'CDLSTICKSANDWICH', 'CDLTASUKIGAP',
-                   'CDLTRISTAR', 'CDLUPSIDEGAP2CROWS',
-                   'CDL3LINESTRIKE', 'CDLCONCEALBABYSWALL',
-                   'CDLBREAKAWAY', 'CDLLADDERBOTTOM', 'CDLMATHOLD', 'CDLRISEFALL3METHODS', 'CDLXSIDEGAP3METHODS'
-                   ]].to_numpy()
-
-    return patterns
+    return 0
