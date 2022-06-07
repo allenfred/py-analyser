@@ -69,7 +69,7 @@ module.exports = {
       cron_restart: '30 22 * * *', // 每天下午 22:30
       watch: false,
       autorestart: false,
-    }
+    },
     {
       name: 'hk_klines',
       script: 'jobs/candles/daily/hk.py',
