@@ -41,22 +41,22 @@ module.exports = {
       autorestart: false,
     },
     {
-      name: 'cn_limit_list',
-      script: 'jobs/candles/daily/cn_limit_limit.py',
-      interpreter: 'python3',
-      instances: 1,
-      exec_mode: 'fork',
-      cron_restart: '0 18 * * *', // 每个交易日下午 18:00 获取每日涨跌停统计
-      watch: false,
-      autorestart: false,
-    },
-    {
       name: 'cn_analysis',
       script: 'jobs/analysis/daily/cn.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '0 17 * * *', // 每个交易日下午 18:00
+      cron_restart: '0 17 * * *', // 每个交易日下午 17:00
+      watch: false,
+      autorestart: false,
+    },
+    {
+      name: 'cn_limit_list',
+      script: 'jobs/candles/daily/cn_limit_list.py',
+      interpreter: 'python3',
+      instances: 1,
+      exec_mode: 'fork',
+      cron_restart: '0 18 * * *', // 每个交易日下午 18:00 获取每日涨跌停统计
       watch: false,
       autorestart: false,
     },
