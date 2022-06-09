@@ -110,25 +110,25 @@ module.exports = {
       watch: false,
       autorestart: false,
     },
-    {
-      name: 'analysis_HK',
-      script: 'jobs/analysis/daily/hk.py',
-      interpreter: 'python3',
-      instances: 1,
-      exec_mode: 'fork',
-      cron_restart: '30 20 * * *', // 每个交易日下午 20:30
-      watch: false,
-      autorestart: false,
-    },
-    {
-      name: 'analysis_US',
-      script: 'jobs/analysis/daily/us.py',
-      interpreter: 'python3',
-      instances: 1,
-      exec_mode: 'fork',
-      cron_restart: '0 11 * * *', // 每天上午 11:00
-      watch: false,
-      autorestart: false,
-    },
+//    {
+//      name: 'analysis_HK',
+//      script: 'jobs/analysis/daily/hk.py',
+//      interpreter: 'python3',
+//      instances: 1,
+//      exec_mode: 'fork',
+//      cron_restart: '30 20 * * *', // 每个交易日下午 20:30
+//      watch: false,
+//      autorestart: false,
+//    },
+//    {
+//      name: 'analysis_US',
+//      script: 'jobs/analysis/daily/us.py',
+//      interpreter: 'python3',
+//      instances: 1,
+//      exec_mode: 'fork',
+//      cron_restart: '0 11 * * *', // 每天上午 11:00
+//      watch: false,
+//      autorestart: false,
+//    },
   ],
 };

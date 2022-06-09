@@ -29,9 +29,9 @@ def is_ma60_first(index, candles, bias, ma, ma_slope, df):
 
     def ma60_down_before():
         flag = True
-        for i in range(21):
-            # 如果 当前MA60 < 前值
-            if ma60[index - i - 5] < ma60[index - i - 6]:
+        for i in range(34):
+            # 如果 当前MA60 > 前值
+            if ma60[index - i - 5] > ma60[index - i - 6]:
                 flag = False
         return flag
 
