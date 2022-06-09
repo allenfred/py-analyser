@@ -129,7 +129,6 @@ def set_quota(df):
     df['pct_range'] = pct_range
 
     df = df.fillna(0)
-
     df = df.round(decimal_digits(min(low)) + 1)
 
     return df

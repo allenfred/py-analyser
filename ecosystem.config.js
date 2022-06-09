@@ -76,7 +76,7 @@ module.exports = {
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '0 18 * * *', // 每个交易日下午 18:00 获取每日涨跌停统计
+      cron_restart: '0 19 * * *', // 每个交易日下午 19:00 获取每日涨跌停统计
       watch: false,
       autorestart: false,
     },

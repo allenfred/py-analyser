@@ -80,10 +80,7 @@ def get_klines_df(inst_id, granularity, limit=1000):
     return clean_klines(klines)
 
 
-def get_inst_df():
-    return [
-        loads(dumps(doc, default=convert_date))
-        for doc in InstrumentInfos.find(
-            {"exchange": 'biance'}
+def get_inst_df(exchange):
+    return InstrumentInfos.find(
+            {"exchange": exchange}
         ).sort("instrument_id", -1)
-    ]

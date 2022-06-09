@@ -29,6 +29,7 @@ def first(index, candles, bias, ma, df):
     _ma60 = ma60[index]
     bias60 = bias[:, 4]
     _bias60 = bias60[index]
+    print(df['gran'][0])
 
     def ma60_down_steady():
         flag = True
@@ -55,7 +56,7 @@ def first(index, candles, bias, ma, df):
 
     if index > 90 and _close > _ma60 and ma60_down_steady() and start_up_ma() and \
             (has_vol(index) or has_vol(index - 1) or has_vol(index - 2)):
-        print(index, candle[5], '1')
+        # print(index, candle[5], '1')
         return 1
 
     return 0
@@ -110,7 +111,8 @@ def second(index, candles, bias, ma, df):
 
     if index > 90 and _low_bias60 < 1 and steady_on_ma() and not ma_down() and \
             (has_long_break_patterns(index, df) or has_long_patterns(index, df)):
-        print(index, candle[5], '2')
+        if index > 290:
+            print(index, candle[5], '2')
         return 1
 
     return 0
@@ -119,8 +121,8 @@ def second(index, candles, bias, ma, df):
 def third(index, candles, bias, ma, df):
     """
     葛南维第三大法则 (均线服从和黄金交叉)
-    1. 连续13个交易日 收盘价在MA60之上 / MA60上行 / ma60_slope > 0
-    2. 价格回落 跌破MA60之后 收盘又站上MA60 K线出现止跌支撑信号 (看涨吞没/看涨锤头线/看涨螺旋桨/看涨孕线)
+    1. 连续13个交易日 MA60上行 当日收盘价在MA60之上
+    2. 价格回落 短暂跌破MA60之后 收盘又站上MA60 K线出现止跌支撑信号 (看涨吞没/看涨锤头线/看涨螺旋桨/看涨孕线)
     3. 随后出现黄金交叉 (5/10 5/20 10/20 5/60 10/60)
 
     :param index:
@@ -130,7 +132,10 @@ def third(index, candles, bias, ma, df):
     :param df: patterns df
     :return:
     """
+    if index < 90:
+        return 0
 
+    gran = df['gran'][0]
     candle = candles[index]
     _low = candle[2]
     _close = candle[3]
@@ -139,7 +144,7 @@ def third(index, candles, bias, ma, df):
     bias60 = bias[:, 4]
     _bias60 = bias60[index]
 
-    if index > 90 and _ma60 > 0:
+    if _ma60 > 0:
         _low_bias60 = (_low - _ma60) * 100 / _ma60
 
     def ma_rise_steady():
@@ -150,10 +155,20 @@ def third(index, candles, bias, ma, df):
                 flag = False
         return flag
 
-    if index > 90 and _close > _ma60 > _low and _bias60 < 8 and \
-            ma_rise_steady() and candles[index - 1][2] < ma60[index - 1] and \
+    def fall_down_ma_temp():
+        tag1 = 0
+        tag2 = 0
+        for i in range(13):
+            if candles[index - i - 1][3] < ma60[index - i - 1]:
+                tag1 += 1
+            if i < 6 and candles[index - i - 1][3] < ma60[index - i - 1]:
+                tag2 += 1
+        return 4 > tag1 > 0 and 4 > tag2 > 0
+
+    if _close > _ma60 > _low and _bias60 < 8 and \
+            ma_rise_steady() and fall_down_ma_temp() and \
             (has_long_break_patterns(index, df) or has_long_patterns(index, df)):
-        print(index, candle[5], '3')
+        # print(index, candle[5], '3')
         return 1
 
     return 0
@@ -208,7 +223,7 @@ def fourth(index, candles, bias, ma, df):
 
     if index > 90 and _bias60 < -16 and ma_down_steady() and \
             steady_under_ma() and has_bottom_patterns_recently():
-        print(index, candle[5], '4')
+        # print(index, candle[5], '4')
         return 1
 
     return 0
@@ -247,9 +262,9 @@ def fifth(index, candles, bias, ma, df):
                 flag = False
         return flag
 
-    if index > 90 and steady_on_ma() and _bias60 > 11 and \
+    if index > 90 and steady_on_ma() and _bias60 > 16 and \
             has_top_patterns(index, df):
-        print(index, candle[5], '5')
+        # print(index, candle[5], '5')
         return 1
 
     return 0
@@ -301,7 +316,7 @@ def sixth(index, candles, bias, ma, df):
     if index > 90 and _close < _ma60 and ma_rise_before() and ma_down_recently() and \
             has_short_patterns(index, df) and \
             8 > _bias60 > -7:
-        print(index, candle[5], '6')
+        # print(index, candle[5], '6')
         return 1
 
     return 0
@@ -312,6 +327,7 @@ def seventh(index, candles, bias, ma, df):
     葛南维第七大法则 (均线服从)
     1. 均线持续下行 - 连续21个交易日: MA60下行
     2. 反弹时未站上MA60之后 继续下行
+    3. 出现 看跌K线形态 / 死亡交叉 (5/10 5/20 10/20 5/60 10/60)
 
     :param index:
     :param candles:
@@ -320,7 +336,10 @@ def seventh(index, candles, bias, ma, df):
     :param df: patterns df
     :return:
     """
+    if index < 90:
+        return 0
 
+    gran = df['gran'][0]
     candle = candles[index]
     _high = candle[1]
     _low = candle[2]
@@ -348,8 +367,8 @@ def seventh(index, candles, bias, ma, df):
             return True
         return False
 
-    if index > 90 and _bias60 > -1 and has_resistance() and steady_under_ma():
-        print(index, candle[5], '7')
+    if _bias60 > -1 and has_resistance() and steady_under_ma():
+        # print(index, candle[5], '7')
         return 1
 
     return 0
@@ -358,9 +377,11 @@ def seventh(index, candles, bias, ma, df):
 def eighth(index, candles, bias, ma, df):
     """
     葛南维第八大法则 (均线服从和死亡交叉)
-    1. 均线持续下行 - 连续21个交易日 MA60下行
+    1. 均线持续下行 - 连续18个交易日 MA60下行
     2. 反弹短暂站上MA60之后 又继续下行
-    3. 出现死亡交叉 (5/10 5/20 10/20 5/60 10/60)
+       1h 站上MA60周期小于3
+       15min  站上MA60周期小于9
+    3. 出现 看跌K线形态 / 死亡交叉 (5/10 5/20 10/20 5/60 10/60)
 
     :param index:
     :param candles:
@@ -369,7 +390,10 @@ def eighth(index, candles, bias, ma, df):
     :param df: patterns df
     :return:
     """
+    if index < 90:
+        return 0
 
+    gran = df['gran'][0]
     candle = candles[index]
     _low = candle[2]
     _close = candle[3]
@@ -381,25 +405,35 @@ def eighth(index, candles, bias, ma, df):
     if index > 90 and _ma60 > 0:
         _low_bias60 = (_low - _ma60) * 100 / _ma60
 
-    def stand_on_ma_temp():
-        tag = 0
-        for i in range(7):
-            if candles[index - i - 1][3] > ma60[index - i - 1]:
-                tag += 1
-        return tag >= 2
-
     def ma_down_steady():
         flag = True
-        for i in range(21):
+        for i in range(18):
             # 如果 当前MA60 > 前值
             if ma60[index - i] > ma60[index - i - 1]:
                 flag = False
         return flag
 
-    if index > 90 and candles[index - 1][3] > ma60[index - 1] and -1 < _bias60 < 0 and \
-            ma_down_steady() and stand_on_ma_temp() and \
-            (has_top_patterns(index, df) or has_short_break_patterns(index, df)):
-        print(index, candle[5], '8')
+    def stand_on_ma_temp():
+        tag = 0
+        for i in range(13):
+            if candles[index - i - 1][3] > ma60[index - i - 1]:
+                tag += 1
+        if gran == 900:
+            return 7 > tag > 1
+        else:
+            return 4 > tag > 0
+
+    def fall_down_continually():
+        return candles[index - 1][1] > ma60[index - 1] and -1 < _bias60 < 0
+
+    def has_short_signals():
+        return has_top_patterns(index, df) or has_short_break_patterns(index, df)
+
+    if ma_down_steady() and \
+            stand_on_ma_temp() and \
+            fall_down_continually() and \
+            has_short_signals():
+        # print(index, candle[5], '8')
         return 1
 
     return 0

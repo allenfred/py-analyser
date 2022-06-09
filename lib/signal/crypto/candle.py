@@ -757,13 +757,13 @@ def up_screw(i, candles):
     _low = candles[:, 2][i]
     _close = candles[:, 3][i]
 
-    k_len = _high - _low
+    k_len = round(_high - _low, 8)
 
     up_shadow_len = math.fabs(_high - _close if _open < _close else _high - _open)
     bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
 
-    if i > 30 and max(high[i - 12: i + 1]) == _high and \
-            up_shadow_len > k_len / 3 and bottom_shadow_len > k_len / 3:
+    if i > 30 and max(high[i - 15: i + 1]) == max(high[i - 2: i + 1]) and \
+            up_shadow_len >= k_len / 3 and bottom_shadow_len >= k_len / 3:
         return -1
 
     return 0
