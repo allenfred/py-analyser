@@ -7,9 +7,7 @@ def is_ma60_first(index, candles, bias, ma, ma_slope, df):
     """
     葛南维第一大法则 (均线扭转)
     1.收盘价位于MA60之上
-    2.MA60 开始拐头 (ma60_slope 连续3日 > 0)
-    3.最近21个交易日中前34个交易日 ma60_slope < 0
-    4.最近3个交易日 slope 呈上升趋势
+    2.MA20 连续7个交易日上行
     5.乖离率正常 不存在超买
 
     :param index:
@@ -23,25 +21,36 @@ def is_ma60_first(index, candles, bias, ma, ma_slope, df):
 
     candle = candles[index]
     _close = candle[3]
-    ma60_slope = ma_slope[:, 5]
+    ma20 = ma[:, 2]
     ma60 = ma[:, 5]
     _ma60 = ma60[index]
     bias60 = bias[:, 4]
     _bias60 = bias60[index]
 
-    # MA60 开始拐头向上
-    def start_up_ma():
+    def ma60_down_before():
         flag = True
-        for i in range(3):
-            if candles[index - i][3] < ma60[index - i] or \
-                    ma60[index - i] < ma60[index - i - 1]:
+        for i in range(21):
+            # 如果 当前MA60 < 前值
+            if ma60[index - i - 5] < ma60[index - i - 6]:
                 flag = False
         return flag
 
-    if index > 90 and _close > _ma60 and start_up_ma() and \
-            max(ma60_slope[index - 34: index - 2]) <= 0 and \
-            0 < ma60_slope[index - 2] < ma60_slope[index - 1] < ma60_slope[index] and \
-            _bias60 < 8:
+    def start_up_ma60():
+        flag = True
+        for i in range(3):
+            if candles[index - i][3] < ma60[index - i]:
+                flag = False
+        return flag
+
+    def ma20_rise_steady():
+        flag = True
+        for i in range(7):
+            # 如果 当前MA60 < 前值
+            if ma20[index - i] < ma20[index - i - 1]:
+                flag = False
+        return flag
+
+    if index > 90 and ma60_down_before() and start_up_ma60() and ma20_rise_steady() and _bias60 < 8:
         return True
     else:
         return False

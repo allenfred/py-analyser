@@ -141,6 +141,58 @@ def is_ema120_rise(index, ema):
         return False
 
 
+def is_up_hill(index, df):
+    """
+    上山爬坡
+    MA20/MA30/MA60 持续上行
+    价格回落MA20 未有效跌破
+    出现看涨形态
+
+    :param index:
+    :param df:
+    :return:
+    """
+
+    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+    close = df['close'].to_numpy()
+    ma5 = ma[:, 0]
+    ma10 = ma[:, 1]
+    ma20 = ma[:, 2]
+    ma30 = ma[:, 3]
+    ma60 = ma[:, 5]
+
+    def ma60_rise_steady():
+        flag = True
+        for i in range(21):
+            # 如果当前 MA <= 前值
+            if ma60[index - i] < ma60[index - i - 1]:
+                flag = False
+        return flag
+
+    def ma20_rise_steady():
+        flag = True
+        for i in range(13):
+            # 如果当前 MA <= 前值
+            if ma20[index - i] < ma20[index - i - 1] or ma30[index - i] < ma30[index - i - 1]:
+                flag = False
+        return flag
+
+    def steady_on_ma20():
+        tag = 0
+        for i in range(13):
+            # 如果当前 MA <= 前值
+            if close[index - i] < ma20[index - i]:
+                tag += 1
+        return tag < 3
+
+    if index > 90 and ma60_rise_steady() and ma20_rise_steady() and steady_on_ma20():
+        if index > 245:
+            print(index)
+        return True
+
+    return True
+
+
 def is_up_ma_arrange(index, ma):
     # MA多头排列（5/10/20/60）
     ma5 = ma[:, 0]
@@ -859,18 +911,6 @@ def is_ma120_support(index, df):
         return False
 
 
-def is_up_hill(index, df):
-    """
-    上山爬坡
-    MA20/MA30 持续上行
-    价格回落MA 未有效跌破
-    出现看涨形态
-
-    :param index:
-    :param df:
-    :return:
-    """
-    return False
 
 
 def has_support_patterns(index, df):

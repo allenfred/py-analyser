@@ -48,7 +48,7 @@ def vol_analyze(df):
         # 巨量
         if index > 10 and \
                 (vol[index] >= vol20[index] * 3 or vol[index] >= vol30[index] * 3) and \
-                (vol[index] < vol20[index] * 5 or vol[index] < vol30[index] * 5):
+                (vol[index] < vol20[index] * 5 and vol[index] < vol30[index] * 5):
             huge_vol.insert(index, 1)
         else:
             huge_vol.insert(index, 0)
@@ -56,14 +56,14 @@ def vol_analyze(df):
         # 大量
         if index > 10 and \
                 (vol[index] >= vol20[index] * 2 or vol[index] >= vol30[index] * 2) and \
-                (vol[index] < vol20[index] * 3 or vol[index] < vol30[index] * 3):
+                (vol[index] < vol20[index] * 3 and vol[index] < vol30[index] * 3):
             large_vol.insert(index, 1)
         else:
             large_vol.insert(index, 0)
 
-        # 异常量
+        # 高量
         if index > 30 and max(high_vol[index - 20: index]) == 0 and \
-                (vol[index] > vol20[index] * 3 and vol[index] > vol30[index] * 3) and \
+                (vol[index] > vol20[index] * 2 and vol[index] > vol30[index] * 2) and \
                 (vol[index] > max(vol[index - 29: index])):
             high_vol.insert(index, 1)
         else:
