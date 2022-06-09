@@ -186,11 +186,9 @@ def is_up_hill(index, df):
         return tag < 3
 
     if index > 90 and ma60_rise_steady() and ma20_rise_steady() and steady_on_ma20():
-        if index > 245:
-            print(index)
         return True
 
-    return True
+    return False
 
 
 def is_up_ma_arrange(index, ma):
