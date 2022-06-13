@@ -1,6 +1,15 @@
 module.exports = {
   apps: [
    {
+      name: 'py-subscriber',
+      script: 'src/server.py',
+      interpreter: 'python3',
+      instances: 1,
+      exec_mode: 'fork',
+      watch: true,
+      autorestart: true,
+    },
+   {
       name: 'cn_limit',
       script: 'jobs/candles/daily/cn_limit.py',
       interpreter: 'python3',

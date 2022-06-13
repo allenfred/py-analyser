@@ -8,3 +8,4 @@ mysql-connector-python==8.0.29
 pymongo==3.9.0
 python-dateutil==2.8.0
 pytz==2019.2
+binance-futures-connector==3.1.1
