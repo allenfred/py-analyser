@@ -40,15 +40,19 @@ def convert_date(date):
 #     ]
 
 def get_usdt_swap_klines(inst_id, granularity, limit=500):
-    return [
-        loads(dumps(doc, default=convert_date))
-        for doc in UsdtSwapKlines.find(
-            {"granularity": int(granularity), "instrument_id": inst_id},
-            {"_id": 0, "_v": 0},
-        )
-            .sort("timestamp", -1)
-            .limit(limit)
-    ]
+    # return [
+    #     loads(dumps(doc, default=convert_date))
+    #     for doc in UsdtSwapKlines.find(
+    #         {"granularity": int(granularity), "instrument_id": inst_id},
+    #         {"_id": 0, "_v": 0},
+    #     )
+    #         .sort("timestamp", -1)
+    #         .limit(limit)
+    # ]
+    return UsdtSwapKlines.find(
+        {"granularity": int(granularity), "instrument_id": inst_id},
+        {"_id": 0, "_v": 0},
+    ).sort("timestamp", -1).limit(limit)
 
 
 def clean_klines(klines):
@@ -57,7 +61,8 @@ def clean_klines(klines):
     klines 默认为根据时间升序排序
     """
     df = pd.DataFrame(
-        columns=["trade_date", "open", "high", "low", "close", "vol", "pct_chg"],
+        columns=["trade_date", "open", "high", "low", "close", "vol",
+                 "pct_chg", "exchange", "time", "underlying_index"],
         # index=range(len(klines)),
     )
 
@@ -69,7 +74,10 @@ def clean_klines(klines):
             "low": item["low"],
             "close": item["close"],
             "vol": float(item["volume"]),
-            "pct_chg": ((item["close"] - item["open"]) * 100) / item["open"]
+            "pct_chg": ((item["close"] - item["open"]) * 100) / item["open"],
+            "exchange": item["exchange"],
+            "time": item["timestamp"],
+            "underlying_index": item["underlying_index"]
         }
 
     return df
@@ -80,7 +88,10 @@ def get_klines_df(inst_id, granularity, limit=1000):
     return clean_klines(klines)
 
 
-def get_inst_df(exchange):
-    return InstrumentInfos.find(
+def get_inst_df(exchange=None):
+    if exchange:
+        return InstrumentInfos.find(
             {"exchange": exchange}
         ).sort("instrument_id", -1)
+    else:
+        return InstrumentInfos.find({}).sort("instrument_id", -1)

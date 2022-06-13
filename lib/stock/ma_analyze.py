@@ -11,63 +11,50 @@ def ma_analyze(org_df):
                        'ma60_slope', 'ma120_slope']].to_numpy()
     bias = org_df[['bias6', 'bias12', 'bias24', 'bias55', 'bias60', 'bias72', 'bias120']].to_numpy()
 
-    ma60_first = []
-    ma60_second = []
-    ma60_third = []
-    ma60_fourth = []
-    ma60_fifth = []
-    ma60_sixth = []
-    ma60_seventh = []
-    ma60_eighth = []
+    ma60_first = [0 for _ in range(len(org_df))]
+    ma60_second = [0 for _ in range(len(org_df))]
+    ma60_third = [0 for _ in range(len(org_df))]
+    ma60_fourth = [0 for _ in range(len(org_df))]
+    ma60_fifth = [0 for _ in range(len(org_df))]
+    ma60_sixth = [0 for _ in range(len(org_df))]
+    ma60_seventh = [0 for _ in range(len(org_df))]
+    ma60_eighth = [0 for _ in range(len(org_df))]
+
+    _start_at = 200
 
     for index in range(len(candle)):
-        # MA60 葛南维第一大法则
-        if is_ma60_first(index, candle, bias, ma, ma_slope, org_df):
-            ma60_first.insert(index, 1)
-        else:
-            ma60_first.insert(index, 0)
+        if index > _start_at:
+            # MA60 葛南维第一大法则
+            if is_ma60_first(index, candle, bias, ma, ma_slope, org_df):
+                ma60_first[index] = 1
 
-        # MA60 葛南维第二大法则
-        if is_ma60_second(index, candle, bias, ma, ma_slope, org_df):
-            ma60_second.insert(index, 1)
-        else:
-            ma60_second.insert(index, 0)
+            # MA60 葛南维第二大法则
+            if is_ma60_second(index, candle, bias, ma, ma_slope, org_df):
+                ma60_second[index] = 1
 
-        # MA60 葛南维第三大法则
-        if is_ma60_third(index, candle, bias, ma, ma_slope, org_df):
-            ma60_third.insert(index, 1)
-        else:
-            ma60_third.insert(index, 0)
+            # MA60 葛南维第三大法则
+            if is_ma60_third(index, candle, bias, ma, ma_slope, org_df):
+                ma60_third[index] = 1
 
-        # MA60 葛南维第四大法则
-        if is_ma60_fourth(index, candle, bias, ma, ma_slope, org_df):
-            ma60_fourth.insert(index, 1)
-        else:
-            ma60_fourth.insert(index, 0)
+            # MA60 葛南维第四大法则
+            if is_ma60_fourth(index, candle, bias, ma, ma_slope, org_df):
+                ma60_fourth[index] = 1
 
-        # MA60 葛南维第5大法则
-        if is_ma60_fifth(index, candle, bias, ma, ma_slope, org_df):
-            ma60_fifth.insert(index, 1)
-        else:
-            ma60_fifth.insert(index, 0)
+            # MA60 葛南维第5大法则
+            if is_ma60_fifth(index, candle, bias, ma, ma_slope, org_df):
+                ma60_fifth[index] = 1
 
-        # MA60 葛南维第6大法则
-        if is_ma60_sixth(index, candle, bias, ma, ma_slope, org_df):
-            ma60_sixth.insert(index, 1)
-        else:
-            ma60_sixth.insert(index, 0)
+            # MA60 葛南维第6大法则
+            if is_ma60_sixth(index, candle, bias, ma, ma_slope, org_df):
+                ma60_sixth[index] = 1
 
-        # MA60 葛南维第7大法则
-        if is_ma60_seventh(index, candle, bias, ma, ma_slope, org_df):
-            ma60_seventh.insert(index, 1)
-        else:
-            ma60_seventh.insert(index, 0)
+            # MA60 葛南维第7大法则
+            if is_ma60_seventh(index, candle, bias, ma, ma_slope, org_df):
+                ma60_seventh[index] = 1
 
-        # MA60 葛南维第8大法则
-        if is_ma60_eighth(index, candle, bias, ma, ma_slope, org_df):
-            ma60_eighth.insert(index, 1)
-        else:
-            ma60_eighth.insert(index, 0)
+            # MA60 葛南维第8大法则
+            if is_ma60_eighth(index, candle, bias, ma, ma_slope, org_df):
+                ma60_eighth[index] = 1
 
     org_df['ma60_first'] = ma60_first
     org_df['ma60_second'] = ma60_second

@@ -107,6 +107,9 @@ def long_analyze(org_df):
 
     stand_up_ma60 = []
     stand_up_ma120 = []
+    # stand_up_ma120 = [0 for _ in range(len(org_df))]
+
+    _start_at = 200
 
     for index in range(len(candle)):
         # set_yearly_price_position
@@ -125,45 +128,72 @@ def long_analyze(org_df):
         yearly_price_position70.insert(index, 1 if 70 >= yearly_price_position[index] else 0)
 
         # MA上行
-        ma20_up.insert(index, 1 if is_ma20_rise(index, ma) else 0)
-        ema20_up.insert(index, 1 if is_ma20_rise(index, ema) else 0)
-        ma30_up.insert(index, 1 if is_ma30_rise(index, ma) else 0)
-        ema30_up.insert(index, 1 if is_ma30_rise(index, ema) else 0)
-        ma60_up.insert(index, 1 if is_ma60_rise(index, ma) else 0)
-        ema60_up.insert(index, 1 if is_ma60_rise(index, ema) else 0)
-        ma120_up.insert(index, 1 if is_ma120_rise(index, ma) else 0)
-        ema120_up.insert(index, 1 if is_ma120_rise(index, ema) else 0)
+        if index > _start_at:
+            ma20_up.insert(index, 1 if is_ma20_rise(index, ma) else 0)
+            ema20_up.insert(index, 1 if is_ma20_rise(index, ema) else 0)
+            ma30_up.insert(index, 1 if is_ma30_rise(index, ma) else 0)
+            ema30_up.insert(index, 1 if is_ma30_rise(index, ema) else 0)
+            ma60_up.insert(index, 1 if is_ma60_rise(index, ma) else 0)
+            ema60_up.insert(index, 1 if is_ma60_rise(index, ema) else 0)
+            ma120_up.insert(index, 1 if is_ma120_rise(index, ma) else 0)
+            ema120_up.insert(index, 1 if is_ma120_rise(index, ema) else 0)
+        else:
+            ma20_up.insert(index, 0)
+            ema20_up.insert(index, 0)
+            ma30_up.insert(index, 0)
+            ema30_up.insert(index, 0)
+            ma60_up.insert(index, 0)
+            ema60_up.insert(index, 0)
+            ma120_up.insert(index, 0)
+            ema120_up.insert(index, 0)
 
-        # 上山爬坡
-        up_hill.insert(index, 1 if is_up_hill(index, org_df) else 0)
-        # MA多头排列（5/10/20/60）
-        up_ma_arrange.insert(index, 1 if is_up_ma_arrange(index, ma) else 0)
-        # EMA多头排列（5/10/20/60）
-        up_ema_arrange.insert(index, 1 if is_up_ma_arrange(index, ema) else 0)
-        # MA短期组合多头排列（5/10/20）
-        up_short_ma_arrange1.insert(index, 1 if is_up_short_ma_arrange(index, ma5, ma10, ma20) else 0)
-        # MA短期组合多头排列（5/10/30）
-        up_short_ma_arrange2.insert(index, 1 if is_up_short_ma_arrange(index, ma5, ma10, ma30) else 0)
-        # EMA短期组合多头排列（5/10/20）
-        up_short_ema_arrange1.insert(index, 1 if is_up_short_ma_arrange(index, ema5, ema10, ema20) else 0)
-        # EMA短期组合多头排列（5/10/30）
-        up_short_ema_arrange2.insert(index, 1 if is_up_short_ma_arrange(index, ema5, ema10, ema30) else 0)
-        # MA中期组合多头排列（10/20/60）
-        up_middle_ma_arrange1.insert(index, 1 if is_up_middle_ma_arrange(index, ma10, ma20, ma60) else 0)
-        # MA中期组合多头排列（10/20/55）
-        up_middle_ma_arrange2.insert(index, 1 if is_up_middle_ma_arrange(index, ma10, ma20, ma55) else 0)
-        # EMA中期组合多头排列（10/20/60）
-        up_middle_ema_arrange1.insert(index, 1 if is_up_middle_ma_arrange(index, ema10, ema20, ema60) else 0)
-        # EMA中期组合多头排列（10/20/55）
-        up_middle_ema_arrange2.insert(index, 1 if is_up_middle_ma_arrange(index, ema10, ema20, ema55) else 0)
-        # MA长期组合多头排列（20/55/120）
-        up_long_ma_arrange1.insert(index, 1 if is_up_long_ma_arrange(index, ma20, ma55, ma120) else 0)
-        # MA长期组合多头排列（30/60/120）
-        up_long_ma_arrange2.insert(index, 1 if is_up_long_ma_arrange(index, ma30, ma60, ma120) else 0)
-        # EMA长期组合多头排列（20/55/120）
-        up_long_ema_arrange1.insert(index, 1 if is_up_long_ma_arrange(index, ema20, ema55, ema120) else 0)
-        # EMA长期组合多头排列（30/60/120）
-        up_long_ema_arrange2.insert(index, 1 if is_up_long_ma_arrange(index, ema30, ema60, ema120) else 0)
+        if index > _start_at:
+            # 上山爬坡
+            up_hill.insert(index, 1 if is_up_hill(index, org_df) else 0)
+            # MA多头排列（5/10/20/60）
+            up_ma_arrange.insert(index, 1 if is_up_ma_arrange(index, ma) else 0)
+            # EMA多头排列（5/10/20/60）
+            up_ema_arrange.insert(index, 1 if is_up_ma_arrange(index, ema) else 0)
+            # MA短期组合多头排列（5/10/20）
+            up_short_ma_arrange1.insert(index, 1 if is_up_short_ma_arrange(index, ma5, ma10, ma20) else 0)
+            # MA短期组合多头排列（5/10/30）
+            up_short_ma_arrange2.insert(index, 1 if is_up_short_ma_arrange(index, ma5, ma10, ma30) else 0)
+            # EMA短期组合多头排列（5/10/20）
+            up_short_ema_arrange1.insert(index, 1 if is_up_short_ma_arrange(index, ema5, ema10, ema20) else 0)
+            # EMA短期组合多头排列（5/10/30）
+            up_short_ema_arrange2.insert(index, 1 if is_up_short_ma_arrange(index, ema5, ema10, ema30) else 0)
+            # MA中期组合多头排列（10/20/60）
+            up_middle_ma_arrange1.insert(index, 1 if is_up_middle_ma_arrange(index, ma10, ma20, ma60) else 0)
+            # MA中期组合多头排列（10/20/55）
+            up_middle_ma_arrange2.insert(index, 1 if is_up_middle_ma_arrange(index, ma10, ma20, ma55) else 0)
+            # EMA中期组合多头排列（10/20/60）
+            up_middle_ema_arrange1.insert(index, 1 if is_up_middle_ma_arrange(index, ema10, ema20, ema60) else 0)
+            # EMA中期组合多头排列（10/20/55）
+            up_middle_ema_arrange2.insert(index, 1 if is_up_middle_ma_arrange(index, ema10, ema20, ema55) else 0)
+            # MA长期组合多头排列（20/55/120）
+            up_long_ma_arrange1.insert(index, 1 if is_up_long_ma_arrange(index, ma20, ma55, ma120) else 0)
+            # MA长期组合多头排列（30/60/120）
+            up_long_ma_arrange2.insert(index, 1 if is_up_long_ma_arrange(index, ma30, ma60, ma120) else 0)
+            # EMA长期组合多头排列（20/55/120）
+            up_long_ema_arrange1.insert(index, 1 if is_up_long_ma_arrange(index, ema20, ema55, ema120) else 0)
+            # EMA长期组合多头排列（30/60/120）
+            up_long_ema_arrange2.insert(index, 1 if is_up_long_ma_arrange(index, ema30, ema60, ema120) else 0)
+        else:
+            up_hill.insert(index, 0)
+            up_ma_arrange.insert(index, 0)
+            up_ema_arrange.insert(index, 0)
+            up_short_ma_arrange1.insert(index, 0)
+            up_short_ma_arrange2.insert(index, 0)
+            up_short_ema_arrange1.insert(index, 0)
+            up_short_ema_arrange2.insert(index, 0)
+            up_middle_ma_arrange1.insert(index, 0)
+            up_middle_ma_arrange2.insert(index, 0)
+            up_middle_ema_arrange1.insert(index, 0)
+            up_middle_ema_arrange2.insert(index, 0)
+            up_long_ma_arrange1.insert(index, 0)
+            up_long_ma_arrange2.insert(index, 0)
+            up_long_ema_arrange1.insert(index, 0)
+            up_long_ema_arrange2.insert(index, 0)
 
         # MA黄金交叉（5/10）
         ma_gold_cross1.insert(index, 1 if is_gold_cross(index, ma5, ma10) else 0)

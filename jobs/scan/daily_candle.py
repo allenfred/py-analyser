@@ -82,7 +82,6 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
             df = set_quota(df)
             df_len = len(df)
 
-            _analyze_start = time.time()
             df = analyze(df)
 
             small_df = df.iloc[df_len - 5: df_len]

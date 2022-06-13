@@ -17,6 +17,7 @@ def has_long_patterns(index, df):
     下探上涨
     下跌螺旋桨
     锤头线
+    T字线
     刺透形态
     梯底
 
@@ -28,6 +29,7 @@ def has_long_patterns(index, df):
             df.iloc[index]['down_rise'] > 0 or \
             df.iloc[index]['down_screw'] > 0 or \
             df.iloc[index]['hammer'] > 0 or \
+            df.iloc[index]['t_line'] > 0 or \
             df.iloc[index]['CDLPIERCING'] > 0 or \
             df.iloc[index]['CDLLADDERBOTTOM'] > 0:
         return True
@@ -82,6 +84,7 @@ def has_bottom_patterns(index, df):
             df.iloc[index]['down_screw'] > 0 or \
             df.iloc[index]['CDLLADDERBOTTOM'] > 0 or \
             df.iloc[index]['hammer'] > 0 or \
+            df.iloc[index]['t_line'] > 0 or \
             df.iloc[index]['CDLMORNINGSTAR'] > 0 or \
             df.iloc[index]['CDLMORNINGDOJISTAR'] > 0:
         return True

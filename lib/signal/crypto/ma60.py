@@ -29,7 +29,6 @@ def first(index, candles, bias, ma, df):
     _ma60 = ma60[index]
     bias60 = bias[:, 4]
     _bias60 = bias60[index]
-    print(df['gran'][0])
 
     def ma60_down_steady():
         flag = True
@@ -349,7 +348,7 @@ def seventh(index, candles, bias, ma, df):
     bias60 = bias[:, 4]
     _bias60 = bias60[index]
 
-    if index > 90 and _ma60 > 0:
+    if _ma60 > 0:
         _high_bias60 = (_high - _ma60) * 100 / _ma60
 
     def steady_under_ma():
@@ -419,7 +418,8 @@ def eighth(index, candles, bias, ma, df):
             if candles[index - i - 1][3] > ma60[index - i - 1]:
                 tag += 1
         if gran == 900:
-            return 7 > tag > 1
+
+            return 7 > tag > 0
         else:
             return 4 > tag > 0
 

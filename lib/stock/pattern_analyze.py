@@ -1,10 +1,6 @@
 # -- coding: utf-8 -
 import talib as lib
-from lib.signal.stock.candle import is_hammer, is_pour_hammer, is_short_end, is_swallow_up, \
-    is_sunrise, is_first_light, is_attack_short, is_flat_base, is_rise_line, is_down_screw, \
-    is_long_end, is_swallow_down, is_hang_neck, is_shooting, is_drop_line, is_up_screw, \
-    is_down_rise, is_upward_jump, is_downward_jump, is_rise_limit, is_drop_limit, \
-    is_up_cross3ma, is_up_cross4ma, is_drop_cross3ma, is_drop_cross4ma
+import lib.signal.stock.candle as patterns
 
 
 def pattern_analyze(df):
@@ -44,55 +40,55 @@ def pattern_analyze(df):
 
     for index in range(len(candle)):
         # 锤子线
-        hammer.insert(index, 1 if is_hammer(index, candle) else 0)
+        hammer.insert(index, patterns.hammer(index, candle))
         # 倒锤子线
-        pour_hammer.insert(index, 1 if is_pour_hammer(index, candle) else 0)
+        pour_hammer.insert(index, patterns.pour_hammer(index, candle))
         # 看涨尽头线
-        short_end.insert(index, 1 if is_short_end(index, candle) else 0)
+        short_end.insert(index, patterns.short_end(index, candle))
         # 下探上涨
-        down_rise.insert(index, 1 if is_down_rise(index, candle) else 0)
+        down_rise.insert(index, patterns.down_rise(index, candle))
         # 看涨吞没
-        swallow_up.insert(index, 1 if is_swallow_up(index, candle) else 0)
+        swallow_up.insert(index, patterns.swallow_up(index, candle))
         # 好友反攻
-        attack_short.insert(index, 1 if is_attack_short(index, candle) else 0)
+        attack_short.insert(index, patterns.attack_short(index, candle))
         # 曙光初现
-        first_light.insert(index, 1 if is_first_light(index, candle) else 0)
+        first_light.insert(index, patterns.first_light(index, candle))
         # 旭日东升
-        sunrise.insert(index, 1 if is_sunrise(index, candle) else 0)
+        sunrise.insert(index, patterns.sunrise(index, candle))
         # 平底
-        flat_base.insert(index, 1 if is_flat_base(index, candle) else 0)
+        flat_base.insert(index, patterns.flat_base(index, candle))
         # 涨停一字板
-        rise_line.insert(index, 1 if is_rise_line(index, candle) else 0)
+        rise_line.insert(index, patterns.rise_line(index, candle))
         # 下跌螺旋桨
-        down_screw.insert(index, 1 if is_down_screw(index, candle) else 0)
+        down_screw.insert(index, patterns.down_screw(index, candle))
         # 看跌尽头线
-        long_end.insert(index, 1 if is_long_end(index, candle) else 0)
+        long_end.insert(index, patterns.long_end(index, candle))
         # 看跌吞没
-        swallow_down.insert(index, 1 if is_swallow_down(index, candle) else 0)
+        swallow_down.insert(index, patterns.swallow_down(index, candle))
         # 吊颈线
-        hang_neck.insert(index, 1 if is_hang_neck(index, candle) else 0)
+        hang_neck.insert(index, patterns.hang_neck(index, candle))
         # 射击之星
-        shooting.insert(index, 1 if is_shooting(index, candle) else 0)
+        shooting.insert(index, patterns.shooting(index, candle))
         # 跌停一字板
-        drop_line.insert(index, 1 if is_drop_line(index, candle) else 0)
+        drop_line.insert(index, patterns.drop_line(index, candle))
         # 看跌螺旋桨
-        up_screw.insert(index, 1 if is_up_screw(index, candle) else 0)
+        up_screw.insert(index, patterns.up_screw(index, candle))
         # 向上跳空
-        upward_jump.insert(index, 1 if is_upward_jump(index, candle) else 0)
+        upward_jump.insert(index, patterns.upward_jump(index, candle))
         # 向下跳空
-        downward_jump.insert(index, 1 if is_downward_jump(index, candle) else 0)
+        downward_jump.insert(index, patterns.downward_jump(index, candle))
         # 涨停板
-        rise_limit.insert(index, 1 if is_rise_limit(index, candle) else 0)
+        rise_limit.insert(index, patterns.rise_limit(index, candle))
         # 跌停板
-        drop_limit.insert(index, 1 if is_drop_limit(index, candle) else 0)
+        drop_limit.insert(index, patterns.drop_limit(index, candle))
         # 一阳穿三线
-        up_cross3ma.insert(index, 1 if is_up_cross3ma(index, candle, df) else 0)
+        up_cross3ma.insert(index, patterns.up_cross3ma(index, candle, df))
         # 一阳穿四线
-        up_cross4ma.insert(index, 1 if is_up_cross4ma(index, candle, df) else 0)
+        up_cross4ma.insert(index, patterns.up_cross4ma(index, candle, df))
         # 一阴穿三线
-        drop_cross3ma.insert(index, 1 if is_drop_cross3ma(index, candle, df) else 0)
+        drop_cross3ma.insert(index, patterns.drop_cross3ma(index, candle, df))
         # 一阴穿四线
-        drop_cross4ma.insert(index, 1 if is_drop_cross4ma(index, candle, df) else 0)
+        drop_cross4ma.insert(index, patterns.drop_cross4ma(index, candle, df))
 
     # for index in range(len(candle)):
     #     # 锤子线

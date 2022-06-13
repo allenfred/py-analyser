@@ -37,16 +37,17 @@ def vol_analyze(df):
     heap_vol = []
     increasingly_vol = []
     decreasingly_vol = []
+    _start_at = 200
 
     for index in range(len(candle)):
         # 天量
-        if index > 10 and (vol[index] > vol20[index] * 5 or vol[index] > vol30[index] * 5):
+        if index > _start_at and (vol[index] > vol20[index] * 5 or vol[index] > vol30[index] * 5):
             max_vol.insert(index, 1)
         else:
             max_vol.insert(index, 0)
 
         # 巨量
-        if index > 10 and \
+        if index > _start_at and \
                 (vol[index] >= vol20[index] * 3 or vol[index] >= vol30[index] * 3) and \
                 (vol[index] < vol20[index] * 5 or vol[index] < vol30[index] * 5):
             huge_vol.insert(index, 1)
@@ -54,7 +55,7 @@ def vol_analyze(df):
             huge_vol.insert(index, 0)
 
         # 大量
-        if index > 10 and \
+        if index > _start_at and \
                 (vol[index] >= vol20[index] * 2 or vol[index] >= vol30[index] * 2) and \
                 (vol[index] < vol20[index] * 3 or vol[index] < vol30[index] * 3):
             large_vol.insert(index, 1)
@@ -70,7 +71,7 @@ def vol_analyze(df):
             high_vol.insert(index, 0)
 
         # 常量
-        if index > 10 and \
+        if index > _start_at and \
                 (vol[index] > vol10[index] or vol[index] > vol20[index] or vol[index] > vol30[index]) and \
                 (vol[index] < vol20[index] * 2 or vol[index] < vol30[index] * 2):
             common_vol.insert(index, 1)
@@ -78,14 +79,14 @@ def vol_analyze(df):
             common_vol.insert(index, 0)
 
         # 地量
-        if index > 10 and \
+        if index > _start_at and \
                 (vol[index] < vol10[index] and vol[index] < vol20[index] and vol[index] < vol30[index]):
             low_vol.insert(index, 1)
         else:
             low_vol.insert(index, 0)
 
         # 放量
-        if index > 10 and \
+        if index > _start_at and \
                 (vol[index] > vol10[index] and vol[index] > vol20[index] and vol[index] > vol30[index]) and \
                 (vol[index] > vol[index - 1] * 1.5):
             increase_vol.insert(index, 1)
@@ -93,20 +94,20 @@ def vol_analyze(df):
             increase_vol.insert(index, 0)
 
         # 缩量
-        if index > 10 and (vol[index] < vol[index - 1] * 0.6):
+        if index > _start_at and (vol[index] < vol[index - 1] * 0.6):
             decrease_vol.insert(index, 1)
         else:
             decrease_vol.insert(index, 0)
 
         # 持续放量
-        if index > 30 and vol[index] > vol[index - 1] * 1.5 and \
+        if index > _start_at and vol[index] > vol[index - 1] * 1.5 and \
                 vol[index - 1] > vol[index - 2] * 1.5:
             increasingly_vol.insert(index, 1)
         else:
             increasingly_vol.insert(index, 0)
 
         # 持续缩量
-        if index > 30 and vol[index] * 1.5 < vol[index - 1] and \
+        if index > _start_at and vol[index] * 1.5 < vol[index - 1] and \
                 vol[index - 1] * 1.5 < vol[index - 2]:
             decreasingly_vol.insert(index, 1)
         else:

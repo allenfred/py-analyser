@@ -26,6 +26,7 @@ def pattern_analyze(df):
     candle = df[['open', 'high', 'low', 'close', 'pct_chg', 'pct_range', 'trade_date']].to_numpy()
 
     hammer = []
+    t_line = []
     pour_hammer = []
     short_end = []
     swallow_up = []
@@ -57,6 +58,8 @@ def pattern_analyze(df):
     for index in range(len(candle)):
         # 锤子线
         hammer.insert(index, patterns.hammer(index, candle))
+        # T字线
+        t_line.insert(index, patterns.t_line(index, candle))
         # 倒锤子线
         pour_hammer.insert(index, patterns.pour_hammer(index, candle))
         # 看涨尽头线
@@ -109,6 +112,7 @@ def pattern_analyze(df):
         long_line.insert(index, patterns.long_line(index, candle))
 
     df['hammer'] = hammer
+    df['t_line'] = t_line
     df['pour_hammer'] = pour_hammer
     df['short_end'] = short_end
     df['swallow_up'] = swallow_up

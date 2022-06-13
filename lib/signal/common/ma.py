@@ -1,6 +1,6 @@
 import numpy as np
 import math as math
-from lib.signal.stock.candle import is_upward_jump, is_rise_limit
+import lib.signal.stock.candle as patterns
 
 
 # MA 信号
@@ -672,7 +672,7 @@ def is_ma_over_gate(index, df):
                 flag = False
         return flag
 
-    if index > 20 and is_general_ma_glue(index, df) and is_upward_jump(index, candle) and \
+    if index > 20 and is_general_ma_glue(index, df) and patterns.upward_jump(index, candle) and \
             is_stand_up_all_ma(index, df) and (ma60_rise_steady() or ma30_rise_steady()):
         # print(df['trade_date'][index], 'is_ma_over_gate')
         return True
@@ -695,8 +695,8 @@ def is_ma_up_ground(index, df):
     _count = 5
     candle = df[['open', 'high', 'low', 'close', 'pct_chg', 'trade_date']].to_numpy()
 
-    if (not is_upward_jump(index - 1, candle)) and is_upward_jump(index, candle) and \
-            is_stand_up_all_ma(index, df) and (not is_rise_limit(index - 1, candle)):
+    if (not patterns.upward_jump(index - 1, candle)) and patterns.upward_jump(index, candle) and \
+            is_stand_up_all_ma(index, df) and (not patterns.rise_limit(index - 1, candle)):
         # print(df['trade_date'][index], 'is_ma_up_ground')
         return True
     else:

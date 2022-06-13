@@ -29,40 +29,77 @@ def ma_analyze(org_df):
     ma120_seventh = []
     ma120_eighth = []
 
-    for index in range(len(candle)):
-        # MA60 葛南维第一大法则
-        ma60_first.insert(index, ma60.first(index, candle, bias, ma, org_df))
-        # MA60 葛南维第二大法则
-        ma60_second.insert(index, ma60.second(index, candle, bias, ma, org_df))
-        # MA60 葛南维第三大法则
-        ma60_third.insert(index, ma60.third(index, candle, bias, ma, org_df))
-        # MA60 葛南维第四大法则
-        ma60_fourth.insert(index, ma60.fourth(index, candle, bias, ma, org_df))
-        # MA60 葛南维第5大法则
-        ma60_fifth.insert(index, ma60.fifth(index, candle, bias, ma, org_df))
-        # MA60 葛南维第6大法则
-        ma60_sixth.insert(index, ma60.sixth(index, candle, bias, ma, org_df))
-        # MA60 葛南维第7大法则
-        ma60_seventh.insert(index, ma60.seventh(index, candle, bias, ma, org_df))
-        # MA60 葛南维第8大法则
-        ma60_eighth.insert(index, ma60.eighth(index, candle, bias, ma, org_df))
+    _start_at = 200
 
-        # MA120 葛南维第一大法则
-        ma120_first.insert(index, ma120.first(index, candle, bias, ma, org_df))
-        # MA120 葛南维第二大法则
-        ma120_second.insert(index, ma120.second(index, candle, bias, ma, org_df))
-        # MA120 葛南维第三大法则
-        ma120_third.insert(index, ma120.third(index, candle, bias, ma, org_df))
-        # MA120 葛南维第四大法则
-        ma120_fourth.insert(index, ma120.fourth(index, candle, bias, ma, org_df))
-        # MA120 葛南维第5大法则
-        ma120_fifth.insert(index, ma120.fifth(index, candle, bias, ma, org_df))
-        # MA120 葛南维第6大法则
-        ma120_sixth.insert(index, ma120.sixth(index, candle, bias, ma, org_df))
-        # MA120 葛南维第7大法则
-        ma120_seventh.insert(index, ma120.seventh(index, candle, bias, ma, org_df))
-        # MA120 葛南维第8大法则
-        ma120_eighth.insert(index, ma120.eighth(index, candle, bias, ma, org_df))
+    for index in range(len(candle)):
+        if index > _start_at:
+            # MA60 葛南维第一大法则
+            ma60_first.insert(index, ma60.first(index, candle, bias, ma, org_df))
+            # MA60 葛南维第二大法则
+            ma60_second.insert(index, ma60.second(index, candle, bias, ma, org_df))
+            # MA60 葛南维第三大法则
+            ma60_third.insert(index, ma60.third(index, candle, bias, ma, org_df))
+            # MA60 葛南维第四大法则
+            ma60_fourth.insert(index, ma60.fourth(index, candle, bias, ma, org_df))
+            # MA60 葛南维第5大法则
+            ma60_fifth.insert(index, ma60.fifth(index, candle, bias, ma, org_df))
+            # MA60 葛南维第6大法则
+            ma60_sixth.insert(index, ma60.sixth(index, candle, bias, ma, org_df))
+            # MA60 葛南维第7大法则
+            ma60_seventh.insert(index, ma60.seventh(index, candle, bias, ma, org_df))
+            # MA60 葛南维第8大法则
+            ma60_eighth.insert(index, ma60.eighth(index, candle, bias, ma, org_df))
+
+            # MA120 葛南维第一大法则
+            ma120_first.insert(index, ma120.first(index, candle, bias, ma, org_df))
+            # MA120 葛南维第二大法则
+            ma120_second.insert(index, ma120.second(index, candle, bias, ma, org_df))
+            # MA120 葛南维第三大法则
+            ma120_third.insert(index, ma120.third(index, candle, bias, ma, org_df))
+            # MA120 葛南维第四大法则
+            ma120_fourth.insert(index, ma120.fourth(index, candle, bias, ma, org_df))
+            # MA120 葛南维第5大法则
+            ma120_fifth.insert(index, ma120.fifth(index, candle, bias, ma, org_df))
+            # MA120 葛南维第6大法则
+            ma120_sixth.insert(index, ma120.sixth(index, candle, bias, ma, org_df))
+            # MA120 葛南维第7大法则
+            ma120_seventh.insert(index, ma120.seventh(index, candle, bias, ma, org_df))
+            # MA120 葛南维第8大法则
+            ma120_eighth.insert(index, ma120.eighth(index, candle, bias, ma, org_df))
+        else:
+            # MA60 葛南维第一大法则
+            ma60_first.insert(index, 0)
+            # MA60 葛南维第二大法则
+            ma60_second.insert(index, 0)
+            # MA60 葛南维第三大法则
+            ma60_third.insert(index, 0)
+            # MA60 葛南维第四大法则
+            ma60_fourth.insert(index, 0)
+            # MA60 葛南维第5大法则
+            ma60_fifth.insert(index, 0)
+            # MA60 葛南维第6大法则
+            ma60_sixth.insert(index, 0)
+            # MA60 葛南维第7大法则
+            ma60_seventh.insert(index, 0)
+            # MA60 葛南维第8大法则
+            ma60_eighth.insert(index, 0)
+
+            # MA120 葛南维第一大法则
+            ma120_first.insert(index, 0)
+            # MA120 葛南维第二大法则
+            ma120_second.insert(index, 0)
+            # MA120 葛南维第三大法则
+            ma120_third.insert(index, 0)
+            # MA120 葛南维第四大法则
+            ma120_fourth.insert(index, 0)
+            # MA120 葛南维第5大法则
+            ma120_fifth.insert(index, 0)
+            # MA120 葛南维第6大法则
+            ma120_sixth.insert(index, 0)
+            # MA120 葛南维第7大法则
+            ma120_seventh.insert(index, 0)
+            # MA120 葛南维第8大法则
+            ma120_eighth.insert(index, 0)
 
     org_df['ma60_first'] = ma60_first
     org_df['ma60_second'] = ma60_second

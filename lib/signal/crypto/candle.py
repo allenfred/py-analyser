@@ -8,6 +8,8 @@ import numpy as np
 -1 bearish pattern
 """
 
+_start_at = 200
+
 
 def long_line(i, candles):
     """
@@ -22,7 +24,7 @@ def long_line(i, candles):
     :param candles:
     :return:
     """
-    if i < 30:
+    if i < _start_at:
         return 0
 
     open = candles[:, 0]
@@ -73,7 +75,7 @@ def marubozu(i, candles):
     :return: boolean
     """
 
-    if i < 30:
+    if i < _start_at:
         return 0
 
     open = candles[:, 0]
@@ -116,14 +118,13 @@ def hammer(i, candles):
     1.市场处于清晰的下降趋势
     2.当前K线收出锤头线形态
     3.当前K线最低价为近期最低价
-    4..K线震幅大于5%
 
     :param i: 当前tick
     :param candles:
     :return: boolean
     """
 
-    if i < 20:
+    if i < _start_at:
         return 0
 
     open = candles[:, 0]
@@ -149,7 +150,51 @@ def hammer(i, candles):
     # 上影线长度需小于柱体长度的1/5
     if lowest_low == _low and _open > up_one_third and _close > up_one_third \
             and up_shadow_len < bar_len / 5 \
-            and pre_close * 0.05 <= k_len and pre_close <= _open < _close:
+            and _close * 0.05 <= k_len and pre_close <= _open < _close:
+        return 1
+
+    return 0
+
+
+def t_line(i, candles):
+    """
+    description: T字线 (看涨)
+    有效标准：
+    1.市场处于清晰的下降趋势
+    2.当前K线收出T字线形态
+    3.当前K线最低价为近期最低价
+
+    :param i: 当前tick
+    :param candles:
+    :return: boolean
+    """
+
+    if i < _start_at:
+        return 0
+
+    open = candles[:, 0]
+    high = candles[:, 1]
+    low = candles[:, 2]
+    close = candles[:, 3]
+    pct_chg = candles[:, 4]
+    _open = open[i]
+    _high = high[i]
+    _low = low[i]
+    _close = close[i]
+
+    k_len = _high - _low
+    bar_len = math.fabs(_open - _close)
+    up_shadow_len = math.fabs(_high - _close if _open < _close else _high - _open)
+    up_one_fifth = _high - (k_len / 5)
+
+    # 最近13日最低价
+    lowest_low = min(low[i - 13: i + 1])
+
+    # 开盘价和收盘价都位于k线上方1/5处 (即：下影线长度占k线长度的4/5以上）
+    # 上影线长度需小于K线长度的1/5
+    if lowest_low == _low and \
+            _open > up_one_fifth and _close > up_one_fifth and \
+            up_shadow_len < k_len / 5:
         return 1
 
     return 0
@@ -169,7 +214,7 @@ def pour_hammer(i, candles):
     :return: boolean
     """
 
-    if i < 20:
+    if i < _start_at:
         return 0
 
     open = candles[:, 0]
@@ -215,7 +260,7 @@ def hang_neck(i, candles):
     :return: boolean
     """
 
-    if i < 20:
+    if i < _start_at:
         return 0
 
     open = candles[:, 0]
@@ -258,7 +303,7 @@ def shooting(i, candles):
     :return: boolean
     """
 
-    if i < 20:
+    if i < _start_at:
         return 0
 
     open = candles[:, 0]
@@ -302,7 +347,7 @@ def resistance_shadow(i, candles):
     :return: boolean
     """
 
-    if i < 20:
+    if i < _start_at:
         return 0
 
     open = candles[:, 0]
@@ -337,7 +382,7 @@ def support_shadow(i, candles):
     :return: boolean
     """
 
-    if i < 20:
+    if i < _start_at:
         return 0
 
     open = candles[:, 0]
@@ -374,7 +419,7 @@ def short_end(i, candles):
     :return: boolean
     """
 
-    if i < 20:
+    if i < _start_at:
         return 0
 
     open = candles[:, 0]
@@ -420,7 +465,7 @@ def long_end(i, candles):
     return {*} Flag:boolean 是否符合
     """
 
-    if i < 20:
+    if i < _start_at:
         return 0
 
     open = candles[:, 0]
@@ -472,7 +517,7 @@ def attack_short(i, candles):
     return {*} Flag:boolean 是否符合
     """
 
-    if i < 20:
+    if i < _start_at:
         return 0
 
     open = candles[:, 0]
@@ -514,7 +559,7 @@ def first_light(i, candles):
     return {*} Flag:boolean 是否符合
     """
 
-    if i < 20:
+    if i < _start_at:
         return 0
 
     open = candles[:, 0]
@@ -556,7 +601,7 @@ def sunrise(i, candles):
     return {*} Flag:boolean 是否符合
     """
 
-    if i < 20:
+    if i < _start_at:
         return 0
 
     open = candles[:, 0]
@@ -596,7 +641,7 @@ def flat_base(i, candles):
     :param candles:
     :return:
     """
-    if i < 20:
+    if i < _start_at:
         return 0
 
     low = candles[:, 2]
@@ -636,7 +681,7 @@ def down_rise(i, candles):
     :param candles:
     :return: boolean
     """
-    if i < 20:
+    if i < _start_at:
         return 0
 
     _open = candles[:, 0][i]
@@ -671,7 +716,7 @@ def swallow_up(i, candles):
     :param candles:
     :return: boolean
     """
-    if i < 20:
+    if i < _start_at:
         return 0
 
     _open = candles[:, 0][i]
@@ -706,13 +751,12 @@ def swallow_down(i, candles):
     3.第二根K线必须吞没第一根
     4.第二根K线实体必须大于K线长度的 2/3
     5.第二根实体必须与第一个实体颜色相反
-    6.第二根K线跌幅大于 3%
 
     :param i: 当前tick
     :param candles:
     :return: boolean
     """
-    if i < 20:
+    if i < _start_at:
         return 0
 
     _open = candles[:, 0][i]
@@ -727,7 +771,7 @@ def swallow_down(i, candles):
     pre_high = candles[:, 1][i - 1]
 
     # 最近20日最高价
-    highest_high = min(candles[:, 1][i - 20: i + 1])
+    highest_high = max(candles[:, 1][i - 20: i + 1])
 
     # 今昨两日最高价为最近21日最高价 (最近21日呈上涨趋势)
     if (highest_high == pre_high or highest_high == _high) \
@@ -750,6 +794,8 @@ def up_screw(i, candles):
     :param candles:
     :return: boolean
     """
+    if i < _start_at:
+        return 0
 
     _open = candles[:, 0][i]
     high = candles[:, 1]
@@ -762,7 +808,7 @@ def up_screw(i, candles):
     up_shadow_len = math.fabs(_high - _close if _open < _close else _high - _open)
     bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
 
-    if i > 30 and max(high[i - 15: i + 1]) == max(high[i - 2: i + 1]) and \
+    if max(high[i - 15: i + 1]) == max(high[i - 2: i + 1]) and \
             up_shadow_len >= k_len / 3 and bottom_shadow_len >= k_len / 3:
         return -1
 
@@ -781,6 +827,8 @@ def down_screw(i, candles):
     :param candles:
     :return: boolean
     """
+    if i < _start_at:
+        return 0
 
     _open = candles[:, 0][i]
     high = candles[:, 1]
@@ -794,7 +842,7 @@ def down_screw(i, candles):
     up_shadow_len = math.fabs(_high - _close if _open < _close else _high - _open)
     bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
 
-    if i > 30 and min(low[i - 12: i + 1]) == _low and \
+    if min(low[i - 12: i + 1]) == _low and \
             up_shadow_len > k_len / 3 and bottom_shadow_len > k_len / 3:
         return 1
 
@@ -814,12 +862,15 @@ def down_pour(i, candles):
     :param candles:
     :return: boolean
     """
+    if i < _start_at:
+        return 0
+
     _open = candles[:, 0][i]
     _pre_open = candles[:, 0][i - 1]
     _close = candles[:, 3][i]
     _pre_close = candles[:, 3][i - 1]
 
-    if i > 30 and _close < _pre_open < _open < _pre_close:
+    if _close < _pre_open < _open < _pre_close:
         return -1
 
     return 0
@@ -835,6 +886,9 @@ def up_cross3ma(i, candles, df):
     :param df:
     :return: boolean
     """
+    if i < _start_at:
+        return 0
+
     ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
     _open = candles[:, 0][i]
     _close = candles[:, 3][i]
@@ -843,10 +897,10 @@ def up_cross3ma(i, candles, df):
     _ma20 = ma[:, 2][i]
     _ma30 = ma[:, 3][i]
 
-    if i > 10 and ((_open < _ma5 and _open < _ma10 and _open < _ma20 and
-                    _close > _ma5 and _close > _ma10 and _close > _ma20) or
-                   (_open < _ma5 and _open < _ma10 and _open < _ma30 and
-                    _close > _ma5 and _close > _ma10 and _close > _ma30)):
+    if ((_open < _ma5 and _open < _ma10 and _open < _ma20 and
+         _close > _ma5 and _close > _ma10 and _close > _ma20) or
+            (_open < _ma5 and _open < _ma10 and _open < _ma30 and
+             _close > _ma5 and _close > _ma10 and _close > _ma30)):
         return 1
 
     return 0
@@ -862,6 +916,9 @@ def up_cross4ma(i, candles, df):
     :param df:
     :return: boolean
     """
+    if i < _start_at:
+        return 0
+
     ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
     _open = candles[:, 0][i]
     _close = candles[:, 3][i]
@@ -870,9 +927,8 @@ def up_cross4ma(i, candles, df):
     _ma20 = ma[:, 2][i]
     _ma60 = ma[:, 5][i]
 
-    if i > 10 and \
-            (_open < _ma5 and _open < _ma10 and _open < _ma20 and _open < _ma60 and
-             _close > _ma5 and _close > _ma10 and _close > _ma20 and _close > _ma60):
+    if (_open < _ma5 and _open < _ma10 and _open < _ma20 and _open < _ma60 and
+            _close > _ma5 and _close > _ma10 and _close > _ma20 and _close > _ma60):
         return 1
 
     return 0
@@ -888,6 +944,9 @@ def up_cross5ma(i, candles, df):
     :param df:
     :return: boolean
     """
+    if i < _start_at:
+        return 0
+
     ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
     _open = candles[:, 0][i]
     _close = candles[:, 3][i]
@@ -897,11 +956,10 @@ def up_cross5ma(i, candles, df):
     _ma60 = ma[:, 5][i]
     _ma120 = ma[:, 6][i]
 
-    if i > 10 and \
-            (_open < _ma5 and _open < _ma10 and _open < _ma20 and
-             _open < _ma60 and _open < _ma120 and
-             _close > _ma5 and _close > _ma10 and _close > _ma20 and
-             _close > _ma60 and _close > _ma120):
+    if (_open < _ma5 and _open < _ma10 and _open < _ma20 and
+            _open < _ma60 and _open < _ma120 and
+            _close > _ma5 and _close > _ma10 and _close > _ma20 and
+            _close > _ma60 and _close > _ma120):
         return 1
 
     return 0
@@ -917,6 +975,9 @@ def drop_cross3ma(i, candles, df):
     :param df:
     :return: boolean
     """
+    if i < _start_at:
+        return 0
+
     ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
     _open = candles[:, 0][i]
     _close = candles[:, 3][i]
@@ -925,10 +986,10 @@ def drop_cross3ma(i, candles, df):
     _ma20 = ma[:, 2][i]
     _ma30 = ma[:, 3][i]
 
-    if i > 10 and ((_open > _ma5 and _open > _ma10 and _open > _ma20 and
-                    _close < _ma5 and _close < _ma10 and _close < _ma20) or
-                   (_open > _ma5 and _open > _ma10 and _open > _ma30 and
-                    _close < _ma5 and _close < _ma10 and _close < _ma30)):
+    if ((_open > _ma5 and _open > _ma10 and _open > _ma20 and
+         _close < _ma5 and _close < _ma10 and _close < _ma20) or
+            (_open > _ma5 and _open > _ma10 and _open > _ma30 and
+             _close < _ma5 and _close < _ma10 and _close < _ma30)):
         return -1
 
     return 0
@@ -944,6 +1005,9 @@ def drop_cross4ma(i, candles, df):
     :param df:
     :return: boolean
     """
+    if i < _start_at:
+        return 0
+
     ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
     _open = candles[:, 0][i]
     _close = candles[:, 3][i]
@@ -952,9 +1016,8 @@ def drop_cross4ma(i, candles, df):
     _ma20 = ma[:, 2][i]
     _ma60 = ma[:, 5][i]
 
-    if i > 10 and \
-            (_open > _ma5 and _open > _ma10 and _open > _ma20 and _open > _ma60 and
-             _close < _ma5 and _close < _ma10 and _close < _ma20 and _close < _ma60):
+    if (_open > _ma5 and _open > _ma10 and _open > _ma20 and _open > _ma60 and
+            _close < _ma5 and _close < _ma10 and _close < _ma20 and _close < _ma60):
         return -1
 
     return 0
@@ -970,6 +1033,9 @@ def drop_cross5ma(i, candles, df):
     :param df:
     :return: boolean
     """
+    if i < _start_at:
+        return 0
+
     ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
     _open = candles[:, 0][i]
     _close = candles[:, 3][i]
@@ -979,11 +1045,10 @@ def drop_cross5ma(i, candles, df):
     _ma60 = ma[:, 5][i]
     _ma120 = ma[:, 6][i]
 
-    if i > 10 and \
-            (_open > _ma5 and _open > _ma10 and _open > _ma20 and
-             _open > _ma60 and _open > _ma120 and
-             _close < _ma5 and _close < _ma10 and _close < _ma20 and
-             _close < _ma60 and _close < _ma120):
+    if (_open > _ma5 and _open > _ma10 and _open > _ma20 and
+            _open > _ma60 and _open > _ma120 and
+            _close < _ma5 and _close < _ma10 and _close < _ma20 and
+            _close < _ma60 and _close < _ma120):
         return -1
 
     return 0
