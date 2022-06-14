@@ -17,6 +17,7 @@ from database import UsdtSwapSignal
 def run(instId, gran):
     _start = time.time()
     df = get_klines_df(instId, gran, 300)
+    print('获取K线总用时 ', used_time_fmt(_start, time.time()))
 
     if len(df) == 0:
         print('没有K线数据')

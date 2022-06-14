@@ -153,7 +153,7 @@ def third(index, candles, bias, ma, df):
     if index > 150 and _close > _ma120 > _low and _bias120 < 8 and \
             ma_rise_steady() and candles[index - 1][2] < ma120[index - 1] and \
             (has_long_break_patterns(index, df) or has_long_patterns(index, df)):
-        print(index, candle[5], '3', 'ma120')
+        # print(index, candle[5], '3', 'ma120')
         return 1
 
     return 0

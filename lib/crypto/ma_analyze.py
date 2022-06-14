@@ -29,7 +29,7 @@ def ma_analyze(org_df):
     ma120_seventh = []
     ma120_eighth = []
 
-    _start_at = 200
+    _start_at = 280
 
     for index in range(len(candle)):
         if index > _start_at:

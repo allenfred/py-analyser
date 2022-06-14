@@ -37,7 +37,7 @@ def vol_analyze(df):
     heap_vol = []
     increasingly_vol = []
     decreasingly_vol = []
-    _start_at = 200
+    _start_at = 260
 
     for index in range(len(candle)):
         # 天量

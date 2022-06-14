@@ -8,7 +8,7 @@ import numpy as np
 -1 bearish pattern
 """
 
-_start_at = 200
+_start_at = 260
 
 
 def long_line(i, candles):
