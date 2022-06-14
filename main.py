@@ -2,12 +2,9 @@ import time
 import os
 import sys
 
-path = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(path)
-
 from binance.websocket.um_futures.websocket_client import UMFuturesWebsocketClient
 # from mongo.database import UsdtSwapSignal
-from .mongo.df import get_inst_df
+from mongo.df import get_inst_df
 
 
 def message_handler(message):

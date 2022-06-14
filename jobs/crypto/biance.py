@@ -74,9 +74,10 @@ def run(instId, gran):
 
 if __name__ == "__main__":
     start = time.time()
-    insts = get_inst_df()
+    insts = get_inst_df('biance')
 
     for index, item in enumerate(insts):
+        time.sleep(0.2)
         _start = time.time()
         inst_id = item['instrument_id']
         run(inst_id, 900)

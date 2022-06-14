@@ -10,8 +10,18 @@ module.exports = {
       autorestart: true,
     },
    {
-      name: 'crypto-job',
-      script: 'jobs/crypto/analyzer.py',
+      name: 'bianceJob',
+      script: 'jobs/crypto/biance.py',
+      interpreter: 'python3',
+      instances: 1,
+      exec_mode: 'fork',
+      cron_restart: '*/15 * * * *', // 每15min
+      watch: false,
+      autorestart: false,
+    },
+    {
+      name: 'okexJob',
+      script: 'jobs/crypto/okex.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
