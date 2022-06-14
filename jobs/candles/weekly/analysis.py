@@ -72,9 +72,9 @@ if __name__ == "__main__":
     start = time.time()
     flag = True
 
-    ready_weekly_klines()
+    _cnt = ready_weekly_klines()
 
-    while flag:
+    while _cnt > 0:
         circle_start = time.time()
         ts_code = stockDao.find_one_weekly_not_ready(today)
         time.sleep(0.2)

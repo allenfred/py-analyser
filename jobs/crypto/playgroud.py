@@ -53,7 +53,7 @@ if __name__ == "__main__":
     # df = get_swap_df(inst_id, "3600", 500)
     # df = get_swap_df(inst_id, "900", 1200)
     df = get_klines_df(inst_id, "900", 300)
-
+    print(len(df))
     if len(df) == 0:
         print('没有K线数据')
 
