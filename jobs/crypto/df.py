@@ -49,9 +49,12 @@ def get_usdt_swap_klines(inst_id, granularity, limit=500):
     #         .sort("timestamp", -1)
     #         .limit(limit)
     # ]
+    # return UsdtSwapKlines.find(
+    #     {"granularity": int(granularity), "instrument_id": inst_id},
+    #     {"_id": 0, "_v": 0},
+    # ).sort("timestamp", -1).limit(limit)
     return UsdtSwapKlines.find(
-        {"granularity": int(granularity), "instrument_id": inst_id},
-        {"_id": 0, "_v": 0},
+        {"instrument_id": inst_id, "granularity": int(granularity)},
     ).sort("timestamp", -1).limit(limit)
 
 

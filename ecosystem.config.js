@@ -15,7 +15,7 @@ module.exports = {
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '*/15 * * * *', // 每15min
+      cron_restart: '1 * * * *', //
       watch: false,
       autorestart: false,
     },
