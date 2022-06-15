@@ -10,7 +10,7 @@ module.exports = {
       autorestart: true,
     },
    {
-      name: 'bianceJob',
+      name: 'biance',
       script: 'jobs/crypto/biance.py',
       interpreter: 'python3',
       instances: 1,
@@ -20,7 +20,7 @@ module.exports = {
       autorestart: false,
     },
     {
-      name: 'okexJob',
+      name: 'okex',
       script: 'jobs/crypto/okex.py',
       interpreter: 'python3',
       instances: 1,
