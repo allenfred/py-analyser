@@ -53,20 +53,20 @@ if __name__ == "__main__":
     # df = get_swap_df(inst_id, "3600", 500)
     # df = get_swap_df(inst_id, "900", 1200)
     df = get_klines_df(inst_id, "900", 300)
-    print(len(df))
+
     if len(df) == 0:
         print('没有K线数据')
 
     print('获取K线用时 ', used_time_fmt(start, time.time()))
 
-    df = df.sort_values(by='trade_date', ascending=True)
+    # df = df.sort_values(by='timestamp', ascending=True)
     # df['trade_date'] = pd.to_datetime(df["trade_date"], format='%Y-%m-%d')
     df['num'] = df.index[::-1].to_numpy()
     df = df.set_index('num')
     df['gran'] = 900
     df['granularity'] = int(900)
 
-    _last = df.iloc[len(df) - 1]['time']
+    _last = df.iloc[len(df) - 1]['timestamp']
     _last = _last.replace(tzinfo=None)
 
     # 剔除最新一根未完成K线
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     df = analyze(df)
     signal = df.iloc[len(df) - 1].to_dict()
 
-    keys = ['exchange', 'time', 'underlying_index', 'granularity',
+    keys = ['exchange', 'timestamp', 'underlying_index', 'granularity',
             'max_vol', 'huge_vol', 'large_vol', 'high_vol', 'common_vol', 'low_vol',
             'increase_vol', 'decrease_vol', 'increasingly_vol', 'decreasingly_vol',
             'hammer', 't_line', 'pour_hammer', 'short_end', 'swallow_up', 'attack_short',
@@ -96,12 +96,12 @@ if __name__ == "__main__":
 
     _data = {}
     for i, v in enumerate(keys):
-        if v == 'exchange' or v == 'time' or v == 'underlying_index':
+        if v == 'exchange' or v == 'trade_date' or v == 'timestamp' or v == 'underlying_index':
             _data[v] = signal.get(v)
         else:
             _data[v] = int(signal.get(v))
     print(_data)
-    UsdtSwapSignal.update_one({"time": _data["time"], "inst_id": inst_id,
-                               "granularity": 900, "exchange": _data["exchange"]}, {"$set": _data}, upsert=True)
+    UsdtSwapSignal.update_one({"time": _data["timestamp"], "inst_id": inst_id,
+                               "granularity": int(900), "exchange": _data["exchange"]}, {"$set": _data}, upsert=True)
 
     print('总用时 ', used_time_fmt(start, time.time()))

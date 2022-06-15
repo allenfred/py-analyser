@@ -5,7 +5,8 @@ SQLAlchemy==1.4.23
 TA-Lib==0.4.15
 tushare==1.2.64
 mysql-connector-python==8.0.29
-pymongo==3.9.0
+pymongo==4.1.1
+pymongoarrow=0.4.0
 python-dateutil==2.8.0
 pytz==2019.2
 binance-futures-connector==3.1.1
