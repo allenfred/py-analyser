@@ -10,7 +10,7 @@ from lib.crypto.analyze import analyze
 import time
 from datetime import date, datetime, timedelta
 from lib.util import set_quota, used_time_fmt
-from df import get_inst_df, get_klines_df
+from df import get_klines_df
 from database import UsdtSwapSignal
 
 #
