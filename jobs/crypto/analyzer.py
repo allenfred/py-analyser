@@ -14,9 +14,13 @@ from df import get_klines_df
 from database import UsdtSwapSignal
 
 
-def run(instId, gran):
+def run(inst, gran):
+    inst_id = inst['instrument_id']
+    exchange = inst['exchange']
+    underlying_index = inst['underlying_index']
+
     _start = time.time()
-    df = get_klines_df(instId, gran, 300)
+    df = get_klines_df(inst_id, gran, 300)
     kline_used = used_time_fmt(_start, time.time())
 
     if len(df) == 0:
@@ -30,6 +34,8 @@ def run(instId, gran):
         df = df.set_index('num')
         df['gran'] = gran
         df['granularity'] = gran
+        df['exchange'] = exchange
+        df['underlying_index'] = underlying_index
 
         _last = df.iloc[len(df) - 1]['timestamp']
         _last = _last.replace(tzinfo=None)
@@ -67,9 +73,9 @@ def run(instId, gran):
             else:
                 _data[v] = int(signal.get(v))
 
-        UsdtSwapSignal.update_one({"time": _data["timestamp"], "inst_id": instId,
+        UsdtSwapSignal.update_one({"time": _data["timestamp"], "inst_id": inst_id,
                                    "granularity": gran, "exchange": _data["exchange"]}, {"$set": _data}, upsert=True)
-        print(instId, gran, 'K线用时', kline_used, ',Analyze用时 ', used_time_fmt(_analyze_start, time.time()))
+        print(inst_id, gran, 'K线用时', kline_used, ',Analyze用时 ', used_time_fmt(_analyze_start, time.time()))
     except Exception as e:
-        print('更新 ', instId, gran, 'Catch Error:', e)
+        print('更新 ', inst_id, gran, 'Catch Error:', e)
 

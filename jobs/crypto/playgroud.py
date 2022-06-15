@@ -53,6 +53,15 @@ if __name__ == "__main__":
     # df = get_swap_df(inst_id, "3600", 500)
     # df = get_swap_df(inst_id, "900", 1200)
     df = get_klines_df(inst_id, "900", 300)
+    exchange = ''
+    underlying_index = ''
+
+    if inst_id.endswith('USDT'):
+        exchange = 'biance'
+        underlying_index = inst_id.replace('USDT', '')
+    else:
+        exchange = 'okex'
+        underlying_index = inst_id.replace('-USDT-SWAP', '')
 
     if len(df) == 0:
         print('没有K线数据')
@@ -65,6 +74,8 @@ if __name__ == "__main__":
     df = df.set_index('num')
     df['gran'] = 900
     df['granularity'] = int(900)
+    df['exchange'] = exchange
+    df['underlying_index'] = underlying_index
 
     _last = df.iloc[len(df) - 1]['timestamp']
     _last = _last.replace(tzinfo=None)

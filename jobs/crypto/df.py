@@ -11,7 +11,6 @@ from pymongoarrow.monkey import patch_all
 import pyarrow as pa
 from pymongoarrow.api import Schema
 
-
 patch_all()
 
 
@@ -70,8 +69,11 @@ def get_usdt_swap_klines(inst_id, granularity, limit=500):
     #     find_pandas_all({"instrument_id": inst_id, "granularity": int(granularity)}, schema=schema,
     #                     sort=[('timestamp', -1)], limit=limit)
 
+    # schema = Schema({'open': float, 'high': float, 'low': float, 'close': float, 'volume': float,
+    #                  'exchange': pa.string(), 'underlying_index': pa.string(), 'timestamp': datetime.datetime})
+
     schema = Schema({'open': float, 'high': float, 'low': float, 'close': float, 'volume': float,
-                     'exchange': pa.string(), 'underlying_index': pa.string(), 'timestamp': datetime.datetime})
+                     'timestamp': pa.timestamp('ms')})
 
     return UsdtSwapKlines. \
         find_pandas_all({"instrument_id": inst_id, "granularity": int(granularity)}, schema=schema,
@@ -88,7 +90,6 @@ def clean_klines(klines):
                  "pct_chg", "exchange", "time", "underlying_index"],
         # index=range(len(klines)),
     )
-
 
     # for index, item in enumerate(klines):
     for index in range(len(klines)):
@@ -120,7 +121,7 @@ def get_klines_df(inst_id, granularity, limit=1000):
     df = df.sort_values(by='timestamp', ascending=True)
     df["vol"] = df['volume']
     df["trade_date"] = df['timestamp']
-    df['pct_chg'] = ((df["close"] - df["open"]) * 100)/df['open']
+    df['pct_chg'] = ((df["close"] - df["open"]) * 100) / df['open']
 
     return df
 
