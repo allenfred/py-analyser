@@ -8,14 +8,14 @@ sys.path.append(path)
 
 import time
 from lib.util import used_time_fmt
-from df import get_inst_df
+from df import get_instruments
 import analyzer
 
 
 if __name__ == "__main__":
     start = time.time()
     cur_min = time.localtime().tm_min
-    insts = get_inst_df('biance')
+    insts = get_instruments('biance')
 
     for index, item in enumerate(insts):
         time.sleep(0.1)

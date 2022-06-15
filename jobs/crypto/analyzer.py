@@ -17,7 +17,13 @@ from database import UsdtSwapSignal
 def run(inst, gran):
     inst_id = inst['instrument_id']
     exchange = inst['exchange']
-    underlying_index = inst['underlying_index']
+    # underlying_index = inst['underlying_index']
+    underlying_index = ''
+
+    if exchange == 'biance':
+        underlying_index = inst_id.replace('USDT', '')
+    elif exchange == 'okex':
+        underlying_index = inst_id.replace('-USDT-SWAP', '')
 
     _start = time.time()
     df = get_klines_df(inst_id, gran, 300)

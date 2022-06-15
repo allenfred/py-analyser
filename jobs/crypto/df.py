@@ -4,7 +4,8 @@ proxy for okex api.
 import pandas as pd
 import datetime
 from database import (
-    InstrumentInfos,
+    InstrumentTicker,
+    InstrumentInfo,
     UsdtSwapKlines,
 )
 from pymongoarrow.monkey import patch_all
@@ -126,10 +127,40 @@ def get_klines_df(inst_id, granularity, limit=1000):
     return df
 
 
-def get_inst_df(exchange=None):
+def get_instruments(exchange=None):
     if exchange:
-        return InstrumentInfos.find(
+        tickers = list(InstrumentTicker.find(
+            {"exchange": exchange},
+            # {"_id": 0, "__v": 0, "exchange": 1, "instrument_id": 1, "last": 1, "volume_24h": 1},
+            {"exchange": 1, "instrument_id": 1, "last": 1, "volume_24h": 1},
+        ).sort("instrument_id", -1))
+        infos = list(InstrumentInfo.find(
+            {"exchange": exchange},
+            # {"_id": 0, "__v": 0, "exchange": 1, "instrument_id": 1, "contract_val": 1},
+            {"exchange": 1, "instrument_id": 1, "contract_val": 1},
+        ).sort("instrument_id", -1))
+    else:
+        tickers = list(InstrumentTicker.find({},
+                                             {"exchange": 1, "instrument_id": 1, "last": 1,
+                                              "volume_24h": 1},
+                                             ).sort("instrument_id", -1))
+        infos = list(InstrumentInfo.find({},
+                                         {"exchange": 1, "instrument_id": 1, "contract_val": 1},
+                                         ).sort("instrument_id", -1))
+
+    for i in range(len(infos)):
+        for j in range(len(tickers)):
+            if infos[i]['instrument_id'] == tickers[j]['instrument_id']:
+                infos[i]['last'] = tickers[j]['last']
+                infos[i]['volume_24h'] = tickers[j]['volume_24h']
+
+    return infos
+
+
+def get_instrument_ticker(exchange=None):
+    if exchange:
+        return InstrumentTicker.find(
             {"exchange": exchange}
         ).sort("instrument_id", -1)
     else:
-        return InstrumentInfos.find({}).sort("instrument_id", -1)
+        return InstrumentTicker.find({}).sort("instrument_id", -1)
