@@ -14,6 +14,7 @@ import analyzer
 
 if __name__ == "__main__":
     start = time.time()
+    cur_min = time.localtime().tm_min
     insts = get_inst_df('biance')
 
     for index, item in enumerate(insts):
@@ -21,7 +22,8 @@ if __name__ == "__main__":
         _start = time.time()
         inst_id = item['instrument_id']
         analyzer.run(inst_id, 900)
-        analyzer.run(inst_id, 3600)
+        if cur_min == 0:
+            analyzer.run(inst_id, 3600)
 
-    print('Analyzer 总用时 ', used_time_fmt(start, time.time()))
+    print('Analyzer 合约数', len(insts), ' 总用时 ', used_time_fmt(start, time.time()))
 
