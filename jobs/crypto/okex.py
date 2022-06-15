@@ -20,10 +20,9 @@ if __name__ == "__main__":
     for index, item in enumerate(insts):
         time.sleep(0.1)
         _start = time.time()
-        inst_id = item['instrument_id']
-        analyzer.run(inst_id, 900)
+        analyzer.run(item, 900)
         if cur_min == 0:
-            analyzer.run(inst_id, 3600)
+            analyzer.run(item, 3600)
 
     print('Analyzer 合约数', len(insts), ' 总用时 ', used_time_fmt(start, time.time()))
 
