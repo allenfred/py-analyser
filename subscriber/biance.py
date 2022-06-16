@@ -1,6 +1,9 @@
 import time
 import os
 import sys
+import redis
+import json
+r = redis.Redis(host='8.210.170.98', port=6371, password='Uwy0Pf8mi', db=0)
 
 path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(path)
@@ -10,7 +13,11 @@ from mongo.df import get_instrument_ticker
 
 
 def message_handler(message):
-    print(message)
+    if message['stream'].find('miniTicker') > 0:
+        r.publish('tickers', json.dumps(message))
+
+    if message['stream'].find('kline') > 0:
+        r.publish('klines', json.dumps(message))
 
 
 insts = list(get_instrument_ticker('biance'))
@@ -19,7 +26,7 @@ streams = ['!miniTicker@arr']
 
 for index, item in enumerate(insts):
     inst_id = item['instrument_id']
-    if index < 70:
+    if len(streams) < 10 and inst_id.endswith('USDT'):
         streams.append(inst_id.lower() + '@kline_15m')
         streams.append(inst_id.lower() + '@kline_1h')
 

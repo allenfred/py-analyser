@@ -56,21 +56,23 @@ def run(inst, gran):
         signal = df.iloc[len(df) - 1].to_dict()
 
         keys = ['exchange', 'timestamp', 'underlying_index',
-                'granularity', 'max_vol', 'huge_vol', 'large_vol', 'high_vol', 'common_vol', 'low_vol', 'increase_vol',
-                'decrease_vol', 'increasingly_vol', 'decreasingly_vol', 'hammer', 't_line', 'pour_hammer', 'short_end',
-                'swallow_up', 'attack_short', 'first_light', 'sunrise', 'flat_base', 'down_screw', 'long_end',
-                'swallow_down',
-                'hang_neck', 'shooting', 'up_screw', 'down_rise', 'up_cross3ma', 'up_cross4ma', 'drop_cross3ma',
-                'drop_cross4ma',
-                'resistance_shadow', 'support_shadow', 'down_pour', 'marubozu', 'long_line', 'CDLDRAGONFLYDOJI',
-                'CDLGRAVESTONEDOJI', 'CDLHAMMER', 'CDLMARUBOZU', 'CDLSHOOTINGSTAR', 'CDLDARKCLOUDCOVER', 'CDLHARAMI',
-                'CDLHARAMICROSS', 'CDLENGULFING', 'CDLPIERCING', 'CDLMORNINGSTAR', 'CDLMORNINGDOJISTAR',
-                'CDLEVENINGSTAR',
-                'CDLEVENINGDOJISTAR', 'CDLLADDERBOTTOM', 'ma60_first', 'ma60_second', 'ma60_third', 'ma60_fourth',
-                'ma60_fifth',
-                'ma60_sixth', 'ma60_seventh', 'ma60_eighth', 'ma120_first', 'ma120_second', 'ma120_third',
-                'ma120_fourth',
-                'ma120_fifth', 'ma120_sixth', 'ma120_seventh', 'ma120_eighth']
+                'granularity', 'max_vol', 'huge_vol', 'large_vol', 'high_vol', 'common_vol',
+                'low_vol', 'increase_vol', 'decrease_vol', 'increasingly_vol', 'decreasingly_vol',
+                'hammer', 't_line', 'pour_hammer', 'short_end', 'swallow_up', 'attack_short',
+                'first_light', 'sunrise', 'flat_base', 'down_screw', 'long_end', 'swallow_down',
+                'hang_neck', 'shooting', 'up_screw', 'down_rise', 'up_cross3ma', 'up_cross4ma',
+                'drop_cross3ma', 'drop_cross4ma',
+                'resistance_shadow', 'support_shadow', 'down_pour', 'marubozu', 'long_line',
+                'CDLDRAGONFLYDOJI', 'CDLGRAVESTONEDOJI', 'CDLHAMMER', 'CDLMARUBOZU', 'CDLSHOOTINGSTAR',
+                'CDLDARKCLOUDCOVER', 'CDLHARAMI', 'CDLHARAMICROSS', 'CDLENGULFING', 'CDLPIERCING',
+                'CDLMORNINGSTAR', 'CDLMORNINGDOJISTAR', 'CDLEVENINGSTAR', 'CDLEVENINGDOJISTAR', 'CDLLADDERBOTTOM',
+                'ma60_first', 'ma60_second', 'ma60_third', 'ma60_fourth',
+                'ma60_fifth', 'ma60_sixth', 'ma60_seventh', 'ma60_eighth',
+                'ma120_first', 'ma120_second', 'ma120_third', 'ma120_fourth',
+                'ma120_fifth', 'ma120_sixth', 'ma120_seventh', 'ma120_eighth',
+                'ma20_up', 'ema20_up', 'ma30_up', 'ema30_up', 'ma60_up', 'ema60_up', 'ma120_up', 'ema120_up',
+                'ma_gold_cross1', 'ma_gold_cross2', 'ma_gold_cross3', 'ma_gold_cross4',
+                'ma_out_sea', 'ma_hold_moon', 'ma_up_ground', 'ma_glue']
 
         _data = {}
         for i, v in enumerate(keys):

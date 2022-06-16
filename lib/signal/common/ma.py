@@ -909,8 +909,6 @@ def is_ma120_support(index, df):
         return False
 
 
-
-
 def has_support_patterns(index, df):
     """
     当前Ticker 存在看涨K线形态

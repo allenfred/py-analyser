@@ -13,21 +13,22 @@ def message_handler(message):
     print(message)
 
 
-insts = list(get_instrument_ticker('biance'))
+insts = list(get_instrument_ticker('okex'))
 insts = sorted(insts, key=lambda d: d['volume_24h'], reverse=True)
 streams = ['!miniTicker@arr']
 
 for index, item in enumerate(insts):
     inst_id = item['instrument_id']
     if index < 70:
+        print(inst_id)
         streams.append(inst_id.lower() + '@kline_15m')
         streams.append(inst_id.lower() + '@kline_1h')
-
-ws_client = UMFuturesWebsocketClient()
-ws_client.start()
-
-ws_client.instant_subscribe(
-    # stream=['!miniTicker@arr'],
-    stream=streams,
-    callback=message_handler,
-)
+#
+# ws_client = UMFuturesWebsocketClient()
+# ws_client.start()
+#
+# ws_client.instant_subscribe(
+#     # stream=['!miniTicker@arr'],
+#     stream=streams,
+#     callback=message_handler,
+# )

@@ -25,6 +25,8 @@ def first(index, candles, bias, ma, df):
 
     candle = candles[index]
     _close = candle[3]
+    ma20 = ma[:, 2]
+    ma60 = ma[:, 5]
     ma120 = ma[:, 6]
     _ma120 = ma120[index]
     bias120 = bias[:, 6]
@@ -40,9 +42,25 @@ def first(index, candles, bias, ma, df):
 
     def start_up_ma():
         flag = True
-        for i in range(9):
+        for i in range(13):
             if candles[index - i][3] < ma120[index - i] or \
                     ma120[index - i] < ma120[index - i - 1]:
+                flag = False
+        return flag
+
+    def ma20_rise_steady():
+        flag = True
+        for i in range(9):
+            # 如果 当前MA20 < 前值
+            if ma20[index - i] <= ma20[index - i - 1]:
+                flag = False
+        return flag
+
+    def ma60_rise_steady():
+        flag = True
+        for i in range(9):
+            # 如果 当前MA60 < 前值
+            if ma60[index - i] <= ma60[index - i - 1]:
                 flag = False
         return flag
 
@@ -53,8 +71,8 @@ def first(index, candles, bias, ma, df):
             return True
         return False
 
-    if index > 150 and _close > _ma120 and ma120_down_steady() and start_up_ma() and \
-            (has_vol(index) or has_vol(index - 1) or has_vol(index - 2) or has_vol(index - 3)):
+    if index > 150 and _close > _ma120 and _bias120 < 8 and ma120_down_steady() and start_up_ma() and \
+            (ma20_rise_steady() or ma60_rise_steady()):
         # print(index, candle[5], '1', 'ma120')
         return 1
 
@@ -98,17 +116,22 @@ def second(index, candles, bias, ma, df):
 
         return flag
 
-    # MA10/MA20 空头排列
-    def ma_down():
+    def ma10_down():
         flag = True
         for i in range(5):
-            if ma10[index - i] > ma10[index - i - 1] \
-                    or ma20[index - i] > ma20[index - i - 1] \
-                    or ma10[index - i] > ma20[index - i]:
+            if ma10[index - i] > ma10[index - i - 1]:
                 flag = False
         return flag
 
-    if index > 150 and _low_bias120 < 1 and steady_on_ma() and not ma_down() and \
+    def ma20_down():
+        flag = True
+        for i in range(5):
+            if ma20[index - i] > ma20[index - i - 1]:
+                flag = False
+        return flag
+
+    if index > 150 and _low_bias120 < 1 and steady_on_ma() and \
+            not ma10_down() and not ma20_down() and \
             (has_long_break_patterns(index, df) or has_long_patterns(index, df)):
         # print(index, candle[5], '2', 'ma120')
         return 1
@@ -134,6 +157,8 @@ def third(index, candles, bias, ma, df):
     candle = candles[index]
     _low = candle[2]
     _close = candle[3]
+    ma10 = ma[:, 1]
+    ma20 = ma[:, 2]
     ma120 = ma[:, 6]
     _ma120 = ma120[index]
     bias120 = bias[:, 6]
@@ -150,7 +175,22 @@ def third(index, candles, bias, ma, df):
                 flag = False
         return flag
 
+    def ma10_down():
+        flag = True
+        for i in range(5):
+            if ma10[index - i] > ma10[index - i - 1]:
+                flag = False
+        return flag
+
+    def ma20_down():
+        flag = True
+        for i in range(5):
+            if ma20[index - i] > ma20[index - i - 1]:
+                flag = False
+        return flag
+
     if index > 150 and _close > _ma120 > _low and _bias120 < 8 and \
+            not ma10_down() and not ma20_down() and \
             ma_rise_steady() and candles[index - 1][2] < ma120[index - 1] and \
             (has_long_break_patterns(index, df) or has_long_patterns(index, df)):
         # print(index, candle[5], '3', 'ma120')

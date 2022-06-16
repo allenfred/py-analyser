@@ -98,20 +98,23 @@ def second(index, candles, bias, ma, df):
 
         return flag
 
-    # MA10/MA20 空头排列
-    def ma_down():
+    def ma10_down():
         flag = True
         for i in range(5):
-            if ma10[index - i] > ma10[index - i - 1] \
-                    or ma20[index - i] > ma20[index - i - 1] \
-                    or ma10[index - i] > ma20[index - i]:
+            if ma10[index - i] > ma10[index - i - 1]:
                 flag = False
         return flag
 
-    if index > 90 and _low_bias60 < 1 and steady_on_ma() and not ma_down() and \
+    def ma20_down():
+        flag = True
+        for i in range(5):
+            if ma20[index - i] > ma20[index - i - 1]:
+                flag = False
+        return flag
+
+    if index > 90 and _low_bias60 < 1 and steady_on_ma() and \
+            not ma10_down() and not ma20_down() and \
             (has_long_break_patterns(index, df) or has_long_patterns(index, df)):
-        if index > 290:
-            print(index, candle[5], '2')
         return 1
 
     return 0
@@ -138,6 +141,8 @@ def third(index, candles, bias, ma, df):
     candle = candles[index]
     _low = candle[2]
     _close = candle[3]
+    ma10 = ma[:, 1]
+    ma20 = ma[:, 2]
     ma60 = ma[:, 5]
     _ma60 = ma60[index]
     bias60 = bias[:, 4]
@@ -154,6 +159,20 @@ def third(index, candles, bias, ma, df):
                 flag = False
         return flag
 
+    def ma10_down():
+        flag = True
+        for i in range(5):
+            if ma10[index - i] > ma10[index - i - 1]:
+                flag = False
+        return flag
+
+    def ma20_down():
+        flag = True
+        for i in range(5):
+            if ma20[index - i] > ma20[index - i - 1]:
+                flag = False
+        return flag
+
     def fall_down_ma_temp():
         tag1 = 0
         tag2 = 0
@@ -165,6 +184,7 @@ def third(index, candles, bias, ma, df):
         return 4 > tag1 > 0 and 4 > tag2 > 0
 
     if _close > _ma60 > _low and _bias60 < 8 and \
+            not ma10_down() and not ma20_down() and \
             ma_rise_steady() and fall_down_ma_temp() and \
             (has_long_break_patterns(index, df) or has_long_patterns(index, df)):
         # print(index, candle[5], '3')
