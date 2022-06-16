@@ -1,10 +1,4 @@
 #  -*- coding: utf-8 -*-
-import os
-import sys
-
-path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(path)
-
 from urllib.parse import quote_plus
 from pymongo import MongoClient
 from config.common import CRYPTO_DB_HOST, CRYPTO_DB_NAME, CRYPTO_DB_PASSWORD, CRYPTO_DB_USERNAME

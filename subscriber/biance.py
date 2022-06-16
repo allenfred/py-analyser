@@ -3,10 +3,12 @@ import os
 import sys
 import redis
 import json
+
+path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(path)
+
 r = redis.Redis(host='8.210.170.98', port=6371, password='Uwy0Pf8mi', db=0)
 
-path = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(path)
 
 from binance.websocket.um_futures.websocket_client import UMFuturesWebsocketClient
 from mongo.df import get_instrument_ticker

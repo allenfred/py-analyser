@@ -2,7 +2,7 @@ import time
 import os
 import sys
 
-path = os.path.dirname(os.path.abspath(__file__))
+path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(path)
 
 from binance.websocket.um_futures.websocket_client import UMFuturesWebsocketClient
