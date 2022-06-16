@@ -7,6 +7,7 @@ path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 sys.path.append(path)
 
 import time
+from datetime import date, datetime, timedelta
 from lib.util import used_time_fmt
 from df import get_instruments
 import analyzer
@@ -24,5 +25,6 @@ if __name__ == "__main__":
         if cur_min == 0:
             analyzer.run(item, 3600)
 
-    print('Analyzer 合约数', len(insts), ' 总用时 ', used_time_fmt(start, time.time()))
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(now, 'Analyzer 合约数', len(insts), ' 总用时 ', used_time_fmt(start, time.time()))
 
