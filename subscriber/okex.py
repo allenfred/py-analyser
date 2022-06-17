@@ -32,3 +32,5 @@ for index, item in enumerate(insts):
 #     stream=streams,
 #     callback=message_handler,
 # )
+
+print('Okex subscriber start...')
