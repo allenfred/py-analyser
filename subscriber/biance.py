@@ -27,7 +27,7 @@ streams = ['!miniTicker@arr']
 
 for index, item in enumerate(insts):
     inst_id = item['instrument_id']
-    if len(streams) < 10 and inst_id.endswith('USDT'):
+    if len(streams) < 160 and inst_id.endswith('USDT'):
         streams.append(inst_id.lower() + '@kline_15m')
         streams.append(inst_id.lower() + '@kline_1h')
 
