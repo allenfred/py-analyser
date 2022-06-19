@@ -48,9 +48,10 @@ if __name__ == "__main__":
     inst_id = 'ADAUSDT'
     inst_id = 'BTCUSDT'
     inst_id = 'PEOPLEUSDT'
-    inst_id = 'AAVEUSDT'
-    gran = 3600
-    df = get_klines_df(inst_id, gran, 300)
+    inst_id = 'ANKRUSDT'
+    gran = 900
+    exchange = 'biance'
+    df = get_klines_df(exchange, inst_id, gran, 300)
     # df = get_swap_df(inst_id, "900", 1200)
     # df = get_klines_df(inst_id, "900", 300)
     exchange = ''
@@ -68,7 +69,7 @@ if __name__ == "__main__":
 
     print('获取K线用时 ', used_time_fmt(start, time.time()))
 
-    # df = df.sort_values(by='timestamp', ascending=True)
+    df = df.sort_values(by='timestamp', ascending=True)
     # df['trade_date'] = pd.to_datetime(df["trade_date"], format='%Y-%m-%d')
     df['num'] = df.index[::-1].to_numpy()
     df = df.set_index('num')
@@ -82,7 +83,7 @@ if __name__ == "__main__":
 
     # 剔除最新一根未完成K线
     if _last + timedelta(minutes=15) > datetime.utcnow():
-        df = df.drop(index=[len(df) - 1])
+        df.drop(index=len(df) - 1, inplace=True)
 
     df = set_quota(df)
     df = analyze(df)

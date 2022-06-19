@@ -43,7 +43,7 @@ def convert_date(date):
 #         .limit(limit)
 #     ]
 
-def get_usdt_swap_klines(inst_id, granularity, limit=500):
+def get_usdt_swap_klines(exchange, inst_id, granularity, limit=500):
     # return UsdtSwapKlines.find(
     #     {"instrument_id": inst_id, "granularity": int(granularity)},
     #     {"_id": 0, "_v": 0, "exchange": 0, "granularity": 0, "instrument_id": 0, "currency_volume": 0},
@@ -76,7 +76,8 @@ def get_usdt_swap_klines(inst_id, granularity, limit=500):
                      'timestamp': pa.timestamp('ms')})
 
     return UsdtSwapKlines. \
-        find_pandas_all({"instrument_id": inst_id, "granularity": int(granularity)}, schema=schema,
+        find_pandas_all({"exchange": exchange, "instrument_id": inst_id, "granularity": int(granularity)},
+                        schema=schema,
                         sort=[('timestamp', -1)], limit=limit)
 
 
@@ -116,8 +117,8 @@ def clean_klines(klines):
     return df
 
 
-def get_klines_df(inst_id, granularity, limit=1000):
-    df = get_usdt_swap_klines(inst_id, granularity, limit)
+def get_klines_df(exchange, inst_id, granularity, limit=1000):
+    df = get_usdt_swap_klines(exchange, inst_id, granularity, limit)
     df = df.sort_values(by='timestamp', ascending=True)
     df["vol"] = df['volume']
     df["trade_date"] = df['timestamp']

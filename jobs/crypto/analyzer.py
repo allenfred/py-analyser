@@ -20,7 +20,7 @@ def run(inst, gran):
     base_currency = inst['base_currency']
 
     _start = time.time()
-    df = get_klines_df(inst_id, gran, 300)
+    df = get_klines_df(exchange, inst_id, gran, 300)
     kline_used = used_time_fmt(_start, time.time())
 
     if len(df) == 0:
@@ -42,7 +42,7 @@ def run(inst, gran):
 
         # 剔除最新一根未完成K线
         if _last + timedelta(minutes=15) > datetime.utcnow():
-            df = df.drop(index=[len(df) - 1])
+            df.drop(index=len(df) - 1, inplace=True)
 
         _analyze_start = time.time()
         df = set_quota(df)
