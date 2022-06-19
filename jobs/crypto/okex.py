@@ -21,7 +21,9 @@ if __name__ == "__main__":
     for index, item in enumerate(insts):
         time.sleep(0.1)
         _start = time.time()
-        if item['volume_24h'] * item['last'] * item['contract_val'] > 10000000 and not item['last'] < 0.00001:
+        if item['volume_24h'] * item['last'] * item['contract_val'] > 10000000 \
+                and not item['last'] < 0.00001 \
+                and item['instrument_id'].endswith('USDT'):
             analyzer.run(item, 900)
             if cur_min == 0:
                 analyzer.run(item, 3600)

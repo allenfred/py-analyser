@@ -21,9 +21,10 @@ if __name__ == "__main__":
     for index, item in enumerate(insts):
         time.sleep(0.1)
         _start = time.time()
-        analyzer.run(item, 900)
-        if cur_min == 0:
-            analyzer.run(item, 3600)
+        if item['instrument_id'].endswith('USDT'):
+            analyzer.run(item, 900)
+            if cur_min == 0:
+                analyzer.run(item, 3600)
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(now, 'Analyzer 合约数', len(insts), ' 总用时 ', used_time_fmt(start, time.time()))
