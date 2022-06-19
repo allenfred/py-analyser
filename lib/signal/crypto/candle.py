@@ -323,7 +323,7 @@ def shooting(i, candles):
     bottom_one_third = _low + (k_len / 3)
 
     # 最近21日最高价
-    highest_high = min(high[i - 20: i + 1])
+    highest_high = max(high[i - 20: i + 1])
 
     # 开盘价和收盘价都位于k线下方1/3处 (即：上影线长度占k线长度的2/3以上）
     # 下影线长度需小于柱体长度的1/5
@@ -331,6 +331,49 @@ def shooting(i, candles):
             and bottom_shadow_len < bar_len / 5:
         return -1
 
+    return 0
+
+
+def shooting_doji(i, candles):
+    """
+    description: 射击十字星 (看跌)
+    有效标准：
+    1.市场处于清晰的上涨趋势
+    2.当前K线收出射击之星形态 上影线2/3 收盘价和开盘价接近
+    3.当前K线最高价为近期最高价
+
+    :param i: 当前tick
+    :param candles:
+    :return: boolean
+    """
+
+    if i < _start_at:
+        return 0
+
+    open = candles[:, 0]
+    high = candles[:, 1]
+    low = candles[:, 2]
+    close = candles[:, 3]
+    pct_chg = candles[:, 4]
+    _open = open[i]
+    _high = high[i]
+    _low = low[i]
+    _close = close[i]
+
+    k_len = _high - _low
+    bar_len = math.fabs(_open - _close)
+
+    bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
+    bottom_one_third = _low + (k_len / 3)
+
+    # 最近21日最高价
+    highest_high = max(high[i - 20: i + 1])
+
+    # 开盘价和收盘价都位于k线下方1/3处 (即：上影线长度占k线长度的2/3以上）
+    # 柱体长度需小于K线长度的1/10
+    if highest_high == _high and _open < bottom_one_third and _close < bottom_one_third \
+            and bar_len < k_len / 10:
+        return -1
     return 0
 
 
@@ -486,7 +529,7 @@ def long_end(i, candles):
     pre_up_shadow_low = (close[i - 1] if open[i - 1] < close[i - 1] else open[i - 1])
 
     # 最近21日最高价
-    highest_high = min(high[i - 20: i + 1])
+    highest_high = max(high[i - 20: i + 1])
     # 最近21日最低价
     lowest_low = min(low[i - 20: i + 1])
 
@@ -896,11 +939,13 @@ def up_cross3ma(i, candles, df):
     _ma10 = ma[:, 1][i]
     _ma20 = ma[:, 2][i]
     _ma30 = ma[:, 3][i]
+    _ma60 = ma[:, 5][i]
 
     if ((_open < _ma5 and _open < _ma10 and _open < _ma20 and
          _close > _ma5 and _close > _ma10 and _close > _ma20) or
-            (_open < _ma5 and _open < _ma10 and _open < _ma30 and
-             _close > _ma5 and _close > _ma10 and _close > _ma30)):
+        (_open < _ma5 and _open < _ma10 and _open < _ma30 and
+         _close > _ma5 and _close > _ma10 and _close > _ma30)) and not \
+            _open < _ma60 < _close:
         return 1
 
     return 0
@@ -926,9 +971,11 @@ def up_cross4ma(i, candles, df):
     _ma10 = ma[:, 1][i]
     _ma20 = ma[:, 2][i]
     _ma60 = ma[:, 5][i]
+    _ma120 = ma[:, 5][i]
 
     if (_open < _ma5 and _open < _ma10 and _open < _ma20 and _open < _ma60 and
-            _close > _ma5 and _close > _ma10 and _close > _ma20 and _close > _ma60):
+        _close > _ma5 and _close > _ma10 and _close > _ma20 and _close > _ma60) and \
+            not _open > _ma120 > _close:
         return 1
 
     return 0
@@ -985,11 +1032,13 @@ def drop_cross3ma(i, candles, df):
     _ma10 = ma[:, 1][i]
     _ma20 = ma[:, 2][i]
     _ma30 = ma[:, 3][i]
+    _ma60 = ma[:, 5][i]
 
     if ((_open > _ma5 and _open > _ma10 and _open > _ma20 and
          _close < _ma5 and _close < _ma10 and _close < _ma20) or
-            (_open > _ma5 and _open > _ma10 and _open > _ma30 and
-             _close < _ma5 and _close < _ma10 and _close < _ma30)):
+        (_open > _ma5 and _open > _ma10 and _open > _ma30 and
+         _close < _ma5 and _close < _ma10 and _close < _ma30)) and not \
+            _open > _ma60 > _close:
         return -1
 
     return 0
@@ -1015,9 +1064,11 @@ def drop_cross4ma(i, candles, df):
     _ma10 = ma[:, 1][i]
     _ma20 = ma[:, 2][i]
     _ma60 = ma[:, 5][i]
+    _ma120 = ma[:, 6][i]
 
     if (_open > _ma5 and _open > _ma10 and _open > _ma20 and _open > _ma60 and
-            _close < _ma5 and _close < _ma10 and _close < _ma20 and _close < _ma60):
+        _close < _ma5 and _close < _ma10 and _close < _ma20 and _close < _ma60) and \
+            not _open > _ma120 > _close:
         return -1
 
     return 0

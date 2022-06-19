@@ -48,19 +48,20 @@ if __name__ == "__main__":
     inst_id = 'ADAUSDT'
     inst_id = 'BTCUSDT'
     inst_id = 'PEOPLEUSDT'
-    inst_id = 'BNXUSDT'
-    # df = get_swap_df(inst_id, "3600", 500)
+    inst_id = 'AAVEUSDT'
+    gran = 3600
+    df = get_klines_df(inst_id, gran, 300)
     # df = get_swap_df(inst_id, "900", 1200)
-    df = get_klines_df(inst_id, "900", 300)
+    # df = get_klines_df(inst_id, "900", 300)
     exchange = ''
-    underlying_index = ''
+    base_currency = ''
 
     if inst_id.endswith('USDT'):
         exchange = 'biance'
-        underlying_index = inst_id.replace('USDT', '')
+        base_currency = inst_id.replace('USDT', '')
     else:
         exchange = 'okex'
-        underlying_index = inst_id.replace('-USDT-SWAP', '')
+        base_currency = inst_id.replace('-USDT-SWAP', '')
 
     if len(df) == 0:
         print('没有K线数据')
@@ -71,10 +72,10 @@ if __name__ == "__main__":
     # df['trade_date'] = pd.to_datetime(df["trade_date"], format='%Y-%m-%d')
     df['num'] = df.index[::-1].to_numpy()
     df = df.set_index('num')
-    df['gran'] = 900
-    df['granularity'] = int(900)
+    df['gran'] = gran
+    df['granularity'] = int(gran)
     df['exchange'] = exchange
-    df['underlying_index'] = underlying_index
+    df['base_currency'] = base_currency
 
     _last = df.iloc[len(df) - 1]['timestamp']
     _last = _last.replace(tzinfo=None)
@@ -87,33 +88,34 @@ if __name__ == "__main__":
     df = analyze(df)
     signal = df.iloc[len(df) - 1].to_dict()
 
-    keys = ['exchange', 'timestamp', 'underlying_index',
+    keys = ['exchange', 'timestamp', 'base_currency',
             'granularity', 'max_vol', 'huge_vol', 'large_vol', 'high_vol', 'common_vol',
             'low_vol', 'increase_vol', 'decrease_vol', 'increasingly_vol', 'decreasingly_vol',
             'hammer', 't_line', 'pour_hammer', 'short_end', 'swallow_up', 'attack_short',
             'first_light', 'sunrise', 'flat_base', 'down_screw', 'long_end', 'swallow_down',
-            'hang_neck', 'shooting', 'up_screw', 'down_rise', 'up_cross3ma', 'up_cross4ma',
-            'drop_cross3ma', 'drop_cross4ma',
+            'hang_neck', 'shooting', 'up_screw', 'down_rise',
+            'up_cross3ma', 'up_cross4ma', 'up_cross5ma',
+            'drop_cross3ma', 'drop_cross4ma', 'drop_cross5ma',
             'resistance_shadow', 'support_shadow', 'down_pour', 'marubozu', 'long_line',
-            'CDLDRAGONFLYDOJI', 'CDLGRAVESTONEDOJI', 'CDLHAMMER', 'CDLMARUBOZU', 'CDLSHOOTINGSTAR',
-            'CDLDARKCLOUDCOVER', 'CDLHARAMI', 'CDLHARAMICROSS', 'CDLENGULFING', 'CDLPIERCING',
-            'CDLMORNINGSTAR', 'CDLMORNINGDOJISTAR', 'CDLEVENINGSTAR', 'CDLEVENINGDOJISTAR', 'CDLLADDERBOTTOM',
+            'CDLDRAGONFLYDOJI', 'CDLGRAVESTONEDOJI', 'CDLHAMMER', 'CDLMARUBOZU',
+            'CDLDARKCLOUDCOVER', 'CDLENGULFING', 'CDLPIERCING',
+            'CDLMORNINGSTAR', 'CDLMORNINGDOJISTAR', 'CDLEVENINGSTAR', 'CDLEVENINGDOJISTAR',
             'ma60_first', 'ma60_second', 'ma60_third', 'ma60_fourth',
             'ma60_fifth', 'ma60_sixth', 'ma60_seventh', 'ma60_eighth',
             'ma120_first', 'ma120_second', 'ma120_third', 'ma120_fourth',
             'ma120_fifth', 'ma120_sixth', 'ma120_seventh', 'ma120_eighth',
             'ma20_up', 'ema20_up', 'ma30_up', 'ema30_up', 'ma60_up', 'ema60_up', 'ma120_up', 'ema120_up',
             'ma_gold_cross1', 'ma_gold_cross2', 'ma_gold_cross3', 'ma_gold_cross4',
-            'ma_out_sea', 'ma_hold_moon', 'ma_up_ground', 'ma_glue']
+            'ma_out_sea', 'ma_hold_moon', 'ma_glue']
 
     _data = {}
     for i, v in enumerate(keys):
-        if v == 'exchange' or v == 'trade_date' or v == 'timestamp' or v == 'underlying_index':
+        if v == 'exchange' or v == 'trade_date' or v == 'timestamp' or v == 'base_currency':
             _data[v] = signal.get(v)
         else:
             _data[v] = int(signal.get(v))
     print(_data)
     UsdtSwapSignal.update_one({"time": _data["timestamp"], "inst_id": inst_id,
-                               "granularity": int(900), "exchange": _data["exchange"]}, {"$set": _data}, upsert=True)
+                               "granularity": int(gran), "exchange": _data["exchange"]}, {"$set": _data}, upsert=True)
 
     print('总用时 ', used_time_fmt(start, time.time()))

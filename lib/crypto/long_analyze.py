@@ -1,9 +1,9 @@
 # -- coding: utf-8 -
-from lib.signal.common.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma120_rise, \
+from lib.signal.crypto.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma120_rise, \
     is_up_ma_arrange, is_up_short_ma_arrange, is_up_middle_ma_arrange, is_up_long_ma_arrange, \
     is_gold_cross, \
     is_ma60_support, is_ma120_support, is_stand_up_ma60, is_stand_up_ma120, \
-    is_ma_glue, is_ma_out_sea, is_ma_hold_moon, is_ma_over_gate, is_ma_up_ground, \
+    is_ma_glue, is_ma_out_sea, is_ma_hold_moon, \
     is_ma_gold_valley, is_ma_silver_valley, is_ma_spider
 
 
@@ -57,7 +57,6 @@ def long_analyze(org_df):
             ma_out_sea[index] = 1 if is_ma_out_sea(index, org_df) else 0
             ma_glue[index] = 1 if is_ma_glue(index, org_df) else 0
             ma_hold_moon[index] = 1 if is_ma_hold_moon(index, org_df) else 0
-            ma_up_ground[index] = 1 if is_ma_up_ground(index, org_df) else 0
 
     org_df['ma20_up'] = ma20_up
     org_df['ema20_up'] = ema20_up
@@ -76,6 +75,5 @@ def long_analyze(org_df):
     org_df['ma_glue'] = ma_glue
     org_df['ma_out_sea'] = ma_out_sea
     org_df['ma_hold_moon'] = ma_hold_moon
-    org_df['ma_up_ground'] = ma_up_ground
 
     return org_df

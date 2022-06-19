@@ -19,7 +19,6 @@ client = MongoClient(uri)
 db = client[CRYPTO_DB_NAME]
 
 
-InstrumentTicker = db["instrument_tickers"]
 InstrumentInfo = db["instrument_infos"]
 # UsdtSwapKlines = db["usdt_swap_klines"]
 # UsdtSwapSignal = db["usdt_swap_signal"]

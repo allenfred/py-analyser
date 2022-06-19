@@ -11,6 +11,7 @@ def pattern_analyze(df):
     螺旋桨
     锤头线
     射击之星
+    射击十字星
     较长影线(1/2)
     光头光脚
 
@@ -39,6 +40,7 @@ def pattern_analyze(df):
     swallow_down = []
     hang_neck = []
     shooting = []
+    shooting_doji = []
     up_screw = []
     down_rise = []
 
@@ -86,6 +88,8 @@ def pattern_analyze(df):
         hang_neck.insert(index, patterns.hang_neck(index, candle))
         # 射击之星
         shooting.insert(index, patterns.shooting(index, candle))
+        # 射击十字星
+        shooting_doji.insert(index, patterns.shooting_doji(index, candle))
         # 看跌螺旋桨
         up_screw.insert(index, patterns.up_screw(index, candle))
         # 一阳穿三线
@@ -125,13 +129,16 @@ def pattern_analyze(df):
     df['swallow_down'] = swallow_down
     df['hang_neck'] = hang_neck
     df['shooting'] = shooting
+    df['shooting_doji'] = shooting_doji
     df['up_screw'] = up_screw
     df['down_rise'] = down_rise
 
     df['up_cross3ma'] = up_cross3ma
     df['up_cross4ma'] = up_cross4ma
+    df['up_cross5ma'] = up_cross5ma
     df['drop_cross3ma'] = drop_cross3ma
     df['drop_cross4ma'] = drop_cross4ma
+    df['drop_cross5ma'] = drop_cross5ma
 
     df['resistance_shadow'] = resistance_shadow
     df['support_shadow'] = support_shadow
@@ -188,7 +195,7 @@ def pattern_analyze(df):
     # df['CDLRICKSHAWMAN'] = lib.CDLRICKSHAWMAN(open, high, low, close)
     #
     # Shooting Star 射击之星
-    df['CDLSHOOTINGSTAR'] = lib.CDLSHOOTINGSTAR(open, high, low, close)
+    # df['CDLSHOOTINGSTAR'] = lib.CDLSHOOTINGSTAR(open, high, low, close)
     #
     # # Short Line Candle 短蜡烛
     # df['CDLSHORTLINE'] = lib.CDLSHORTLINE(open, high, low, close)
@@ -210,10 +217,10 @@ def pattern_analyze(df):
     # df['CDLGAPSIDESIDEWHITE'] = lib.CDLGAPSIDESIDEWHITE(open, high, low, close)
     #
     # 孕线
-    df['CDLHARAMI'] = lib.CDLHARAMI(open, high, low, close)
+    # df['CDLHARAMI'] = lib.CDLHARAMI(open, high, low, close)
     #
     # 十字孕线
-    df['CDLHARAMICROSS'] = lib.CDLHARAMICROSS(open, high, low, close)
+    # df['CDLHARAMICROSS'] = lib.CDLHARAMICROSS(open, high, low, close)
     #
     # # 家鸽
     # df['CDLHOMINGPIGEON'] = lib.CDLHOMINGPIGEON(open, high, low, close)
@@ -339,7 +346,7 @@ def pattern_analyze(df):
     # df['CDLBREAKAWAY'] = lib.CDLBREAKAWAY(open, high, low, close)
     #
     # Ladder Bottom 梯底 底部反转
-    df['CDLLADDERBOTTOM'] = lib.CDLLADDERBOTTOM(open, high, low, close)
+    # df['CDLLADDERBOTTOM'] = lib.CDLLADDERBOTTOM(open, high, low, close)
     #
     # # Mat Hold 铺垫
     # df['CDLMATHOLD'] = lib.CDLMATHOLD(open, high, low, close)

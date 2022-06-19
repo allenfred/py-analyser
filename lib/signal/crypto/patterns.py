@@ -70,7 +70,6 @@ def has_bottom_patterns(index, df):
     看涨吞没
     刺透心态 (旭日东升 / 曙光初现 / 好友反攻)
     看涨螺旋桨
-    梯底
     锤头
     早晨之星(早晨十字星)
 
@@ -82,7 +81,6 @@ def has_bottom_patterns(index, df):
     if df.iloc[index]['swallow_up'] > 0 or \
             df.iloc[index]['sunrise'] > 0 or \
             df.iloc[index]['down_screw'] > 0 or \
-            df.iloc[index]['CDLLADDERBOTTOM'] > 0 or \
             df.iloc[index]['hammer'] > 0 or \
             df.iloc[index]['t_line'] > 0 or \
             df.iloc[index]['CDLMORNINGSTAR'] > 0 or \
@@ -98,6 +96,7 @@ def has_top_patterns(index, df):
     看跌吞没
     看跌螺旋桨
     射击之星
+    射击十字星
     倾盆大雨
     阻力线(上影线占K线长度1/2)
     刺透形态
@@ -111,6 +110,7 @@ def has_top_patterns(index, df):
     if df.iloc[index]['swallow_down'] < 0 or \
             df.iloc[index]['up_screw'] < 0 or \
             df.iloc[index]['shooting'] < 0 or \
+            df.iloc[index]['shooting_doji'] < 0 or \
             df.iloc[index]['down_pour'] < 0 or \
             df.iloc[index]['resistance_shadow'] < 0 or \
             df.iloc[index]['CDLPIERCING'] < 0 or \
