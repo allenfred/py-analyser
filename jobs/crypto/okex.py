@@ -16,14 +16,13 @@ import analyzer
 if __name__ == "__main__":
     start = time.time()
     cur_min = time.localtime().tm_min
-    insts = get_instruments('okex')
+    insts = list(get_instruments('okex'))
 
     for index, item in enumerate(insts):
         time.sleep(0.1)
         _start = time.time()
         if item['volume_24h'] * item['last'] * item['contract_val'] > 10000000 \
-                and not item['last'] < 0.00001 \
-                and item['instrument_id'].endswith('USDT'):
+                and not item['last'] < 0.00001:
             analyzer.run(item, 900)
             if cur_min == 0:
                 analyzer.run(item, 3600)

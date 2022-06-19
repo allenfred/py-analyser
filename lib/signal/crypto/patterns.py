@@ -19,7 +19,7 @@ def has_long_patterns(index, df):
     锤头线
     T字线
     刺透形态
-    梯底
+    # 梯底
 
     :param index:
     :param df:
@@ -30,8 +30,7 @@ def has_long_patterns(index, df):
             df.iloc[index]['down_screw'] > 0 or \
             df.iloc[index]['hammer'] > 0 or \
             df.iloc[index]['t_line'] > 0 or \
-            df.iloc[index]['CDLPIERCING'] > 0 or \
-            df.iloc[index]['CDLLADDERBOTTOM'] > 0:
+            df.iloc[index]['CDLPIERCING'] > 0:
         return True
 
     return False

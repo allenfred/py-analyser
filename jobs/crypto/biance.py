@@ -16,7 +16,7 @@ import analyzer
 if __name__ == "__main__":
     start = time.time()
     cur_min = time.localtime().tm_min
-    insts = get_instruments('biance')
+    insts = list(get_instruments('biance'))
 
     for index, item in enumerate(insts):
         time.sleep(0.1)
