@@ -10,7 +10,7 @@ sys.path.append(path)
 r = redis.Redis(host='8.210.170.98', port=6371, password='Uwy0Pf8mi', db=0)
 
 from binance.websocket.um_futures.websocket_client import UMFuturesWebsocketClient
-from mongo.df import get_instrument_ticker
+from mongo.df import get_instruments
 
 
 def message_handler(message):
@@ -21,7 +21,7 @@ def message_handler(message):
         r.publish('klines', json.dumps(message))
 
 
-insts = list(get_instrument_ticker('biance'))
+insts = list(get_instruments('biance'))
 insts = sorted(insts, key=lambda d: d['volume_24h'], reverse=True)
 streams = ['!miniTicker@arr']
 
