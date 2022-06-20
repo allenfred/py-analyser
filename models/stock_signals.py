@@ -151,15 +151,6 @@ class StockSignal(Base):
     drop_cross3ma = Column(SmallInteger)
     drop_cross4ma = Column(SmallInteger)
 
-    ma55_first = Column(SmallInteger)
-    ma55_second = Column(SmallInteger)
-    ma55_third = Column(SmallInteger)
-    ma55_fourth = Column(SmallInteger)
-    ma55_fifth = Column(SmallInteger)
-    ma55_sixth = Column(SmallInteger)
-    ma55_seventh = Column(SmallInteger)
-    ma55_eighth = Column(SmallInteger)
-
     ma60_first = Column(SmallInteger)
     ma60_second = Column(SmallInteger)
     ma60_third = Column(SmallInteger)
@@ -168,6 +159,8 @@ class StockSignal(Base):
     ma60_sixth = Column(SmallInteger)
     ma60_seventh = Column(SmallInteger)
     ma60_eighth = Column(SmallInteger)
+
+    ma_rule_marker = Column(SmallInteger)
 
     max_vol = Column(SmallInteger)
     huge_vol = Column(SmallInteger)
@@ -328,15 +321,6 @@ def get_obj(signal):
         drop_cross3ma=signal.get('drop_cross3ma', None),
         drop_cross4ma=signal.get('drop_cross4ma', None),
 
-        ma55_first=signal.get('ma55_first', None),
-        ma55_second=signal.get('ma55_second', None),
-        ma55_third=signal.get('ma55_third', None),
-        ma55_fourth=signal.get('ma55_fourth', None),
-        ma55_fifth=signal.get('ma55_fifth', None),
-        ma55_sixth=signal.get('ma55_sixth', None),
-        ma55_seventh=signal.get('ma55_seventh', None),
-        ma55_eighth=signal.get('ma55_eighth', None),
-
         ma60_first=signal.get('ma60_first', None),
         ma60_second=signal.get('ma60_second', None),
         ma60_third=signal.get('ma60_third', None),
@@ -345,6 +329,8 @@ def get_obj(signal):
         ma60_sixth=signal.get('ma60_sixth', None),
         ma60_seventh=signal.get('ma60_seventh', None),
         ma60_eighth=signal.get('ma60_eighth', None),
+
+        ma_rule_marker=signal.get('ma_rule_marker', None),
 
         max_vol=signal.get('max_vol', None),
         huge_vol=signal.get('huge_vol', None),
@@ -364,6 +350,11 @@ class StockSignalDao:
         self.session = DBSession()
 
     def upsert(self, signal):
+        if signal['ma60_first'] == 1 or signal['ma60_second'] == 1 or signal['ma60_third'] == 1 or \
+                signal['ma60_fourth'] == 1 or signal['ma60_fifth'] == 1 or signal['ma60_sixth'] == 1 or \
+                signal['ma60_seventh'] == 1 or signal['ma60_eighth'] == 1:
+            signal['ma_rule_marker'] = 1
+
         obj = get_obj(signal)
 
         try:
@@ -628,23 +619,6 @@ class StockSignalDao:
                 if obj.drop_cross4ma is not None:
                     row.drop_cross4ma = obj.drop_cross4ma
 
-                if obj.ma55_first is not None:
-                    row.ma55_first = obj.ma55_first
-                if obj.ma55_second is not None:
-                    row.ma55_second = obj.ma55_second
-                if obj.ma55_third is not None:
-                    row.ma55_third = obj.ma55_third
-                if obj.ma55_fourth is not None:
-                    row.ma55_fourth = obj.ma55_fourth
-                if obj.ma55_fifth is not None:
-                    row.ma55_fifth = obj.ma55_fifth
-                if obj.ma55_sixth is not None:
-                    row.ma55_sixth = obj.ma55_sixth
-                if obj.ma55_seventh is not None:
-                    row.ma55_seventh = obj.ma55_seventh
-                if obj.ma55_eighth is not None:
-                    row.ma55_eighth = obj.ma55_eighth
-
                 if obj.ma60_first is not None:
                     row.ma60_first = obj.ma60_first
                 if obj.ma60_second is not None:
@@ -661,6 +635,9 @@ class StockSignalDao:
                     row.ma60_seventh = obj.ma60_seventh
                 if obj.ma60_eighth is not None:
                     row.ma60_eighth = obj.ma60_eighth
+
+                if obj.ma_rule_marker is not None:
+                    row.ma_rule_marker = obj.ma_rule_marker
 
                 if obj.max_vol is not None:
                     row.max_vol = obj.max_vol

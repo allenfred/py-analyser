@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
    {
-      name: 'biance_subscriber',
+      name: 'sub_biance',
       script: 'subscriber/biance.py',
       interpreter: 'python3',
       instances: 1,
@@ -10,8 +10,17 @@ module.exports = {
       autorestart: true,
     },
     {
-      name: 'okex_subscriber',
+      name: 'sub_okex',
       script: 'subscriber/okex.py',
+      interpreter: 'python3',
+      instances: 1,
+      exec_mode: 'fork',
+      watch: true,
+      autorestart: true,
+    },
+    {
+      name: 'sub_bybit',
+      script: 'subscriber/bybit.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
