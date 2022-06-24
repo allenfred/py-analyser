@@ -31,7 +31,7 @@ def daily_basic_quota():
     print(_today, '每日指标 ', len(df))
 
     for index, row in df.iterrows():
-        time.sleep(0.1)
+        time.sleep(0.2)
         stockDao.update(row.to_dict())
 
     _end = time.time()

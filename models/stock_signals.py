@@ -354,6 +354,8 @@ class StockSignalDao:
                 signal['ma60_fourth'] == 1 or signal['ma60_fifth'] == 1 or signal['ma60_sixth'] == 1 or \
                 signal['ma60_seventh'] == 1 or signal['ma60_eighth'] == 1:
             signal['ma_rule_marker'] = 1
+        else:
+            signal['ma_rule_marker'] = 0
 
         obj = get_obj(signal)
 
