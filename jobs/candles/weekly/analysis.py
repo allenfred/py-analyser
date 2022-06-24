@@ -29,7 +29,6 @@ stockDao = StockDao()
 
 def ready_weekly_klines():
     _today = datetime.now().strftime("%Y%m%d")
-    _today = '20220602'
     _start_time = time.time()
     is_last_req = False
     offset = 0
@@ -72,9 +71,9 @@ if __name__ == "__main__":
     start = time.time()
     flag = True
 
-    _cnt = ready_weekly_klines()
+    _weekly_cnt = ready_weekly_klines()
 
-    while _cnt > 0:
+    while _weekly_cnt > 0:
         circle_start = time.time()
         ts_code = stockDao.find_one_weekly_not_ready(today)
         time.sleep(0.2)
