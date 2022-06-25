@@ -15,8 +15,8 @@ def analyze(org_df):
 
     org_df = vol_analyze(org_df)
     org_df = pattern_analyze(org_df)
-    org_df = ma_analyze(org_df)
     org_df = long_analyze(org_df)
+    org_df = ma_analyze(org_df)
 
     return org_df
 

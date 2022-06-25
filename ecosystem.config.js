@@ -37,6 +37,16 @@ module.exports = {
       watch: false,
       autorestart: false,
     },
+     {
+      name: 'bybit',
+      script: 'jobs/crypto/bybit.py',
+      interpreter: 'python3',
+      instances: 1,
+      exec_mode: 'fork',
+      cron_restart: '*/15 * * * *', // 每15min
+      watch: false,
+      autorestart: false,
+    },
     {
       name: 'okex',
       script: 'jobs/crypto/okex.py',

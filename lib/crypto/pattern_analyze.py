@@ -253,7 +253,7 @@ def pattern_analyze(df):
     # df['CDLENGULFING'] = lib.CDLENGULFING(open, high, low, close)
     #
     # Piercing Pattern 刺透形态
-    # df['CDLPIERCING'] = lib.CDLPIERCING(open, high, low, close)
+    df['CDLPIERCING'] = lib.CDLPIERCING(open, high, low, close)
     #
     # """
     # 三日K线模式
@@ -287,10 +287,10 @@ def pattern_analyze(df):
     # df['CDLMORNINGDOJISTAR'] = lib.CDLMORNINGDOJISTAR(open, high, low, close)
     #
     # 黄昏之星
-    # df['CDLEVENINGSTAR'] = lib.CDLEVENINGSTAR(open, high, low, close)
+    df['CDLEVENINGSTAR'] = lib.CDLEVENINGSTAR(open, high, low, close)
     #
     # 黄昏十字星
-    # df['CDLEVENINGDOJISTAR'] = lib.CDLEVENINGDOJISTAR(open, high, low, close)
+    df['CDLEVENINGDOJISTAR'] = lib.CDLEVENINGDOJISTAR(open, high, low, close)
     #
     # # Three Advancing White Soldiers 三个白兵
     # df['CDL3WHITESOLDIERS'] = lib.CDL3WHITESOLDIERS(open, high, low, close)
