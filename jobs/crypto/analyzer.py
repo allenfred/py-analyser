@@ -58,16 +58,12 @@ def run(inst, gran):
                 'up_cross3ma', 'up_cross4ma', 'up_cross5ma',
                 'drop_cross3ma', 'drop_cross4ma', 'drop_cross5ma',
                 'resistance_shadow', 'support_shadow', 'down_pour', 'marubozu', 'long_line',
-                'CDLDRAGONFLYDOJI', 'CDLGRAVESTONEDOJI', 'CDLHAMMER', 'CDLMARUBOZU',
-                'CDLDARKCLOUDCOVER', 'CDLENGULFING', 'CDLPIERCING',
-                'CDLMORNINGSTAR', 'CDLMORNINGDOJISTAR', 'CDLEVENINGSTAR', 'CDLEVENINGDOJISTAR',
                 'ma60_first', 'ma60_second', 'ma60_third', 'ma60_fourth',
                 'ma60_fifth', 'ma60_sixth', 'ma60_seventh', 'ma60_eighth',
                 'ma120_first', 'ma120_second', 'ma120_third', 'ma120_fourth',
                 'ma120_fifth', 'ma120_sixth', 'ma120_seventh', 'ma120_eighth',
                 'ma20_up', 'ema20_up', 'ma30_up', 'ema30_up', 'ma60_up', 'ema60_up', 'ma120_up', 'ema120_up',
-                'ma_gold_cross1', 'ma_gold_cross2', 'ma_gold_cross3', 'ma_gold_cross4',
-                'ma_out_sea', 'ma_hold_moon', 'ma_glue']
+                'ma_gold_cross1', 'ma_gold_cross2', 'ma_gold_cross3', 'ma_gold_cross4']
 
         _data = {}
         for i, v in enumerate(keys):

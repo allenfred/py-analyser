@@ -8,7 +8,7 @@ def is_ma20_rise(index, ma):
 
     def ma_rise():
         flag = True
-        for i in range(5):
+        for i in range(7):
             # 如果 当前MA20 <= 前值
             if ma20[index - i] <= ma20[index - i - 1]:
                 flag = False
@@ -25,7 +25,7 @@ def is_ema20_rise(index, ema):
 
     def ma_rise():
         flag = True
-        for i in range(5):
+        for i in range(7):
             # 如果 当前EMA20 <= 前值
             if ema20[index - i] <= ema20[index - i - 1]:
                 flag = False
@@ -42,7 +42,7 @@ def is_ma30_rise(index, ma):
 
     def ma_rise():
         flag = True
-        for i in range(5):
+        for i in range(7):
             # 如果 当前MA30 <= 前值
             if ma30[index - i] <= ma30[index - i - 1]:
                 flag = False
@@ -59,7 +59,7 @@ def is_ema30_rise(index, ema):
 
     def ma_rise():
         flag = True
-        for i in range(5):
+        for i in range(7):
             # 如果 当前EMA30 <= 前值
             if ema30[index - i] <= ema30[index - i - 1]:
                 flag = False
@@ -76,9 +76,9 @@ def is_ma60_rise(index, ma):
 
     def ma_rise():
         flag = True
-        for i in range(7):
+        for i in range(13):
             # 如果 当前MA60 <= 前值
-            if ma60[index - i] <= ma60[index - i - 1]:
+            if ma60[index - i] < ma60[index - i - 1]:
                 flag = False
         return flag
 
@@ -93,7 +93,7 @@ def is_ema60_rise(index, ema):
 
     def ma_rise():
         flag = True
-        for i in range(7):
+        for i in range(13):
             # 如果 当前EMA60 <= 前值
             if ema60[index - i] <= ema60[index - i - 1]:
                 flag = False
