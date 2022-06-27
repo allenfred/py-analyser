@@ -27,29 +27,9 @@ module.exports = {
       watch: true,
       autorestart: true,
     },
-   {
-      name: 'biance',
-      script: 'jobs/crypto/biance.py',
-      interpreter: 'python3',
-      instances: 1,
-      exec_mode: 'fork',
-      cron_restart: '*/15 * * * *', // 每15min
-      watch: false,
-      autorestart: false,
-    },
-     {
-      name: 'bybit',
-      script: 'jobs/crypto/bybit.py',
-      interpreter: 'python3',
-      instances: 1,
-      exec_mode: 'fork',
-      cron_restart: '*/15 * * * *', // 每15min
-      watch: false,
-      autorestart: false,
-    },
     {
-      name: 'okex',
-      script: 'jobs/crypto/okex.py',
+      name: 'crypto_analyzer',
+      script: 'jobs/crypto/all.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',

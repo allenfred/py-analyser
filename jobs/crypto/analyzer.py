@@ -74,7 +74,7 @@ def run(inst, gran):
 
         UsdtSwapSignal.update_one({"time": _data["timestamp"], "inst_id": inst_id,
                                    "granularity": gran, "exchange": _data["exchange"]}, {"$set": _data}, upsert=True)
-        print(inst_id, gran, 'K线用时', kline_used, ',Analyze用时 ', used_time_fmt(_analyze_start, time.time()))
+        print(exchange, inst_id, gran, 'K线用时', kline_used, ',Analyze用时 ', used_time_fmt(_analyze_start, time.time()))
     except Exception as e:
         print('更新 ', inst_id, gran, 'Catch Error:', e)
 
