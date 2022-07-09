@@ -23,7 +23,7 @@ def message_handler(message):
 
 insts = list(get_instruments('biance'))
 insts = sorted(insts, key=lambda d: d['volume_24h'], reverse=True)
-streams = ['!miniTicker@arr']
+streams = ['!miniTicker@arr', 'btcusdt@kline_4h']
 
 for index, item in enumerate(insts):
     inst_id = item['instrument_id']
@@ -40,4 +40,4 @@ ws_client.instant_subscribe(
     callback=message_handler,
 )
 
-print('Biance subscriber start...')
+print('[Biance] subscriber start...')

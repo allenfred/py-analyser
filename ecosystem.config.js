@@ -6,7 +6,8 @@ module.exports = {
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      watch: true,
+      cron_restart: '0 0 * * *', // 每天
+      watch: false,
       autorestart: true,
     },
     {
@@ -15,7 +16,8 @@ module.exports = {
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      watch: true,
+      cron_restart: '0 0 * * *', // 每天
+      watch: false,
       autorestart: true,
     },
     {
@@ -24,7 +26,8 @@ module.exports = {
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      watch: true,
+      cron_restart: '0 0 * * *', // 每天
+      watch: false,
       autorestart: true,
     },
     {
