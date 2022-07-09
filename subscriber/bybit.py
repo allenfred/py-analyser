@@ -4,7 +4,7 @@ import redis
 from time import sleep
 import json
 
-path = os.path.dirname(os.path.abspath(__file__))
+path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(path)
 
 r = redis.Redis(host='8.210.170.98', port=6371, password='Uwy0Pf8mi', db=0)
