@@ -28,13 +28,13 @@ ws = usdt_perpetual.WebSocket(
     domain="bybit"  # the default is "bybit" 'bytick'
 )
 
-insts = list(get_instruments('bybit'))
+insts = list(get_instruments())
 insts = sorted(insts, key=lambda d: d['volume_24h'], reverse=True)
 streams = []
 
 for index, item in enumerate(insts):
     inst_id = item['instrument_id']
-    if len(streams) < 20 and inst_id.endswith('USDT'):
+    if len(streams) < 20 and item['exchange'] == 'bybit' and inst_id.endswith('USDT'):
         streams.append(inst_id)
 
 

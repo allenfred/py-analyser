@@ -107,7 +107,28 @@ def get_klines_df(inst_id, granularity, limit=1000):
 def get_instruments(exchange=None):
     if exchange:
         return InstrumentInfo.find(
-            {"exchange": exchange}
-        ).sort("volume_24h", -1)
+            {"exchange": exchange},
+        ).sort("instrument_id", -1)
     else:
-        return InstrumentTicker.find({}).sort("volume_24h", -1)
+        return InstrumentInfo.aggregate([
+            {"$sort": {"exchange": 1}},
+            {
+                "$group": {
+                    "_id": "$base_currency",
+                    "base_currency": {"$first": "$base_currency"},
+                    "quote_currency": {"$first": "$quote_currency"},
+                    "exchange": {"$first": "$exchange"},
+                    "volume_24h": {"$first": "$volume_24h"},
+                    "instrument_id": {"$first": "$instrument_id"},
+                }
+            }, {"$sort": {"volume_24h": -1}},
+            {
+                "$project": {
+                    "instrument_id": "$instrument_id",
+                    "base_currency": "$base_currency",
+                    "quote_currency": "$quote_currency",
+                    "exchange": "$exchange",
+                    "volume_24h": "$volume_24h"
+                }
+            }
+        ])
