@@ -168,8 +168,8 @@ async def subscribe(url, api_key, passphrase, secret_key, channels):
                             print(time + "正在重连……")
                             print(e)
                             break
-                    print(res)
-                    # handle_kline(res)
+
+                    handle_msg(res)
 
         except Exception as e:
             time = get_timestamp()
@@ -344,7 +344,7 @@ if __name__ == "__main__":
 
     for index, item in enumerate(insts):
         inst_id = item['instrument_id']
-        if len(channels) < 200 and item['exchange'] == 'okex':
+        if len(channels) < 200 and item['exchange'] == 'okex' and item['volume_24h'] > 1000000:
             channels.append({
                 "channel": "candle15m",
                 "instId": inst_id
