@@ -78,10 +78,10 @@ def change(num_old):
 def handle_msg(message):
     try:
         if 'tickers' in message:
-            r.publish('tickers', json.dumps(message))
+            r.publish('tickers', message)
 
         if 'candle' in message:
-            r.publish('klines', json.dumps(message))
+            r.publish('klines', message)
 
     except Exception as e:
         print(e)
