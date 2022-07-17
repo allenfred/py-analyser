@@ -17,6 +17,7 @@ from mongo.df import get_instruments
 
 r = redis.Redis(host='8.210.170.98', port=6371, password='Uwy0Pf8mi', db=0)
 
+
 def get_timestamp():
     now = datetime.datetime.now()
     t = now.isoformat("T", "milliseconds")
@@ -74,9 +75,14 @@ def change(num_old):
     return out
 
 
-def handle_kline(message):
+def handle_msg(message):
     try:
-        r.publish('klines', json.dumps(message))
+        if 'tickers' in message:
+            r.publish('tickers', json.dumps(message))
+
+        if 'candle' in message:
+            r.publish('klines', json.dumps(message))
+
     except Exception as e:
         print(e)
 
@@ -162,8 +168,8 @@ async def subscribe(url, api_key, passphrase, secret_key, channels):
                             print(time + "正在重连……")
                             print(e)
                             break
-
-                    handle_kline(res)
+                    print(res)
+                    # handle_kline(res)
 
         except Exception as e:
             time = get_timestamp()
@@ -346,6 +352,11 @@ if __name__ == "__main__":
 
             channels.append({
                 "channel": "candle1H",
+                "instId": inst_id
+            })
+
+            channels.append({
+                "channel": "tickers",
                 "instId": inst_id
             })
 

@@ -19,7 +19,7 @@ if __name__ == "__main__":
     insts = list(get_instruments())
 
     for index, item in enumerate(insts):
-        time.sleep(0.1)
+        time.sleep(0.2)
         _start = time.time()
         if item['quote_currency'] == 'USDT':
             analyzer.run(item, 900)

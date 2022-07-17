@@ -30,12 +30,15 @@ ws = usdt_perpetual.WebSocket(
 
 insts = list(get_instruments())
 insts = sorted(insts, key=lambda d: d['volume_24h'], reverse=True)
-streams = []
+kline_streams = []
+ticker_streams = []
 
 for index, item in enumerate(insts):
     inst_id = item['instrument_id']
-    if len(streams) < 20 and item['exchange'] == 'bybit' and inst_id.endswith('USDT'):
-        streams.append(inst_id)
+    if len(kline_streams) < 20 and item['exchange'] == 'bybit' and \
+            inst_id.endswith('USDT') and item['volume_24h'] > 1000000:
+        kline_streams.append(inst_id)
+        ticker_streams.append(inst_id)
 
 
 def handle_kline(message):
@@ -45,8 +48,13 @@ def handle_kline(message):
         print(e)
 
 
-ws.kline_stream(handle_kline, streams, 15)
-ws.kline_stream(handle_kline, streams, 60)
+def handle_ticker(message):
+    r.publish('tickers', json.dumps(message))
+
+
+ws.instrument_info_stream(handle_ticker, ticker_streams)
+ws.kline_stream(handle_kline, kline_streams, 15)
+ws.kline_stream(handle_kline, kline_streams, 60)
 ws.kline_stream(handle_kline, ['BTCUSDT'], 240)
 
 print('[Bybit] subscriber start...')
