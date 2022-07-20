@@ -110,25 +110,12 @@ def get_instruments(exchange=None):
             {"exchange": exchange},
         ).sort("instrument_id", -1)
     else:
-        return InstrumentInfo.aggregate([
-            {"$sort": {"exchange": 1}},
-            {
-                "$group": {
-                    "_id": "$base_currency",
-                    "base_currency": {"$first": "$base_currency"},
-                    "quote_currency": {"$first": "$quote_currency"},
-                    "exchange": {"$first": "$exchange"},
-                    "volume_24h": {"$first": "$volume_24h"},
-                    "instrument_id": {"$first": "$instrument_id"},
-                }
-            }, {"$sort": {"volume_24h": -1}},
-            {
-                "$project": {
-                    "instrument_id": "$instrument_id",
-                    "base_currency": "$base_currency",
-                    "quote_currency": "$quote_currency",
-                    "exchange": "$exchange",
-                    "volume_24h": "$volume_24h"
-                }
-            }
-        ])
+        insts = InstrumentInfo.find({}).sort("volume_24h", -1)
+
+        res = list(map(dict, set(tuple(sorted(sub.items())) for sub in insts)))
+        for index, item in enumerate(res):
+            print(item['exchange'], item['base_currency'])
+
+        return res
+
+        # return list({v['base_currency']: v for v in insts}.values())
