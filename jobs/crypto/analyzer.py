@@ -66,7 +66,8 @@ def run(inst, gran):
                 'ma_gold_cross1', 'ma_gold_cross2', 'ma_gold_cross3', 'ma_gold_cross4']
 
         _data = {}
-        for i, v in enumerate(keys):
+        # for i, v in enumerate(keys):
+        for i, v in enumerate(signal.keys()):
             if v == 'exchange' or v == 'trade_date' or v == 'timestamp' or v == 'base_currency':
                 _data[v] = signal.get(v)
             else:

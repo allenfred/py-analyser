@@ -17,8 +17,7 @@ def long_line(i, candles):
     有效标准：
     1.市场处于清晰的上涨/下跌趋势
     2.实体长度占比小于90%
-    3.K线涨跌幅大于 2 * avg(21)
-    # 4.K线振幅大于avg(21)
+    3.K线涨跌幅大于 2 (BTC) 3 (Others)
 
     :param i:
     :param candles:
@@ -44,6 +43,13 @@ def long_line(i, candles):
     up_shadow_len = math.fabs(_high - _close if _open < _close else _high - _open)
     bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
 
+    # Others
+    pct_chg_base = 3
+
+    # BTC
+    if _open > 10000:
+        pct_chg_base = 2
+
     def avg_pct():
         _sum = 0
         for index in range(21):
@@ -52,7 +58,7 @@ def long_line(i, candles):
 
     if up_shadow_len + bottom_shadow_len < k_len * _per * 2 and \
             (up_shadow_len > k_len * _per or bottom_shadow_len > k_len * _per) and \
-            math.fabs(pct_chg[i]) > 2 * avg_pct():
+            math.fabs(pct_chg[i]) > pct_chg_base:
         if _open < _close:
             return 1
         else:
@@ -67,8 +73,7 @@ def marubozu(i, candles):
     有效标准：
     1.市场处于清晰的上涨/下降趋势
     2.上下影线占K线长度比例小于5%
-    3.K线涨幅大于avg(21)
-    # 4.K线振幅大于avg(21)
+    3.K线涨跌幅大于 2 (BTC) 3 (Others)
 
     :param i: 当前tick
     :param candles:
@@ -95,6 +100,13 @@ def marubozu(i, candles):
     up_shadow_len = math.fabs(_high - _close if _open < _close else _high - _open)
     bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
 
+    # Others
+    pct_chg_base = 3
+
+    # BTC
+    if _open > 10000:
+        pct_chg_base = 2
+
     def avg_pct():
         _sum = 0
         for index in range(21):
@@ -102,7 +114,7 @@ def marubozu(i, candles):
         return round(_sum / 21, 3)
 
     if up_shadow_len < k_len * _per and bottom_shadow_len < k_len * _per and \
-            math.fabs(pct_chg[i]) > avg_pct():
+            math.fabs(pct_chg[i]) > pct_chg_base:
         if _open < _close:
             return 1
         else:
