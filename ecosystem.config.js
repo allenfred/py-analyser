@@ -56,7 +56,7 @@ module.exports = {
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '0 16 * * *', // 每个交易日下午 17:00
+      cron_restart: '0 16 * * *', // 每个交易日下午 16:00
       watch: false,
       autorestart: false,
     },
@@ -66,7 +66,7 @@ module.exports = {
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '5 16 * * *', // 每个交易日上午 16:05 获取A股每日指标
+      cron_restart: '5 16 * * *', // 每个交易日下午 16:05 获取A股每日指标
       watch: false,
       autorestart: false,
     },

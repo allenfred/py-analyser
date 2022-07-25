@@ -15,7 +15,7 @@ import time
 from datetime import datetime, timedelta
 from config.common import TS_TOKEN
 from api.daily_basic import get_cn_daily_basic
-from lib.util import used_time_fmt
+from lib.util import used_time_fmt, get_timestamp
 
 pro = ts.pro_api(TS_TOKEN)
 dailyCandleDao = CNDailyCandleDao()
@@ -31,7 +31,7 @@ def daily_basic_quota():
     print(_today, '每日指标 ', len(df))
 
     for index, row in df.iterrows():
-        time.sleep(0.2)
+        time.sleep(0.1)
         stockDao.update(row.to_dict())
 
     _end = time.time()

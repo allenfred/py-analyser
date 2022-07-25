@@ -50,6 +50,7 @@ class Stock(Base):
     weekly_date = Column(Date)  # 上一次计算weekly candle完成日期
     amount = Column(Float)  # 最近一个交易日的成交额
     ex_date = Column(Date)  # 除权除息日
+    close = Column(Float)  # 最新价
 
 
 stocks = Table('stocks', metadata_obj,
@@ -89,6 +90,7 @@ stocks = Table('stocks', metadata_obj,
                Column('weekly_date', Date),
                Column('amount', Float),
                Column('ex_date', Date),
+               Column('close', Float),
                )
 
 
@@ -131,7 +133,8 @@ def get_obj(item):
         indicator_date=item.get('indicator_date', None),
         weekly_date=item.get('weekly_date', None),
         amount=item.get('amount', None),  # 成交额
-        ex_date=item.get('ex_date', None)  # 除权除息日
+        ex_date=item.get('ex_date', None),  # 除权除息日
+        close=item.get('close', None),  # 最新价
     )
 
 
@@ -285,6 +288,8 @@ class StockDao:
                     row.amount = obj.get('amount')
                 if obj.get('ex_date') is not None:
                     row.ex_date = obj.get('ex_date')
+                if obj.get('close') is not None:
+                    row.close = obj.get('close')
 
         except Exception as e:
             print('Error:', e)
@@ -305,10 +310,8 @@ class StockDao:
         self.session.close()
 
     def bulk_upsert(self, df):
-
         for index, item in df.iterrows():
             obj = get_obj(item)
-
             try:
                 row = self.session.query(Stock).filter(Stock.ts_code == obj.ts_code).first()
 
@@ -375,6 +378,8 @@ class StockDao:
                         row.amount = obj.amount
                     if obj.ex_date is not None:
                         row.ex_date = obj.ex_date
+                    if obj.close is not None:
+                        row.close = obj.close
 
             except Exception as e:
                 print('Error:', e)

@@ -43,7 +43,7 @@ if __name__ == "__main__":
         "is_hs"
     ])
 
-    stockDao.bulk_insert(df)
+    stockDao.bulk_upsert(df)
     print('更新 stocks 完成', len(df), ' 条数据')
 
     end = time.time()

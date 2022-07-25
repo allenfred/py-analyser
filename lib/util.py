@@ -4,6 +4,7 @@ from lib.quota.bias import bias
 from lib.quota.ma_slope import slope
 from lib.quota.magic_nine_turn import td
 import platform
+import datetime
 
 
 def is_mac_os():
@@ -30,6 +31,12 @@ def decimal_digits(val: float):
 
     if digits_location:
         return len(val_str[digits_location + 1:])
+
+
+def get_timestamp():
+    now = datetime.datetime.now()
+    t = now.isoformat("T", "milliseconds")
+    return "[" + t + "Z" + "]"
 
 
 def set_quota(df):
