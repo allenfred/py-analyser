@@ -11,6 +11,7 @@ r = redis.Redis(host='8.210.170.98', port=6371, password='Uwy0Pf8mi', db=0)
 
 from binance.websocket.um_futures.websocket_client import UMFuturesWebsocketClient
 from mongo.df import get_instruments
+from lib.util import get_timestamp
 
 
 def message_handler(message):
@@ -40,4 +41,4 @@ ws_client.instant_subscribe(
     callback=message_handler,
 )
 
-print('[Biance] subscriber start...')
+print(get_timestamp() + '[Biance] subscriber start...')

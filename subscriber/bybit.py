@@ -17,6 +17,7 @@ However, you can set a custom `domain` as shown below.
 """
 from pybit import usdt_perpetual
 from mongo.df import get_instruments
+from lib.util import get_timestamp
 
 ws = usdt_perpetual.WebSocket(
     test=False,
@@ -57,7 +58,7 @@ ws.kline_stream(handle_kline, kline_streams, 15)
 ws.kline_stream(handle_kline, kline_streams, 60)
 ws.kline_stream(handle_kline, ['BTCUSDT'], 240)
 
-print('[Bybit] subscriber start...')
+print(get_timestamp() + '[Bybit] subscriber start...')
 
 while True:
     # This while loop is required for the program to run. You may execute
