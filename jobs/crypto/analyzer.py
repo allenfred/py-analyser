@@ -2,13 +2,14 @@
 
 import os
 import sys
+import numpy as np
 
 path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(path)
 
 from lib.crypto.analyze import analyze
 import time
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from lib.util import set_quota, used_time_fmt
 from df import get_klines_df
 from database import UsdtSwapSignal
@@ -27,18 +28,21 @@ def run(inst, gran):
         print('没有K线数据')
         return
 
+    if min(df['close']) < 0.00001:
+        print('价格过低', exchange, inst_id)
+        return
+
     try:
         # df = df.sort_values(by='trade_date', ascending=True)
         # df['trade_date'] = pd.to_datetime(df["trade_date"], format='%Y-%m-%d')
         df['num'] = df.index[::-1].to_numpy()
         df = df.set_index('num')
-        df['gran'] = gran
         df['granularity'] = gran
         df['exchange'] = exchange
         df['base_currency'] = base_currency
 
         _last = df.iloc[len(df) - 1]['timestamp']
-        _last = _last.replace(tzinfo=None)
+        _last = datetime.strptime(_last, '%Y-%m-%d %H:%M:%S')
 
         # 剔除最新一根未完成K线
         if _last + timedelta(minutes=15) > datetime.utcnow():
@@ -66,16 +70,20 @@ def run(inst, gran):
                 'ma_gold_cross1', 'ma_gold_cross2', 'ma_gold_cross3', 'ma_gold_cross4']
 
         _data = {}
-        # for i, v in enumerate(keys):
         for i, v in enumerate(signal.keys()):
-            if v == 'exchange' or v == 'trade_date' or v == 'timestamp' or v == 'base_currency':
-                _data[v] = signal.get(v)
-            else:
+            if isinstance(signal.get(v), np.int64) or isinstance(signal.get(v), np.int32):
                 _data[v] = int(signal.get(v))
+            elif isinstance(signal.get(v), np.float64):
+                _data[v] = float(signal.get(v))
+            elif v == 'timestamp':
+                _data[v] = datetime.strptime(signal.get("timestamp"), '%Y-%m-%d %H:%M:%S'). \
+                                  replace(tzinfo=timezone.utc). \
+                                  astimezone(timezone.utc)
+            else:
+                _data[v] = signal.get(v)
 
-        UsdtSwapSignal.update_one({"time": _data["timestamp"], "inst_id": inst_id,
+        UsdtSwapSignal.update_one({"timestamp": _data["timestamp"], "instrument_id": inst_id,
                                    "granularity": gran, "exchange": _data["exchange"]}, {"$set": _data}, upsert=True)
         print(exchange, inst_id, gran, 'K线用时', kline_used, ',Analyze用时 ', used_time_fmt(_analyze_start, time.time()))
     except Exception as e:
         print('更新 ', inst_id, gran, 'Catch Error:', e)
-

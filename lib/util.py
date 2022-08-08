@@ -5,6 +5,7 @@ from lib.quota.ma_slope import slope
 from lib.quota.magic_nine_turn import td
 import platform
 import datetime
+import numpy as np
 
 
 def is_mac_os():
@@ -46,7 +47,7 @@ def set_quota(df):
     high = df.high.to_numpy()
     low = df.low.to_numpy()
     close = df.close.to_numpy()
-    vol = df.vol.to_numpy()
+    vol = np.array(df.vol.to_numpy(), dtype='f8')
 
     df['vol5'] = SMA(vol, 5)
     df['vol10'] = SMA(vol, 10)

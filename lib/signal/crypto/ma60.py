@@ -87,7 +87,7 @@ def second(index, candles, bias, ma, df):
     bias60 = bias[:, 4]
     _bias60 = bias60[index]
 
-    if index > 90 and _ma60 > 0:
+    if index > 90:
         _low_bias60 = (_low - _ma60) * 100 / _ma60
 
     def steady_on_ma():
@@ -137,7 +137,7 @@ def third(index, candles, bias, ma, df):
     if index < 90:
         return 0
 
-    gran = df['gran'][0]
+    granularity = df['granularity'][0]
     candle = candles[index]
     _low = candle[2]
     _close = candle[3]
@@ -358,7 +358,7 @@ def seventh(index, candles, bias, ma, df):
     if index < 90:
         return 0
 
-    gran = df['gran'][0]
+    granularity = df['granularity'][0]
     candle = candles[index]
     _high = candle[1]
     _low = candle[2]
@@ -368,7 +368,7 @@ def seventh(index, candles, bias, ma, df):
     bias60 = bias[:, 4]
     _bias60 = bias60[index]
 
-    if _ma60 > 0:
+    if index > 90:
         _high_bias60 = (_high - _ma60) * 100 / _ma60
 
     def steady_under_ma():
@@ -386,7 +386,7 @@ def seventh(index, candles, bias, ma, df):
             return True
         return False
 
-    if _bias60 > -1 and has_resistance() and steady_under_ma():
+    if index > 90 and _bias60 > -1 and has_resistance() and steady_under_ma():
         # print(index, candle[5], '7')
         return 1
 
@@ -412,7 +412,7 @@ def eighth(index, candles, bias, ma, df):
     if index < 90:
         return 0
 
-    gran = df['gran'][0]
+    granularity = df['granularity'][0]
     candle = candles[index]
     _low = candle[2]
     _close = candle[3]
@@ -437,7 +437,7 @@ def eighth(index, candles, bias, ma, df):
         for i in range(13):
             if candles[index - i - 1][3] > ma60[index - i - 1]:
                 tag += 1
-        if gran == 900:
+        if granularity == 900:
 
             return 7 > tag > 0
         else:
