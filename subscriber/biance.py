@@ -23,11 +23,11 @@ def message_handler(message):
 
 
 insts = list(get_instruments('biance'))
-insts = sorted(insts, key=lambda d: d['volume_24h'], reverse=True)
 streams = ['!miniTicker@arr', 'btcusdt@kline_4h']
 
 for index, item in enumerate(insts):
     inst_id = item['instrument_id']
+    print(inst_id, item['volume_24h'])
     if len(streams) < 160 and inst_id.endswith('USDT'):
         streams.append(inst_id.lower() + '@kline_15m')
         streams.append(inst_id.lower() + '@kline_1h')
