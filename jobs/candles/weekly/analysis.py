@@ -27,53 +27,12 @@ weeklySignalDao = WeeklySignalDao()
 stockDao = StockDao()
 
 
-def ready_weekly_klines():
-    _today = datetime.now().strftime("%Y%m%d")
-    _start_time = time.time()
-    is_last_req = False
-    offset = 0
-    _cnt = 0
-
-    while not is_last_req:
-        klines_df = get_weekly_candles({"trade_date": _today, "limit": 2000, "offset": offset})
-
-        if len(klines_df) < 2000:
-            is_last_req = True
-        else:
-            offset += len(klines_df)
-
-        try:
-            if len(klines_df) > 0:
-                klines_df['trade_date'] = pd.to_datetime(klines_df["trade_date"], format='%Y-%m-%d')
-
-                # 过滤出最新candle数据 (相较于db)
-                db_df = weeklyCandleDao.find_by_trade_date(klines_df['trade_date'][0])
-                new_df = klines_df.loc[~klines_df["ts_code"].isin(db_df["ts_code"])]
-                if len(new_df) == 0:
-                    break
-
-                _cnt += len(new_df)
-                weeklyCandleDao.bulk_insert(new_df)
-
-                print('已更新 CN weekly_candles :', len(new_df))
-            else:
-                print(_today, '没有周K线')
-
-        except Exception as e:
-            print(_today, 'Error:', e)
-            break
-
-    return _cnt
-
-
 if __name__ == "__main__":
     today = datetime.now().strftime("%Y-%m-%d")
     start = time.time()
     flag = True
 
-    _weekly_cnt = ready_weekly_klines()
-
-    while _weekly_cnt > 0:
+    while flag:
         circle_start = time.time()
         ts_code = stockDao.find_one_weekly_not_ready(today)
         time.sleep(0.2)
@@ -109,6 +68,5 @@ if __name__ == "__main__":
         except Exception as e:
             print(ts_code, 'Error:', e)
             break
-            stockDao.update({'ts_code': ts_code, 'weekly_date': today})
 
     print(today, '用时', used_time_fmt(start, time.time()))

@@ -16,8 +16,8 @@ def get_weekly_candles(options):
             df = pro.weekly(**{
                 "ts_code": options.get("ts_code", ""),
                 "trade_date": options.get("trade_date", ""),
-                "start_date": "",
-                "end_date": "",
+                "start_date": options.get("start_date", ""),
+                "end_date": options.get("end_date", ""),
                 "limit": options.get("limit", 500),
                 "offset": options.get("offset", ""),
             }, fields=[

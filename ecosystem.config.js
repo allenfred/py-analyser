@@ -121,7 +121,17 @@ module.exports = {
       autorestart: false,
     },
     {
-      name: 'cn_weekly',
+      name: 'weekly_candle',
+      script: 'jobs/candles/weekly/history.py',
+      interpreter: 'python3',
+      instances: 1,
+      exec_mode: 'fork',
+      cron_restart: '0 22 * * *', // 每天下午 22:00
+      watch: false,
+      autorestart: false,
+    },
+    {
+      name: 'weekly_analysis',
       script: 'jobs/candles/weekly/analysis.py',
       interpreter: 'python3',
       instances: 1,
