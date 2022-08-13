@@ -17,7 +17,6 @@ from lib.util import set_quota, used_time_fmt
 import time
 from datetime import datetime
 from config.common import TS_TOKEN
-from api.weekly_candle import get_weekly_candles
 
 
 pro = ts.pro_api(TS_TOKEN)
@@ -58,7 +57,7 @@ if __name__ == "__main__":
                 small_df = df.iloc[df_len - 10: df_len]
                 weeklySignalDao.reinsert(small_df, ts_code)
 
-                print('分析完成 :', ts_code, '，用时 ',
+                print('分析完成 :', ts_code, ', 用时 ',
                       used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start, time.time()))
             else:
                 print('新股周K线不足30')
