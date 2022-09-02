@@ -22,7 +22,7 @@ def message_handler(message):
         r.publish('klines', json.dumps(message))
 
 
-insts = list(get_instruments('biance'))
+insts = list(get_instruments('binance'))
 streams = ['!miniTicker@arr', 'btcusdt@kline_4h']
 
 for index, item in enumerate(insts):
@@ -41,4 +41,4 @@ ws_client.instant_subscribe(
     callback=message_handler,
 )
 
-print(get_timestamp() + '[Biance] subscriber start...')
+print(get_timestamp() + '[Binance] subscriber start...')

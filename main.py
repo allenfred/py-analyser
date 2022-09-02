@@ -11,7 +11,7 @@ def message_handler(message):
     print(message)
 
 
-insts = get_inst_df('biance')
+insts = get_inst_df('binance')
 streams = ['!miniTicker@arr']
 
 for index, item in enumerate(insts):
