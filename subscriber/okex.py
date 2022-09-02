@@ -186,7 +186,6 @@ if __name__ == "__main__":
 
     for index, item in enumerate(insts):
         inst_id = item['instrument_id']
-        # print(inst_id)
 
         if len(channels) < 200 and item['exchange'] == 'okex' and item['volume_24h'] > 1000000:
             channels.append({

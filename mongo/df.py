@@ -14,5 +14,7 @@ def get_instruments(exchange=None):
         return InstrumentInfo.find(
             {"exchange": exchange},
         ).sort("volume_24h", -1)
-
-    return []
+    else:
+        return InstrumentInfo.find(
+            {},
+        ).sort("volume_24h", -1)
