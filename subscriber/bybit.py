@@ -16,7 +16,7 @@ There are several WSS URLs offered by Bybit, which pybit manages for you.
 However, you can set a custom `domain` as shown below.
 """
 from pybit import usdt_perpetual
-from mongo.df import get_instruments
+from mongo.df import get_instruments, get_tickers
 from lib.util import get_timestamp
 
 ws = usdt_perpetual.WebSocket(
@@ -30,12 +30,14 @@ ws = usdt_perpetual.WebSocket(
 )
 
 insts = list(get_instruments())
+tickers = list(get_tickers())
 insts = sorted(insts, key=lambda d: d['volume_24h'], reverse=True)
 kline_streams = []
 ticker_streams = []
 
 for index, item in enumerate(insts):
     inst_id = item['instrument_id']
+    
     if len(kline_streams) < 20 and item['exchange'] == 'bybit' and \
             inst_id.endswith('USDT') and item['volume_24h'] > 1000000:
         kline_streams.append(inst_id)
@@ -64,5 +66,3 @@ while True:
     # This while loop is required for the program to run. You may execute
     # additional code for your trading logic here.
     sleep(1)
-
-
