@@ -87,7 +87,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
             small_df = df.iloc[df_len - 5: df_len]
             signal = df.iloc[df_len - 1].to_dict()
 
-            # dailyIndicatorDao.bulk_insert(small_df, ts_code)
+            dailyIndicatorDao.bulk_insert(small_df, ts_code)
             stockSignalDao.upsert(signal)
             stockDailySignalDao.reinsert(small_df, ts_code)
             dailyPatternSignalDao.bulk_insert(small_df, ts_code)

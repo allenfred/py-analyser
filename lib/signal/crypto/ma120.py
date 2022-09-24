@@ -116,22 +116,7 @@ def second(index, candles, bias, ma, df):
 
         return flag
 
-    def ma10_down():
-        flag = True
-        for i in range(5):
-            if ma10[index - i] > ma10[index - i - 1]:
-                flag = False
-        return flag
-
-    def ma20_down():
-        flag = True
-        for i in range(5):
-            if ma20[index - i] > ma20[index - i - 1]:
-                flag = False
-        return flag
-
     if index > 150 and _low_bias120 < 1 and steady_on_ma() and \
-            not ma10_down() and not ma20_down() and \
             (has_long_break_patterns(index, df) or has_long_patterns(index, df)):
         # print(index, candle[5], '2', 'ma120')
         return 1
@@ -175,22 +160,7 @@ def third(index, candles, bias, ma, df):
                 flag = False
         return flag
 
-    def ma10_down():
-        flag = True
-        for i in range(5):
-            if ma10[index - i] > ma10[index - i - 1]:
-                flag = False
-        return flag
-
-    def ma20_down():
-        flag = True
-        for i in range(5):
-            if ma20[index - i] > ma20[index - i - 1]:
-                flag = False
-        return flag
-
     if index > 150 and _close > _ma120 > _low and _bias120 < 8 and \
-            not ma10_down() and not ma20_down() and \
             ma_rise_steady() and candles[index - 1][2] < ma120[index - 1] and \
             (has_long_break_patterns(index, df) or has_long_patterns(index, df)):
         # print(index, candle[5], '3', 'ma120')
@@ -443,5 +413,3 @@ def eighth(index, candles, bias, ma, df):
         return 1
 
     return 0
-
-

@@ -92,28 +92,13 @@ def second(index, candles, bias, ma, df):
 
     def steady_on_ma():
         flag = True
-        for i in range(13):
+        for i in range(21):
             if candles[index - i][3] < ma60[index - i] or ma60[index - i] < ma60[index - i - 1]:
                 flag = False
 
         return flag
 
-    def ma10_down():
-        flag = True
-        for i in range(5):
-            if ma10[index - i] > ma10[index - i - 1]:
-                flag = False
-        return flag
-
-    def ma20_down():
-        flag = True
-        for i in range(5):
-            if ma20[index - i] > ma20[index - i - 1]:
-                flag = False
-        return flag
-
     if index > 90 and _low_bias60 < 1 and steady_on_ma() and \
-            not ma10_down() and not ma20_down() and \
             (has_long_break_patterns(index, df) or has_long_patterns(index, df)):
         return 1
 
@@ -159,35 +144,9 @@ def third(index, candles, bias, ma, df):
                 flag = False
         return flag
 
-    def ma10_down():
-        flag = True
-        for i in range(5):
-            if ma10[index - i] > ma10[index - i - 1]:
-                flag = False
-        return flag
-
-    def ma20_down():
-        flag = True
-        for i in range(5):
-            if ma20[index - i] > ma20[index - i - 1]:
-                flag = False
-        return flag
-
-    def fall_down_ma_temp():
-        tag1 = 0
-        tag2 = 0
-        for i in range(13):
-            if candles[index - i - 1][3] < ma60[index - i - 1]:
-                tag1 += 1
-            if i < 6 and candles[index - i - 1][3] < ma60[index - i - 1]:
-                tag2 += 1
-        return 4 > tag1 > 0 and 4 > tag2 > 0
-
     if _close > _ma60 > _low and _bias60 < 8 and \
-            not ma10_down() and not ma20_down() and \
-            ma_rise_steady() and fall_down_ma_temp() and \
+            ma_rise_steady() and \
             (has_long_break_patterns(index, df) or has_long_patterns(index, df)):
-        # print(index, candle[5], '3')
         return 1
 
     return 0

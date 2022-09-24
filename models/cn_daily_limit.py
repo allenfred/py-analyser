@@ -37,6 +37,14 @@ class CNDailyLimitDao:
     def __init__(self):
         self.session = DBSession()
 
+    def find_by_trade_date(self, trade_date):
+        s = text("select ts_code, trade_date, up_limit, down_limit from cn_daily_limit where trade_date = :trade_date;")
+        statement = self.session.execute(s.params(trade_date=trade_date))
+        df = pd.DataFrame(statement.fetchall(), columns=['ts_code', 'trade_date', 'up_limit', 'down_limit'])
+        self.session.close()
+
+        return df
+
     def reinsert(self, df):
         trade_date = df['trade_date'][0]
         items = []

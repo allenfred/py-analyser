@@ -50,11 +50,10 @@ if __name__ == "__main__":
     inst_id = 'BTCUSDT'
     inst_id = 'ETHUSDT'
     inst_id = 'SOLUSDT'
-    inst_id = 'BABYDOGE-USDT-SWAP'
 
     gran = 900
-    # exchange = 'biance'
-    exchange = 'okex'
+    exchange = 'binance'
+    # exchange = 'okex'
     df = get_klines_df(exchange, inst_id, gran, 300)
     # df = get_swap_df(inst_id, "900", 1200)
     # df = get_klines_df(inst_id, "900", 300)
@@ -91,7 +90,7 @@ if __name__ == "__main__":
     df = set_quota(df)
     df = analyze(df)
     signal = df.iloc[len(df) - 1].to_dict()
-
+    print(signal)
     _data = {}
     for i, v in enumerate(signal.keys()):
 

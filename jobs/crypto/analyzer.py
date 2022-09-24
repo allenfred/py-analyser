@@ -77,8 +77,8 @@ def run(inst, gran):
                 _data[v] = float(signal.get(v))
             elif v == 'timestamp':
                 _data[v] = datetime.strptime(signal.get("timestamp"), '%Y-%m-%d %H:%M:%S'). \
-                                  replace(tzinfo=timezone.utc). \
-                                  astimezone(timezone.utc)
+                    replace(tzinfo=timezone.utc). \
+                    astimezone(timezone.utc)
             else:
                 _data[v] = signal.get(v)
 

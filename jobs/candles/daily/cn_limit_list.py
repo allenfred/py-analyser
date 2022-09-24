@@ -27,7 +27,8 @@ calendarDao = TradeCalendarDao()
 stockDao = StockDao()
 
 
-def daily_limit():
+# 获取每日涨停数据统计
+def daily_limit_list():
     _start = time.time()
     _today = datetime.now().strftime("%Y%m%d")
     # 获取单日统计数据
@@ -40,7 +41,7 @@ if __name__ == "__main__":
     today = datetime.now().strftime("%Y-%m-%d")
     start = time.time()
 
-    daily_limit()
+    daily_limit_list()
 
     end = time.time()
 

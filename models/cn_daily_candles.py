@@ -102,9 +102,10 @@ class CNDailyCandleDao:
         return df
 
     def find_by_trade_date(self, trade_date):
-        s = text("select ts_code, open, close, high, low from cn_daily_candles where trade_date = :trade_date;")
+        s = text(
+            "select ts_code, open, close, high, low, pct_chg from cn_daily_candles where trade_date = :trade_date;")
         statement = self.session.execute(s.params(trade_date=trade_date))
-        df = pd.DataFrame(statement.fetchall(), columns=['ts_code', 'open', 'close', 'high', 'low'])
+        df = pd.DataFrame(statement.fetchall(), columns=['ts_code', 'open', 'close', 'high', 'low', 'pct_chg'])
         self.session.close()
 
         return df

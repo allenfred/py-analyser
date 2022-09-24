@@ -18,10 +18,7 @@ uri = "mongodb://%s:%s@%s" % (
 client = MongoClient(uri)
 db = client[CRYPTO_DB_NAME]
 
-
 InstrumentInfo = db["instrument_infos"]
-# UsdtSwapKlines = db["usdt_swap_klines"]
-# UsdtSwapSignal = db["usdt_swap_signal"]
 UsdtSwapKlines = db["usdt_swap_klines"].with_options(
     codec_options=CodecOptions(tz_aware=True, tzinfo=pytz.timezone("Etc/GMT+0"))
 )

@@ -2,12 +2,15 @@
 
 import os
 import sys
+import pandas as pd
 
 path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 sys.path.append(path)
 
 import tushare as ts
 from models.cn_daily_candles import CNDailyCandleDao
+from models.cn_limit_list import CNLimitListDao
+from models.cn_daily_limit import CNDailyLimitDao
 from models.weekly_candles import WeeklyCandleDao
 from models.trade_calendar import TradeCalendarDao
 from models.stocks import StockDao
@@ -19,6 +22,8 @@ from lib.util import used_time_fmt
 
 pro = ts.pro_api(TS_TOKEN)
 dailyCandleDao = CNDailyCandleDao()
+dailyLimitDao = CNDailyLimitDao()
+limitListDao = CNLimitListDao()
 weeklyCandleDao = WeeklyCandleDao()
 calendarDao = TradeCalendarDao()
 stockDao = StockDao()
@@ -32,6 +37,7 @@ def ready_daily_klines():
 
         if item:
             trade_dte = datetime.strftime(item.cal_date, "%Y%m%d")
+
             is_last_req = False
             total_got_count = 0
             offset = 0
@@ -64,42 +70,19 @@ def ready_daily_klines():
             break
 
         print('已更新 CN daily_candles ', item.cal_date, ': ', total_got_count, ' 条数据，用时 ',
-              used_time_fmt(circle_start, time.time()), ', 总用时 ',  used_time_fmt(start_time, time.time()))
+              used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start_time, time.time()))
         calendarDao.set_cn_candle_ready(item.cal_date)
 
-#
-# def ready_candles_by_stock(start_time):
-#     today = datetime.now().strftime("%Y-%m-%d")
-#     df = get_cn_candles({"ts_code": ts_code, "limit": 1, "offset": 0})
-#     latest_candle_date = datetime.strftime(datetime.strptime(df["trade_date"][0], "%Y%m%d"), '%Y-%m-%d')
-#
-#     if not latest_candle_date == today:
-#         print('tushare 尚未同步最新行情数据:', today)
-#         quit()
-#
-#     while True:
-#         circle_start = time.time()
-#         ts_code = stockDao.find_one_candle_not_ready('CN', today)
-#
-#         if ts_code is None:
-#             break
-#
-#         try:
-#             df = get_cn_candles({"ts_code": ts_code, "limit": 2000, "offset": 0})
-#             df = df.sort_values(by='trade_date', ascending=False)
-#
-#             # 过滤出最新candle数据 (相较于db)
-#             db_df = dailyCandleDao.find_by_ts_code(ts_code)
-#             new_df = df.loc[~pd.to_datetime(df["trade_date"], format='%Y-%m-%d').isin(db_df["trade_date"].to_numpy())]
-#
-#             dailyCandleDao.bulk_insert(new_df)
-#             stockDao.update({'ts_code': ts_code, 'candle_date': today})
-#
-#             print('已更新 CN daily_candles :', ts_code, ': ', len(new_df), ' 条数据，用时 ',
-#                   used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start_time, time.time()))
-#         except Exception as e:
-#             stockDao.update({'ts_code': ts_code, 'candle_date': today})
-#             print('Error:', e)
+
+def init_limit_list(_today):
+    db_df = dailyCandleDao.find_by_trade_date(_today)
+    limit_df = dailyLimitDao.find_by_trade_date(_today)
+    new_df = pd.merge(db_df, limit_df, on='ts_code')
+    new_df['limit'] = 'U'
+    limit_df = new_df[new_df.close == new_df.up_limit]
+    insert_df = limit_df[['ts_code', 'trade_date', 'close', 'pct_chg', 'limit']]
+
+    limitListDao.reinsert(insert_df)
 
 
 if __name__ == "__main__":
@@ -107,6 +90,7 @@ if __name__ == "__main__":
     start = time.time()
 
     ready_daily_klines()
+    init_limit_list(today)
 
     end = time.time()
 
