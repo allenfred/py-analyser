@@ -82,10 +82,6 @@ def run(inst, gran):
             else:
                 _data[v] = signal.get(v)
 
-        _data['trade_date'] = datetime.strptime(signal.get("timestamp"), '%Y-%m-%d'). \
-            replace(tzinfo=timezone.utc). \
-            astimezone(timezone.utc)
-
         UsdtSwapSignal.update_one({"timestamp": _data["timestamp"], "instrument_id": inst_id,
                                    "granularity": gran, "exchange": _data["exchange"]}, {"$set": _data}, upsert=True)
         print(exchange, inst_id, gran, 'K线用时', kline_used, ',Analyze用时 ', used_time_fmt(_analyze_start, time.time()))
