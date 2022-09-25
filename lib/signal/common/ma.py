@@ -171,9 +171,17 @@ def is_up_hill(index, df):
 
     def ma20_rise_steady():
         flag = True
-        for i in range(13):
+        for i in range(21):
             # 如果当前 MA <= 前值
-            if ma20[index - i] < ma20[index - i - 1] or ma30[index - i] < ma30[index - i - 1]:
+            if ma20[index - i] < ma20[index - i - 1]:
+                flag = False
+        return flag
+
+    def ma30_rise_steady():
+        flag = True
+        for i in range(21):
+            # 如果当前 MA <= 前值
+            if ma30[index - i] < ma30[index - i - 1]:
                 flag = False
         return flag
 
@@ -185,7 +193,9 @@ def is_up_hill(index, df):
                 tag += 1
         return tag < 3
 
-    if index > 90 and ma60_rise_steady() and ma20_rise_steady() and steady_on_ma20():
+    if index > 90 and ma60_rise_steady() and \
+            (ma20_rise_steady() and ma30_rise_steady()) and \
+            steady_on_ma20():
         return True
 
     return False
