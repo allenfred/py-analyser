@@ -54,7 +54,7 @@ class CNLimitListDao:
         self.session = DBSession()
 
     def reinsert(self, df):
-        trade_date = df['trade_date'][0]
+        trade_date = df['trade_date'].to_numpy()[0]
         items = []
 
         for index, item in df.iterrows():
