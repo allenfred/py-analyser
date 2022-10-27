@@ -82,6 +82,8 @@ def init_limit_list(_today):
     limit_df = new_df[new_df.close == new_df.up_limit]
     insert_df = limit_df[['ts_code', 'trade_date', 'close', 'pct_chg', 'limit']]
 
+    print('今日涨停:', len(insert_df))
+    
     limitListDao.reinsert(insert_df)
 
 

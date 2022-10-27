@@ -155,6 +155,7 @@ def is_up_hill(index, df):
 
     ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
     close = df['close'].to_numpy()
+    low = df['low'].to_numpy()
     ma5 = ma[:, 0]
     ma10 = ma[:, 1]
     ma20 = ma[:, 2]
@@ -163,7 +164,7 @@ def is_up_hill(index, df):
 
     def ma60_rise_steady():
         flag = True
-        for i in range(21):
+        for i in range(18):
             # 如果当前 MA <= 前值
             if ma60[index - i] < ma60[index - i - 1]:
                 flag = False
@@ -187,15 +188,21 @@ def is_up_hill(index, df):
 
     def steady_on_ma20():
         tag = 0
-        for i in range(13):
+        for i in range(21):
             # 如果当前 MA <= 前值
             if close[index - i] < ma20[index - i]:
                 tag += 1
-        return tag < 3
+        return tag <= 3
+
+    # 在MA20 或者 MA30 获得支撑
+    def support_on_ma20():
+        if (close[index] > ma20[index] or close[index] > ma30[index]) and \
+                (low[index] < ma20[index] or low[index] < ma30[index]):
+            return True
 
     if index > 90 and ma60_rise_steady() and \
-            (ma20_rise_steady() and ma30_rise_steady()) and \
-            steady_on_ma20():
+            (ma20_rise_steady() or ma30_rise_steady()) and \
+            steady_on_ma20() and support_on_ma20():
         return True
 
     return False
