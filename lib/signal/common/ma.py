@@ -186,11 +186,11 @@ def is_up_hill(index, df):
                 flag = False
         return flag
 
-    def steady_on_ma20():
+    def steady_on_ma30():
         tag = 0
         for i in range(21):
             # 如果当前 MA <= 前值
-            if close[index - i] < ma20[index - i]:
+            if close[index - i] < ma30[index - i]:
                 tag += 1
         return tag <= 3
 
@@ -202,7 +202,7 @@ def is_up_hill(index, df):
 
     if index > 90 and ma60_rise_steady() and \
             (ma20_rise_steady() or ma30_rise_steady()) and \
-            steady_on_ma20() and support_on_ma20():
+            steady_on_ma30() and support_on_ma20():
         return True
 
     return False
