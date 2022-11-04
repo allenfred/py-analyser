@@ -7,6 +7,96 @@ import sys
 _start_at = 200
 
 
+def long_line(i, candles):
+    """
+    description: 大阳线/大阴线
+    有效标准：
+    1.市场处于清晰的上涨/下跌趋势
+    2.实体长度占比小于90%
+    3.K线涨跌幅大于 5
+
+    :param i:
+    :param candles:
+    :return:
+    """
+    if i < _start_at:
+        return 0
+
+    open = candles[:, 0]
+    high = candles[:, 1]
+    low = candles[:, 2]
+    close = candles[:, 3]
+    pct_chg = candles[:, 4]
+    pct_range = candles[:, 5]
+    _open = open[i]
+    _high = high[i]
+    _low = low[i]
+    _close = close[i]
+    _per = 0.05
+
+    k_len = _high - _low
+    bar_len = math.fabs(_open - _close)
+    up_shadow_len = math.fabs(_high - _close if _open < _close else _high - _open)
+    bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
+
+    pct_chg_base = 5
+
+    if up_shadow_len + bottom_shadow_len < k_len * _per * 2 and \
+            (up_shadow_len > k_len * _per or bottom_shadow_len > k_len * _per) and \
+            math.fabs(pct_chg[i]) > pct_chg_base:
+        if _open < _close:
+            return 1
+        else:
+            return -1
+
+    return 0
+
+
+def marubozu(i, candles):
+    """
+    description: 光头光脚 (看涨/看跌)
+    有效标准：
+    1.市场处于清晰的上涨/下降趋势
+    2.上下影线占K线长度比例小于5%
+    3.K线涨跌幅大于 5
+
+    :param i: 当前tick
+    :param candles:
+    :return: boolean
+    """
+
+    if i < _start_at:
+        return 0
+
+    open = candles[:, 0]
+    high = candles[:, 1]
+    low = candles[:, 2]
+    close = candles[:, 3]
+    pct_chg = candles[:, 4]
+    pct_range = candles[:, 5]
+    _open = open[i]
+    _high = high[i]
+    _low = low[i]
+    _close = close[i]
+    _per = 0.05
+
+    k_len = _high - _low
+    bar_len = math.fabs(_open - _close)
+    up_shadow_len = math.fabs(_high - _close if _open < _close else _high - _open)
+    bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
+
+    pct_chg_base = 5
+
+    if up_shadow_len < k_len * _per and bottom_shadow_len < k_len * _per and \
+            math.fabs(pct_chg[i]) > pct_chg_base:
+        if _open < _close:
+            return 1
+        else:
+            return -1
+
+    return 0
+
+
 def hammer(i, candles):
     """
     description: 锤头线 (看涨)
@@ -370,8 +460,9 @@ def sunrise(i, candles):
     description: 旭日东升 (看涨)
     有效标准：
     1.市场处于清晰的下降趋势
-    2.当前K线收出旭日东升形态
-    3.当前K线最低价为近期最低价
+    2.当前K线开盘价高于前日收盘价
+    3.当前K线收盘价高于前日开盘价
+    4.K线波动幅度大于3%
 
     param {*} i 当前时间tick
     param {*} candles
@@ -396,8 +487,6 @@ def sunrise(i, candles):
     # 最近21日最低价
     lowest_low = min(low[i - 20: i + 1])
 
-    # 下跌趋势中 前一根K线为中阴线或大阴线 当日K线为高开的中阳线或大阳线
-    # 当日K线收盘价插入前日K线实体的1/2 但没有超过前日K线的开盘价
     if pct_chg[i - 1] < -3 and pct_chg[i] > 3 and lowest_low == low[i - 1] and \
             _close > open[i - 1] > _open > close[i - 1]:
         return 1
@@ -727,54 +816,6 @@ def downward_jump(i, candles):
     return 0
 
 
-def rise_limit(i, candles):
-    """
-    description: 涨停板(A股)
-    有效标准：
-
-    :param i: 当前tick
-    :param candles:
-    :return: boolean
-    """
-    if i < _start_at:
-        return 0
-
-    _open = candles[:, 0][i]
-    _high = candles[:, 1][i]
-    _low = candles[:, 2][i]
-    _close = candles[:, 3][i]
-    _chg = candles[:, 4][i]
-
-    if _high == _close and _chg > 9.5:
-        return 1
-
-    return 0
-
-
-def drop_limit(i, candles):
-    """
-    description: 跌停板(A股)
-    有效标准：
-
-    :param i: 当前tick
-    :param candles:
-    :return: boolean
-    """
-    if i < _start_at:
-        return 0
-
-    _open = candles[:, 0][i]
-    _high = candles[:, 1][i]
-    _low = candles[:, 2][i]
-    _close = candles[:, 3][i]
-    _chg = candles[:, 4][i]
-
-    if _low == _close and _chg < -9.5:
-        return 1
-
-    return 0
-
-
 def up_cross3ma(i, candles, df):
     """
     description: 一阳穿三线 (看涨)
@@ -873,6 +914,37 @@ def drop_cross4ma(i, candles, df):
     :param df:
     :return: boolean
     """
+    if i < _start_at:
+        return 0
+
+    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+    _open = candles[:, 0][i]
+    _close = candles[:, 3][i]
+    _ma5 = ma[:, 0][i]
+    _ma10 = ma[:, 1][i]
+    _ma20 = ma[:, 2][i]
+    _ma60 = ma[:, 5][i]
+
+    if (_open > _ma5 and _open > _ma10 and _open > _ma20 and _open > _ma60 and
+            _close < _ma5 and _close < _ma10 and _close < _ma20 and _close < _ma60):
+        return 1
+
+    return 0
+
+
+def limit_up_gene(i, candles, df):
+    """
+    description: 涨停基因(看涨)
+    有效标准：
+    最近20个交易日有涨停
+    价格 回调至上个涨停区间 0.386
+
+    :param i: 当前tick
+    :param candles:
+    :param df:
+    :return: boolean
+    """
+    
     if i < _start_at:
         return 0
 

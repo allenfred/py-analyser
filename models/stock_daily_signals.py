@@ -98,6 +98,9 @@ class StockDailySignal(Base):
     up_hill = Column(SmallInteger)
     down_hill = Column(SmallInteger)
 
+    up_wave = Column(SmallInteger)
+    limit_up_gene = Column(SmallInteger)
+
     up_td8 = Column(SmallInteger)
     up_td9 = Column(SmallInteger)
 
@@ -270,6 +273,9 @@ def get_obj(signal):
 
         up_hill=signal.get('up_hill', None),
         down_hill=signal.get('down_hill', None),
+
+        up_wave=signal.get('up_wave', None),
+        limit_up_gene=signal.get('limit_up_gene', None),
 
         up_td8=signal.get('up_td8', None),
         up_td9=signal.get('up_td9', None),
@@ -585,6 +591,11 @@ class StockDailySignalDao:
                     row.up_hill = obj.up_hill
                 if obj.down_hill is not None:
                     row.down_hill = obj.down_hill
+
+                if obj.up_wave is not None:
+                    row.up_wave = obj.up_wave
+                if obj.limit_up_gene is not None:
+                    row.limit_up_gene = obj.limit_up_gene
 
                 if obj.up_td8 is not None:
                     row.up_td8 = obj.up_td8

@@ -420,22 +420,31 @@ def has_support_patterns(index, df):
 
 def has_bottom_patterns(index, df):
     """
-    判断当前是否存在di底部看涨K线形态
+    判断当前是否存在底部看涨K线形态
     看涨吞没
-    刺透心态 (旭日东升 / 曙光初现 / 好友反攻)
+    旭日东升
     看涨螺旋桨
-    梯底
     锤头 (探水竿)
     倒锤头
+    墓碑十字/倒T十字 CDLGRAVESTONEDOJI
+    晨星 CDLMORNINGSTAR
+    十字晨星 CDLMORNINGDOJISTAR
+    刺透心态 CDLPIERCING
 
     :param index: 当前时间
     :param df:
     :return:
     """
 
-    if df.iloc[index]['swallow_up'] > 0 or df.iloc[index]['sunrise'] > 0 \
-            or df.iloc[index]['down_screw'] > 0 or df.iloc[index]['CDLLADDERBOTTOM'] > 0 \
-            or df.iloc[index]['hammer'] > 0 or df.iloc[index]['pour_hammer'] > 0:
+    if df.iloc[index]['swallow_up'] > 0 or \
+            df.iloc[index]['sunrise'] > 0 or \
+            df.iloc[index]['down_screw'] > 0 or \
+            df.iloc[index]['hammer'] > 0 or \
+            df.iloc[index]['pour_hammer'] > 0 or \
+            df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 or \
+            df.iloc[index]['CDLMORNINGSTAR'] > 0 or \
+            df.iloc[index]['CDLMORNINGDOJISTAR'] > 0 or \
+            df.iloc[index]['CDLPIERCING'] > 0:
         return True
 
     return False

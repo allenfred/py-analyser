@@ -49,7 +49,7 @@ if __name__ == "__main__":
     inst_id = 'ADAUSDT'
     inst_id = 'BTCUSDT'
     inst_id = 'ETHUSDT'
-    inst_id = 'SOLUSDT'
+    inst_id = 'OCEANUSDT'
 
     gran = 900
     exchange = 'binance'

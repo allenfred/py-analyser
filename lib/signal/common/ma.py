@@ -165,8 +165,8 @@ def is_up_hill(index, df):
     def ma60_rise_steady():
         flag = True
         for i in range(18):
-            # 如果当前 MA <= 前值
-            if ma60[index - i] < ma60[index - i - 1]:
+            # 如果当前 MA <= 前值 / 收盘价低于 MA60
+            if ma60[index - i] < ma60[index - i - 1] or close[index - i] < ma60[index - i]:
                 flag = False
         return flag
 
@@ -192,9 +192,9 @@ def is_up_hill(index, df):
             # 如果当前 MA <= 前值
             if close[index - i] < ma30[index - i]:
                 tag += 1
-        return tag <= 3
+        return tag < 3
 
-    # 在MA20 或者 MA30 获得支撑
+    # 在MA20/MA30 获得支撑
     def support_on_ma20():
         if (close[index] > ma20[index] or close[index] > ma30[index]) and \
                 (low[index] < ma20[index] or low[index] < ma30[index]):
@@ -203,6 +203,101 @@ def is_up_hill(index, df):
     if index > 90 and ma60_rise_steady() and \
             (ma20_rise_steady() or ma30_rise_steady()) and \
             steady_on_ma30() and support_on_ma20():
+        # print('is_up_hill', df.iloc[index]['trade_date'])
+        return True
+
+    return False
+
+
+def is_up_wave(index, df):
+    """
+    逐浪上升
+    MA60/MA120 持续上行
+    价格回落跌破 MA60/MA120
+    均线附近出现看涨形态 (金叉/大阳线)
+
+    :param index:
+    :param df:
+    :return:
+    """
+
+    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+    close = df['close'].to_numpy()
+    low = df['low'].to_numpy()
+    ma5 = ma[:, 0]
+    ma10 = ma[:, 1]
+    ma20 = ma[:, 2]
+    ma30 = ma[:, 3]
+    ma60 = ma[:, 5]
+    ma120 = ma[:, 6]
+
+    def low_bias(sma, ind):
+        return round(round((low[ind] - sma[ind]) / sma[ind], 5) * 100, 2)
+
+    def ma120_rise_steady():
+        flag = True
+        for i in range(33):
+            # 如果当前 MA <= 前值
+            if ma120[index - i] < ma120[index - i - 1]:
+                flag = False
+        return flag
+
+    def ma60_rise_steady():
+        flag = True
+        for i in range(21):
+            # 如果当前 MA <= 前值
+            if ma60[index - i] < ma60[index - i - 1]:
+                flag = False
+        return flag
+
+    def has_bottom_patterns_recently():
+        return has_bottom_patterns(index, df) or \
+               has_bottom_patterns(index - 1, df) or \
+               has_bottom_patterns(index - 2, df)
+
+    def has_large_vol_recently():
+        return df.iloc[index]['large_vol'] == 1 or \
+               df.iloc[index - 1]['large_vol'] == 1 or \
+               df.iloc[index - 2]['large_vol'] == 1
+
+    def has_long_ling_recently():
+        return df.iloc[index]['long_line'] == 1 or \
+               df.iloc[index - 1]['long_line'] == 1 or \
+               df.iloc[index - 2]['long_line'] == 1 or \
+               df.iloc[index]['marubozu'] == 1 or \
+               df.iloc[index - 1]['marubozu'] == 1 or \
+               df.iloc[index - 2]['marubozu'] == 1 or \
+               df.iloc[index]['up_cross4ma'] == 1 or \
+               df.iloc[index - 1]['up_cross4ma'] == 1 or \
+               df.iloc[index - 2]['up_cross4ma'] == 1
+
+    def has_gold_cross():
+        return df.iloc[index]['ma_gold_cross1'] == 1 or \
+               df.iloc[index]['ma_gold_cross2'] == 1 or \
+               df.iloc[index]['ma_gold_cross3'] == 1 or \
+               df.iloc[index]['ma_gold_cross4'] == 1
+
+    # 出现看涨信号：看涨K线信号 / 金叉 / 量价配合
+    def long_on_ma60():
+        if close[index] > ma60[index] and (low_bias(ma60, index - 1) < 1 or low_bias(ma60, index - 2) < 1) \
+                and (has_bottom_patterns_recently() or has_gold_cross() or
+                     has_large_vol_recently() or has_long_ling_recently()):
+            return True
+        return False
+
+    # 收盘价高于MA
+    # 最近3日回落均线附近 bias120 < 1
+    # 最近3日出现底部K线形态 或 收盘出现金叉
+    def long_on_ma120():
+        if close[index] > ma120[index] and \
+                (low_bias(ma120, index - 1) < 1 or low_bias(ma120, index - 2) < 1) \
+                and (has_bottom_patterns_recently() or has_gold_cross() or
+                     has_large_vol_recently() or has_long_ling_recently()):
+            return True
+        return False
+
+    if index > 90 and ((ma60_rise_steady() and long_on_ma60()) or (ma120_rise_steady() and long_on_ma120())):
+        # print(index, 'is_up_wave', df.iloc[index]['trade_date'], long_on_ma60(), long_on_ma120())
         return True
 
     return False
@@ -713,7 +808,7 @@ def is_ma_up_ground(index, df):
     candle = df[['open', 'high', 'low', 'close', 'pct_chg', 'trade_date']].to_numpy()
 
     if (not patterns.upward_jump(index - 1, candle)) and patterns.upward_jump(index, candle) and \
-            is_stand_up_all_ma(index, df) and (not patterns.rise_limit(index - 1, candle)):
+            is_stand_up_all_ma(index, df):
         # print(df['trade_date'][index], 'is_ma_up_ground')
         return True
     else:
@@ -944,11 +1039,52 @@ def has_support_patterns(index, df):
     :param df:
     :return:
     """
-    if df.iloc[index]['swallow_up'] > 0 or df.iloc[index]['down_rise'] > 0 \
-            or df.iloc[index]['CDLHAMMER'] > 0 or df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 \
-            or df.iloc[index]['CDLDRAGONFLYDOJI'] > 0 or df.iloc[index]['CDLTAKURI'] > 0 \
-            or df.iloc[index]['CDLHARAMI'] > 0 or df.iloc[index]['CDLHARAMICROSS'] > 0 \
-            or df.iloc[index]['CDLPIERCING'] > 0 or df.iloc[index]['CDLLADDERBOTTOM'] > 0:
+    if df.iloc[index]['swallow_up'] > 0 or \
+            df.iloc[index]['down_rise'] > 0 or \
+            df.iloc[index]['CDLHAMMER'] > 0 or \
+            df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 \
+            or df.iloc[index]['CDLDRAGONFLYDOJI'] > 0 \
+            or df.iloc[index]['CDLTAKURI'] > 0 \
+            or df.iloc[index]['CDLHARAMI'] > 0 \
+            or df.iloc[index]['CDLHARAMICROSS'] > 0 \
+            or df.iloc[index]['CDLPIERCING'] > 0 \
+            or df.iloc[index]['flat_base'] > 0:
+        return True
+
+    return False
+
+
+def has_bottom_patterns(index, df):
+    """
+    判断当前是否存在底部看涨K线形态
+    看涨吞没
+    旭日东升
+    看涨螺旋桨
+    锤头 (探水竿)
+    倒锤头
+    墓碑十字/倒T十字 CDLGRAVESTONEDOJI
+    晨星 CDLMORNINGSTAR
+    十字晨星 CDLMORNINGDOJISTAR
+    刺透心态 CDLPIERCING
+    反击线 CDLCOUNTERATTACK
+    梯底
+
+    :param index: 当前时间
+    :param df:
+    :return:
+    """
+
+    if df.iloc[index]['swallow_up'] > 0 or \
+            df.iloc[index]['sunrise'] > 0 or \
+            df.iloc[index]['down_screw'] > 0 or \
+            df.iloc[index]['hammer'] > 0 or \
+            df.iloc[index]['pour_hammer'] > 0 or \
+            df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 or \
+            df.iloc[index]['CDLMORNINGSTAR'] > 0 or \
+            df.iloc[index]['CDLMORNINGDOJISTAR'] > 0 or \
+            df.iloc[index]['CDLPIERCING'] > 0 or \
+            df.iloc[index]['CDLCOUNTERATTACK'] > 0 or \
+            df.iloc[index]['flat_base'] > 0:
         return True
 
     return False

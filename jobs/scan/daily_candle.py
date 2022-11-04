@@ -58,11 +58,23 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
                                                     + "order by trade_date desc "
                                                       "limit 250").params(ts_code=ts_code))
 
-    df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'high', 'close',
-                                                     'low', 'pct_chg', 'vol', 'amount'])
-    df = df.fillna(0)
+    kline_df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'high', 'close',
+                                                           'low', 'pct_chg', 'vol', 'amount'])
+    kline_df = kline_df.fillna(0)
     last_amount = 0
     list_status = 'L'
+
+    limit_up_statement = stockSignalDao.session.execute(
+        text("select trade_date, `limit` from "
+             + "cn_limit_list" + " where ts_code = :ts_code "
+             + "and trade_date > '2015-01-01' and `limit` = 'U' "
+             + "order by trade_date desc "
+               "limit 250").params(ts_code=ts_code))
+
+    limit_up_df = pd.DataFrame(limit_up_statement.fetchall(), columns=['trade_date', 'limit'])
+
+    df = pd.merge(kline_df, limit_up_df, how='left', on=['trade_date'])
+    df = df.fillna('N')
 
     if len(df) > 1:
         last_amount = get_amount(exchange_type, df.iloc[0].amount)

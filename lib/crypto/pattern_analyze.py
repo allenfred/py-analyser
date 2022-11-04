@@ -171,7 +171,7 @@ def pattern_analyze(df):
     # df['CDLDRAGONFLYDOJI'] = lib.CDLDRAGONFLYDOJI(open, high, low, close)
     #
     # 墓碑十字/倒T十字 底部反转
-    # df['CDLGRAVESTONEDOJI'] = lib.CDLGRAVESTONEDOJI(open, high, low, close)
+    df['CDLGRAVESTONEDOJI'] = lib.CDLGRAVESTONEDOJI(open, high, low, close)
     #
     # Hammer 锤头
     # df['CDLHAMMER'] = lib.CDLHAMMER(open, high, low, close)
@@ -207,8 +207,8 @@ def pattern_analyze(df):
     # 二日K线模式
     # """
     #
-    # # Counterattack 反击线
-    # df['CDLCOUNTERATTACK'] = lib.CDLCOUNTERATTACK(open, high, low, close)
+    # Counterattack 反击线
+    df['CDLCOUNTERATTACK'] = lib.CDLCOUNTERATTACK(open, high, low, close)
     #
     # # Dark Cloud Cover 乌云压顶
     # df['CDLDARKCLOUDCOVER'] = lib.CDLDARKCLOUDCOVER(open, high, low, close)
@@ -280,11 +280,11 @@ def pattern_analyze(df):
     # # 奇特三川
     # df['CDLUNIQUE3RIVER'] = lib.CDLUNIQUE3RIVER(open, high, low, close)
     #
-    # # 早晨之星  底部反转
-    # df['CDLMORNINGSTAR'] = lib.CDLMORNINGSTAR(open, high, low, close)
+    # 早晨之星  底部反转
+    df['CDLMORNINGSTAR'] = lib.CDLMORNINGSTAR(open, high, low, close)
     #
-    # # 早晨十字星  底部反转
-    # df['CDLMORNINGDOJISTAR'] = lib.CDLMORNINGDOJISTAR(open, high, low, close)
+    # 早晨十字星  底部反转
+    df['CDLMORNINGDOJISTAR'] = lib.CDLMORNINGDOJISTAR(open, high, low, close)
     #
     # 黄昏之星
     df['CDLEVENINGSTAR'] = lib.CDLEVENINGSTAR(open, high, low, close)

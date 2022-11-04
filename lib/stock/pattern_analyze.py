@@ -11,6 +11,8 @@ def pattern_analyze(df):
 
     candle = df[['open', 'high', 'low', 'close', 'pct_chg', 'trade_date']].to_numpy()
 
+    long_line = []
+    marubozu = []
     hammer = []
     pour_hammer = []
     short_end = []
@@ -31,14 +33,16 @@ def pattern_analyze(df):
 
     upward_jump = []
     downward_jump = []
-    rise_limit = []
-    drop_limit = []
     up_cross3ma = []
     up_cross4ma = []
     drop_cross3ma = []
     drop_cross4ma = []
 
     for index in range(len(candle)):
+        # 大阳线
+        long_line.insert(index, patterns.long_line(index, candle))
+        # 光头光脚
+        marubozu.insert(index, patterns.marubozu(index, candle))
         # 锤子线
         hammer.insert(index, patterns.hammer(index, candle))
         # 倒锤子线
@@ -77,10 +81,6 @@ def pattern_analyze(df):
         upward_jump.insert(index, patterns.upward_jump(index, candle))
         # 向下跳空
         downward_jump.insert(index, patterns.downward_jump(index, candle))
-        # 涨停板
-        rise_limit.insert(index, patterns.rise_limit(index, candle))
-        # 跌停板
-        drop_limit.insert(index, patterns.drop_limit(index, candle))
         # 一阳穿三线
         up_cross3ma.insert(index, patterns.up_cross3ma(index, candle, df))
         # 一阳穿四线
@@ -142,6 +142,8 @@ def pattern_analyze(df):
     #     # 一阴穿四线
     #     drop_cross4ma.insert(index, 0)
 
+    df['long_line'] = long_line
+    df['marubozu'] = marubozu
     df['hammer'] = hammer
     df['pour_hammer'] = pour_hammer
     df['short_end'] = short_end
@@ -161,8 +163,6 @@ def pattern_analyze(df):
     df['down_rise'] = down_rise
     df['upward_jump'] = upward_jump
     df['downward_jump'] = downward_jump
-    df['rise_limit'] = rise_limit
-    df['drop_limit'] = drop_limit
     df['up_cross3ma'] = up_cross3ma
     df['up_cross4ma'] = up_cross4ma
     df['drop_cross3ma'] = drop_cross3ma
