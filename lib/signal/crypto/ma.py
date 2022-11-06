@@ -44,12 +44,14 @@ def is_ma60_rise(index, ma):
     def ma_rise():
         flag = True
         for i in range(21):
+            # print(index - i, ma60[index - i])
             # 如果 当前MA60 <= 前值
             if ma60[index - i] < ma60[index - i - 1]:
                 flag = False
         return flag
 
     if index > 90 and ma_rise():
+        # print(index, 'is_ma60_rise')
         return True
     else:
         return False

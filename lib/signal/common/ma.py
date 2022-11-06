@@ -144,6 +144,7 @@ def is_ema120_rise(index, ema):
 def is_up_hill(index, df):
     """
     上山爬坡
+    收盘价长期不跌破 MA60
     MA20/MA30/MA60 持续上行
     价格回落MA20 未有效跌破
     出现看涨形态
@@ -161,6 +162,40 @@ def is_up_hill(index, df):
     ma20 = ma[:, 2]
     ma30 = ma[:, 3]
     ma60 = ma[:, 5]
+
+    def stead_on_ma60():
+        ma_steady_33days = True
+        ma_steady_55days = True
+        close_steady_33days = True
+        close_steady_55days = True
+
+        for i in range(33):
+            # 如果当前 MA <= 前值
+            if ma60[index - i] < ma60[index - i - 1]:
+                ma_steady_33days = False
+
+        for i in range(55):
+            # 如果当前 MA <= 前值
+            if ma60[index - i] < ma60[index - i - 1]:
+                ma_steady_55days = False
+
+        for i in range(33):
+            # 如果收盘价低于 MA60
+            if close[index - i] < ma60[index - i]:
+                close_steady_33days = False
+
+        for i in range(55):
+            # 如果收盘价低于 MA60
+            if close[index - i] < ma60[index - i]:
+                close_steady_55days = False
+
+        if ma_steady_33days and not close_steady_33days:
+            return False
+
+        if ma_steady_55days and not close_steady_55days:
+            return False
+
+        return True
 
     def ma60_rise_steady():
         flag = True
@@ -200,7 +235,7 @@ def is_up_hill(index, df):
                 (low[index] < ma20[index] or low[index] < ma30[index]):
             return True
 
-    if index > 90 and ma60_rise_steady() and \
+    if index > 90 and ma60_rise_steady() and stead_on_ma60() and \
             (ma20_rise_steady() or ma30_rise_steady()) and \
             steady_on_ma30() and support_on_ma20():
         # print('is_up_hill', df.iloc[index]['trade_date'])
@@ -212,6 +247,7 @@ def is_up_hill(index, df):
 def is_up_wave(index, df):
     """
     逐浪上升
+    收盘价长期不跌破 MA120
     MA60/MA120 持续上行
     价格回落跌破 MA60/MA120
     均线附近出现看涨形态 (金叉/大阳线)
@@ -236,11 +272,17 @@ def is_up_wave(index, df):
 
     def ma120_rise_steady():
         flag = True
+        _cnt = 0
         for i in range(33):
             # 如果当前 MA <= 前值
             if ma120[index - i] < ma120[index - i - 1]:
                 flag = False
-        return flag
+
+            # 如果当前 MA <= 前值
+            if close[index - i] < ma120[index - i]:
+                _cnt += 1
+
+        return flag and _cnt < 2
 
     def ma60_rise_steady():
         flag = True
@@ -260,7 +302,7 @@ def is_up_wave(index, df):
                df.iloc[index - 1]['large_vol'] == 1 or \
                df.iloc[index - 2]['large_vol'] == 1
 
-    def has_long_ling_recently():
+    def has_long_line_recently():
         return df.iloc[index]['long_line'] == 1 or \
                df.iloc[index - 1]['long_line'] == 1 or \
                df.iloc[index - 2]['long_line'] == 1 or \
@@ -281,7 +323,7 @@ def is_up_wave(index, df):
     def long_on_ma60():
         if close[index] > ma60[index] and (low_bias(ma60, index - 1) < 1 or low_bias(ma60, index - 2) < 1) \
                 and (has_bottom_patterns_recently() or has_gold_cross() or
-                     has_large_vol_recently() or has_long_ling_recently()):
+                     has_large_vol_recently() or has_long_line_recently()):
             return True
         return False
 
@@ -292,7 +334,7 @@ def is_up_wave(index, df):
         if close[index] > ma120[index] and \
                 (low_bias(ma120, index - 1) < 1 or low_bias(ma120, index - 2) < 1) \
                 and (has_bottom_patterns_recently() or has_gold_cross() or
-                     has_large_vol_recently() or has_long_ling_recently()):
+                     has_large_vol_recently() or has_long_line_recently()):
             return True
         return False
 
@@ -1058,6 +1100,7 @@ def has_bottom_patterns(index, df):
     """
     判断当前是否存在底部看涨K线形态
     看涨吞没
+    吞噬模式 CDLENGULFING
     旭日东升
     看涨螺旋桨
     锤头 (探水竿)
@@ -1075,6 +1118,7 @@ def has_bottom_patterns(index, df):
     """
 
     if df.iloc[index]['swallow_up'] > 0 or \
+            df.iloc[index]['CDLENGULFING'] > 0 or \
             df.iloc[index]['sunrise'] > 0 or \
             df.iloc[index]['down_screw'] > 0 or \
             df.iloc[index]['hammer'] > 0 or \

@@ -50,8 +50,11 @@ if __name__ == "__main__":
     inst_id = 'BTCUSDT'
     inst_id = 'ETHUSDT'
     inst_id = 'OCEANUSDT'
+    inst_id = 'MASKUSDT'
 
     gran = 900
+    gran = 3600
+    # gran = 14400
     exchange = 'binance'
     # exchange = 'okex'
     df = get_klines_df(exchange, inst_id, gran, 300)

@@ -8,7 +8,7 @@ import numpy as np
 -1 bearish pattern
 """
 
-_start_at = 260
+_start_at = 60
 
 
 def long_line(i, candles):
@@ -36,7 +36,7 @@ def long_line(i, candles):
     _high = high[i]
     _low = low[i]
     _close = close[i]
-    _per = 0.05
+    _per = 0.15
 
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
@@ -44,7 +44,7 @@ def long_line(i, candles):
     bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
 
     # Others
-    pct_chg_base = 3
+    pct_chg_base = 2
 
     # BTC
     if _open > 10000:

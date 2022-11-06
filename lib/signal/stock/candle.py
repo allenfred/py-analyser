@@ -4,7 +4,7 @@ import sys
 
 # path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # sys.path.append(path)
-_start_at = 200
+_start_at = 100
 
 
 def long_line(i, candles):
@@ -944,7 +944,7 @@ def limit_up_gene(i, candles, df):
     :param df:
     :return: boolean
     """
-    
+
     if i < _start_at:
         return 0
 

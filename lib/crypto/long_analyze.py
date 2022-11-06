@@ -31,7 +31,7 @@ def long_analyze(org_df):
     ma_gold_cross3 = [0 for _ in range(len(org_df))]
     ma_gold_cross4 = [0 for _ in range(len(org_df))]
 
-    _start_at = 280
+    _start_at = 200
 
     for index in range(len(candle)):
         if index > _start_at:

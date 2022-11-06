@@ -33,7 +33,7 @@ def ma_analyze(org_df):
     up_hill = [0 for _ in range(len(org_df))]
     up_wave = [0 for _ in range(len(org_df))]
 
-    _start_at = 280
+    _start_at = 200
 
     for index in range(len(candle)):
         if index > _start_at:

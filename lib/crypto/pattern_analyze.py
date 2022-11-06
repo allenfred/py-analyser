@@ -250,7 +250,7 @@ def pattern_analyze(df):
     # df['CDLBELTHOLD'] = lib.CDLBELTHOLD(open, high, low, close)
     #
     # Engulfing Pattern 吞噬模式
-    # df['CDLENGULFING'] = lib.CDLENGULFING(open, high, low, close)
+    df['CDLENGULFING'] = lib.CDLENGULFING(open, high, low, close)
     #
     # Piercing Pattern 刺透形态
     df['CDLPIERCING'] = lib.CDLPIERCING(open, high, low, close)
