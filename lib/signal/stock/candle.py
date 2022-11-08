@@ -935,9 +935,14 @@ def drop_cross4ma(i, candles, df):
 def limit_up_gene(i, candles, df):
     """
     description: 涨停基因(看涨)
-    有效标准：
+    标准 1:
     最近20个交易日有涨停
-    价格 回调至上个涨停区间 0.386
+    价格 回调至上个涨停区间 0.5
+
+    标准 2:
+    最近20个交易日有涨停
+    价格 回调至上个涨停区间
+    回调至 MA20/MA60 附近
 
     :param i: 当前tick
     :param candles:
@@ -949,6 +954,7 @@ def limit_up_gene(i, candles, df):
         return 0
 
     ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+
     _open = candles[:, 0][i]
     _close = candles[:, 3][i]
     _ma5 = ma[:, 0][i]
@@ -956,8 +962,35 @@ def limit_up_gene(i, candles, df):
     _ma20 = ma[:, 2][i]
     _ma60 = ma[:, 5][i]
 
-    if (_open > _ma5 and _open > _ma10 and _open > _ma20 and _open > _ma60 and
-            _close < _ma5 and _close < _ma10 and _close < _ma20 and _close < _ma60):
+    def steady_on_ma():
+        if _close > _ma60 and df.iloc[i]['ma60_up'] == 1:
+            return True
+        return False
+
+    def back_limit_area():
+        flag = False
+        for j in range(1, 21):
+            if df.iloc[i - j]['limit'] == 'U' and \
+                    df.iloc[i - j - 1]['close'] * 0.95 > _close > df.iloc[i - j - 1]['close']:
+                flag = True
+
+        return flag
+
+    def back_limit_area_on_ma():
+        flag = False
+        if not steady_on_ma():
+            return flag
+
+        for j in range(1, 21):
+            if df.iloc[i - j]['limit'] == 'U':
+                if df.iloc[i - j]['close'] > _close > df.iloc[i - j - 1]['close'] * 0.95 and \
+                        (df.iloc[i]['bias24'] < 5 or df.iloc[i]['bias60'] < 5):
+                    flag = True
+
+        return flag
+
+    if back_limit_area_on_ma():
+        # print('limit_up_gene', df.iloc[i]['trade_date'], i)
         return 1
 
     return 0

@@ -3,6 +3,7 @@
 from lib.signal.stock.ma60 import is_ma60_first, is_ma60_second, is_ma60_third, is_ma60_fourth, \
     is_ma60_fifth, is_ma60_sixth, is_ma60_seventh, is_ma60_eighth
 from lib.signal.common.ma import is_up_hill, is_up_wave
+import lib.signal.stock.candle as patterns
 
 
 def ma_analyze(org_df):
@@ -23,8 +24,9 @@ def ma_analyze(org_df):
 
     up_hill = [0 for _ in range(len(org_df))]
     up_wave = [0 for _ in range(len(org_df))]
+    limit_up_gene = [0 for _ in range(len(org_df))]
 
-    _start_at = 100
+    _start_at = 180
 
     for index in range(len(candle)):
         if index > _start_at:
@@ -68,6 +70,10 @@ def ma_analyze(org_df):
             if is_up_wave(index, org_df):
                 up_wave[index] = 1
 
+            # 涨停基因
+            if patterns.limit_up_gene(index, candle, org_df):
+                limit_up_gene[index] = 1
+
     org_df['ma60_first'] = ma60_first
     org_df['ma60_second'] = ma60_second
     org_df['ma60_third'] = ma60_third
@@ -79,5 +85,6 @@ def ma_analyze(org_df):
 
     org_df['up_hill'] = up_hill
     org_df['up_wave'] = up_wave
+    org_df['limit_up_gene'] = limit_up_gene
 
     return org_df

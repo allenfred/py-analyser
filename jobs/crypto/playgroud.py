@@ -51,10 +51,12 @@ if __name__ == "__main__":
     inst_id = 'ETHUSDT'
     inst_id = 'OCEANUSDT'
     inst_id = 'MASKUSDT'
+    inst_id = 'CHZUSDT'
+    inst_id = 'LTCUSDT'
 
     gran = 900
     gran = 3600
-    # gran = 14400
+    gran = 14400
     exchange = 'binance'
     # exchange = 'okex'
     df = get_klines_df(exchange, inst_id, gran, 300)
@@ -93,7 +95,7 @@ if __name__ == "__main__":
     df = set_quota(df)
     df = analyze(df)
     signal = df.iloc[len(df) - 1].to_dict()
-    print(signal)
+
     _data = {}
     for i, v in enumerate(signal.keys()):
 
