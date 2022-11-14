@@ -956,6 +956,7 @@ def limit_up_gene(i, candles, df):
     ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
 
     _open = candles[:, 0][i]
+    _low = candles[:, 2][i]
     _close = candles[:, 3][i]
     _ma5 = ma[:, 0][i]
     _ma10 = ma[:, 1][i]
@@ -971,25 +972,27 @@ def limit_up_gene(i, candles, df):
         flag = False
         for j in range(1, 21):
             if df.iloc[i - j]['limit'] == 'U' and \
-                    df.iloc[i - j - 1]['close'] * 0.95 > _close > df.iloc[i - j - 1]['close']:
+                    df.iloc[i - j - 1]['close'] * 1.05 > _close > df.iloc[i - j - 1]['close']:
                 flag = True
 
         return flag
 
     def back_limit_area_on_ma():
         flag = False
+
         if not steady_on_ma():
             return flag
 
         for j in range(1, 21):
             if df.iloc[i - j]['limit'] == 'U':
-                if df.iloc[i - j]['close'] > _close > df.iloc[i - j - 1]['close'] * 0.95 and \
+                if (df.iloc[i - j]['close'] > _close > df.iloc[i - j - 1]['close'] or
+                    df.iloc[i - j]['close'] * 0.95 > _low > df.iloc[i - j - 1]['low']) and \
                         (df.iloc[i]['bias24'] < 5 or df.iloc[i]['bias60'] < 5):
                     flag = True
 
         return flag
 
-    if back_limit_area_on_ma():
+    if back_limit_area() or back_limit_area_on_ma():
         # print('limit_up_gene', df.iloc[i]['trade_date'], i)
         return 1
 

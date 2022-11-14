@@ -58,5 +58,7 @@ if __name__ == "__main__":
     ts_code = '002334.SZ'
     ts_code = '002868.SZ'
     ts_code = '002197.SZ'
-    scan_daily_candles(ts_code, 'CN', '2022-11-07')
+    ts_code = '000948.SZ'
+    ts_code = '600992.SH'
+    scan_daily_candles(ts_code, 'CN', '2022-11-09')
     print('扫描成功')

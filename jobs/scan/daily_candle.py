@@ -52,7 +52,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
     statement = dailyCandleDao.session.execute(text("select trade_date, open, high, close, low, pct_chg, vol, amount "
                                                     "from "
                                                     + table_name + " where ts_code = :ts_code "
-                                                    + "and trade_date > '2015-01-01' and open is not null "
+                                                    + "and trade_date > '2020-01-01' and open is not null "
                                                       "and close is not null and high is not null and"
                                                     + " low is not null "
                                                     + "order by trade_date desc "
@@ -67,7 +67,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
     limit_up_statement = stockSignalDao.session.execute(
         text("select trade_date, `limit` from "
              + "cn_limit_list" + " where ts_code = :ts_code "
-             + "and trade_date > '2015-01-01' and `limit` = 'U' "
+             + "and trade_date > '2021-01-01' "
              + "order by trade_date desc "
                "limit 250").params(ts_code=ts_code))
 

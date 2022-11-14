@@ -33,7 +33,7 @@ def ma_analyze(org_df):
     up_hill = [0 for _ in range(len(org_df))]
     up_wave = [0 for _ in range(len(org_df))]
 
-    _start_at = 100
+    _start_at = 200
 
     for index in range(len(candle)):
         if index > _start_at:
@@ -56,8 +56,8 @@ def ma_analyze(org_df):
             ma120_eighth[index] = ma120.eighth(index, candle, bias, ma, org_df)
 
             # 上山爬坡
-            if is_up_hill(index, org_df):
-                up_hill[index] = 1
+            # if is_up_hill(index, org_df):
+            #     up_hill[index] = 1
 
             # 逐浪上升
             if is_up_wave(index, org_df):
@@ -81,7 +81,7 @@ def ma_analyze(org_df):
     org_df['ma120_seventh'] = ma120_seventh
     org_df['ma120_eighth'] = ma120_eighth
 
-    org_df['up_hill'] = up_hill
+    # org_df['up_hill'] = up_hill
     org_df['up_wave'] = up_wave
 
     return org_df

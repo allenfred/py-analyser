@@ -147,6 +147,7 @@ def is_up_hill(index, df):
     收盘价长期不跌破 MA60
     MA20/MA30/MA60 持续上行
     价格回落MA20 未有效跌破
+    20个交易日内未出现涨停
     出现看涨形态
 
     :param index:
@@ -235,9 +236,17 @@ def is_up_hill(index, df):
                 (low[index] < ma20[index] or low[index] < ma30[index]):
             return True
 
+    def has_no_limit():
+        flag = True
+        for j in range(21):
+            # 如果当前 MA <= 前值
+            if df.iloc[index - j]['limit'] != 'N':
+                flag = False
+        return flag
+
     if index > 90 and ma60_rise_steady() and stead_on_ma60() and \
             (ma20_rise_steady() or ma30_rise_steady()) and \
-            steady_on_ma30() and support_on_ma20():
+            steady_on_ma30() and support_on_ma20() and has_no_limit():
         # print('is_up_hill', df.iloc[index]['trade_date'])
         return True
 
