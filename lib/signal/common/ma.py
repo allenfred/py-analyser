@@ -141,6 +141,75 @@ def is_ema120_rise(index, ema):
         return False
 
 
+def steady_on_ma60(index, df):
+    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+    close = df['close'].to_numpy()
+    ma20 = ma[:, 2]
+    ma60 = ma[:, 5]
+
+    ma60_steady_22days = True
+    ma20_on_ma60_22days = True
+    close_steady_22days = True
+
+    ma60_steady_33days = True
+    ma20_on_ma60_33days = True
+    close_steady_33days = True
+
+    ma60_steady_55days = True
+    ma20_on_ma60_55days = True
+    close_steady_55days = True
+
+    for i in range(21):
+        # 如果当前 MA60 <= 前值
+        if ma60[index - i] < ma60[index - i - 1]:
+            ma60_steady_22days = False
+
+        # 如果当前 MA20 < MA60
+        if ma20[index - i] < ma60[index - i]:
+            ma20_on_ma60_22days = False
+
+        # 如果收盘价低于 MA60
+        if close[index - i] < ma60[index - i]:
+            close_steady_22days = False
+
+    for i in range(33):
+        # 如果当前 MA60 <= 前值
+        if ma60[index - i] < ma60[index - i - 1]:
+            ma60_steady_33days = False
+
+        # 如果当前 MA20 < MA60
+        if ma20[index - i] < ma60[index - i]:
+            ma20_on_ma60_33days = False
+
+        # 如果收盘价低于 MA60
+        if close[index - i] < ma60[index - i]:
+            close_steady_33days = False
+
+    for i in range(55):
+        # 如果当前 MA60 <= 前值
+        if ma60[index - i] < ma60[index - i - 1]:
+            ma60_steady_55days = False
+
+        # 如果当前 MA20 < MA60
+        if ma20[index - i] < ma60[index - i]:
+            ma20_on_ma60_55days = False
+
+        # 如果收盘价低于 MA60
+        if close[index - i] < ma60[index - i]:
+            close_steady_55days = False
+
+    if ma60_steady_22days and (close_steady_22days or ma20_on_ma60_22days):
+        return True
+
+    if ma60_steady_33days and (close_steady_33days or ma20_on_ma60_33days):
+        return True
+
+    if ma60_steady_55days and (close_steady_55days or ma20_on_ma60_55days):
+        return True
+
+    return False
+
+
 def is_up_hill(index, df):
     """
     上山爬坡
@@ -163,40 +232,6 @@ def is_up_hill(index, df):
     ma20 = ma[:, 2]
     ma30 = ma[:, 3]
     ma60 = ma[:, 5]
-
-    def stead_on_ma60():
-        ma_steady_33days = True
-        ma_steady_55days = True
-        close_steady_33days = True
-        close_steady_55days = True
-
-        for i in range(33):
-            # 如果当前 MA <= 前值
-            if ma60[index - i] < ma60[index - i - 1]:
-                ma_steady_33days = False
-
-        for i in range(55):
-            # 如果当前 MA <= 前值
-            if ma60[index - i] < ma60[index - i - 1]:
-                ma_steady_55days = False
-
-        for i in range(33):
-            # 如果收盘价低于 MA60
-            if close[index - i] < ma60[index - i]:
-                close_steady_33days = False
-
-        for i in range(55):
-            # 如果收盘价低于 MA60
-            if close[index - i] < ma60[index - i]:
-                close_steady_55days = False
-
-        if ma_steady_33days and not close_steady_33days:
-            return False
-
-        if ma_steady_55days and not close_steady_55days:
-            return False
-
-        return True
 
     def ma60_rise_steady():
         flag = True
@@ -244,7 +279,7 @@ def is_up_hill(index, df):
                 flag = False
         return flag
 
-    if index > 90 and ma60_rise_steady() and stead_on_ma60() and \
+    if index > 90 and steady_on_ma60(index, df) and ma60_rise_steady() and \
             (ma20_rise_steady() or ma30_rise_steady()) and \
             steady_on_ma30() and support_on_ma20() and has_no_limit():
         # print('is_up_hill', df.iloc[index]['trade_date'])
@@ -256,10 +291,9 @@ def is_up_hill(index, df):
 def is_up_wave(index, df):
     """
     逐浪上升
-    收盘价长期不跌破 MA120
-    MA60/MA120 持续上行
-    价格回落跌破 MA60/MA120
-    均线附近出现看涨形态 (金叉/大阳线)
+    MA120 长期持续上行
+    价格回落跌破 MA120 后又站上 MA120
+    MA120 附近出现看涨形态 (金叉/大阳线)
 
     :param index:
     :param df:
@@ -282,7 +316,7 @@ def is_up_wave(index, df):
     def ma120_rise_steady():
         flag = True
         _cnt = 0
-        for i in range(33):
+        for i in range(44):
             # 如果当前 MA <= 前值
             if ma120[index - i] < ma120[index - i - 1]:
                 flag = False
@@ -292,14 +326,6 @@ def is_up_wave(index, df):
                 _cnt += 1
 
         return flag and _cnt < 2
-
-    def ma60_rise_steady():
-        flag = True
-        for i in range(21):
-            # 如果当前 MA <= 前值
-            if ma60[index - i] < ma60[index - i - 1]:
-                flag = False
-        return flag
 
     def has_bottom_patterns_recently():
         return has_bottom_patterns(index, df) or \
@@ -328,14 +354,6 @@ def is_up_wave(index, df):
                df.iloc[index]['ma_gold_cross3'] == 1 or \
                df.iloc[index]['ma_gold_cross4'] == 1
 
-    # 出现看涨信号：看涨K线信号 / 金叉 / 量价配合
-    def long_on_ma60():
-        if close[index] > ma60[index] and (low_bias(ma60, index - 1) < 1 or low_bias(ma60, index - 2) < 1) \
-                and (has_bottom_patterns_recently() or has_gold_cross() or
-                     has_large_vol_recently() or has_long_line_recently()):
-            return True
-        return False
-
     # 收盘价高于MA
     # 最近3日回落均线附近 bias120 < 1
     # 最近3日出现底部K线形态 或 收盘出现金叉
@@ -347,7 +365,7 @@ def is_up_wave(index, df):
             return True
         return False
 
-    if index > 90 and ((ma60_rise_steady() and long_on_ma60()) or (ma120_rise_steady() and long_on_ma120())):
+    if index > 180 and ma120_rise_steady() and long_on_ma120():
         # print(index, 'is_up_wave', df.iloc[index]['trade_date'], long_on_ma60(), long_on_ma120())
         return True
 

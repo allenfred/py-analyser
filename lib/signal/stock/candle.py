@@ -964,13 +964,13 @@ def limit_up_gene(i, candles, df):
     _ma60 = ma[:, 5][i]
 
     def steady_on_ma():
-        if _close > _ma60 and df.iloc[i]['ma60_up'] == 1:
+        if _close > _ma60 and df.iloc[i]['ma60_up'] == 1 and df.iloc[i]['ma20_up'] == 1:
             return True
         return False
 
     def back_limit_area():
         flag = False
-        for j in range(1, 21):
+        for j in range(1, 10):
             if df.iloc[i - j]['limit'] == 'U' and \
                     df.iloc[i - j - 1]['close'] * 1.05 > _close > df.iloc[i - j - 1]['close']:
                 flag = True
@@ -992,7 +992,15 @@ def limit_up_gene(i, candles, df):
 
         return flag
 
-    if back_limit_area() or back_limit_area_on_ma():
+    # 最近22个交易日内无连续上涨行情
+    def has_no_crazy_up():
+        flag = True
+        for j in range(0, 21):
+            if df.iloc[i - j]['bias24'] > 30:
+                flag = False
+        return flag
+
+    if back_limit_area_on_ma() and has_no_crazy_up():
         # print('limit_up_gene', df.iloc[i]['trade_date'], i)
         return 1
 

@@ -1,6 +1,75 @@
 import numpy as np
 
 
+def steady_on_ma60(index, df):
+    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+    close = df['close'].to_numpy()
+    ma20 = ma[:, 2]
+    ma60 = ma[:, 5]
+
+    ma60_steady_22days = True
+    ma20_on_ma60_22days = True
+    close_steady_22days = True
+
+    ma60_steady_33days = True
+    ma20_on_ma60_33days = True
+    close_steady_33days = True
+
+    ma60_steady_55days = True
+    ma20_on_ma60_55days = True
+    close_steady_55days = True
+
+    for i in range(21):
+        # 如果当前 MA60 <= 前值
+        if ma60[index - i] < ma60[index - i - 1]:
+            ma60_steady_22days = False
+
+        # 如果当前 MA20 < MA60
+        if ma20[index - i] < ma60[index - i]:
+            ma20_on_ma60_22days = False
+
+        # 如果收盘价低于 MA60
+        if close[index - i] < ma60[index - i]:
+            close_steady_22days = False
+
+    for i in range(33):
+        # 如果当前 MA60 <= 前值
+        if ma60[index - i] < ma60[index - i - 1]:
+            ma60_steady_33days = False
+
+        # 如果当前 MA20 < MA60
+        if ma20[index - i] < ma60[index - i]:
+            ma20_on_ma60_33days = False
+
+        # 如果收盘价低于 MA60
+        if close[index - i] < ma60[index - i]:
+            close_steady_33days = False
+
+    for i in range(55):
+        # 如果当前 MA60 <= 前值
+        if ma60[index - i] < ma60[index - i - 1]:
+            ma60_steady_55days = False
+
+        # 如果当前 MA20 < MA60
+        if ma20[index - i] < ma60[index - i]:
+            ma20_on_ma60_55days = False
+
+        # 如果收盘价低于 MA60
+        if close[index - i] < ma60[index - i]:
+            close_steady_55days = False
+
+    if ma60_steady_22days and (close_steady_22days or ma20_on_ma60_22days):
+        return True
+
+    if ma60_steady_33days and (close_steady_33days or ma20_on_ma60_33days):
+        return True
+
+    if ma60_steady_55days and (close_steady_55days or ma20_on_ma60_55days):
+        return True
+
+    return False
+
+
 # MA60 葛南维买卖八大法则
 
 def is_ma60_first(index, candles, bias, ma, ma_slope, df):
@@ -84,14 +153,7 @@ def is_ma60_second(index, candles, bias, ma, ma_slope, df):
     if index > 90 and _ma60 > 0:
         _low_bias60 = (_low - _ma60) * 100 / _ma60
 
-    def steady_on_ma():
-        flag = True
-        for i in range(21):
-            if candles[index - i][3] < ma60[index - i] or ma60[index - i] < ma60[index - i - 1]:
-                flag = False
-        return flag
-
-    if index > 90 and steady_on_ma() and \
+    if index > 90 and steady_on_ma60(index, df) and \
             has_support_patterns(index, df) and _low_bias60 < 2:
         return True
     else:
@@ -138,7 +200,7 @@ def is_ma60_third(index, candles, bias, ma, ma_slope, df):
             if close[index - 1] < ma60[index - i]:
                 beneath_ma60_cnt += 1
 
-        return flag and 1 < beneath_ma60_cnt <= 5
+        return flag and 1 < beneath_ma60_cnt < 3
 
     if index > 90 and _close > _ma60 > _low and _bias60 < 8 and \
             rise_steady() and candles[index - 1][2] < ma60[index - 1]:
