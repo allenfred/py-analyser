@@ -966,13 +966,11 @@ def limit_up_gene(i, candles, df):
     ma60 = ma[:, 5]
 
     def steady_on_ma():
-        flag = True
-
         if _close > ma60[i] and df.iloc[i]['ma60_up'] == 1 and \
                 not df.iloc[i]['ma20_down'] == 1:
-            flag = False
+            return True
 
-        return flag
+        return False
 
     # 回调至涨停区间
     def back_limit_zone():
