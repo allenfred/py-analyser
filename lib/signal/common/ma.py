@@ -198,16 +198,26 @@ def steady_on_ma60(index, df):
         if close[index - i] < ma60[index - i]:
             close_steady_55days = False
 
-    if ma60_steady_22days and (close_steady_22days or ma20_on_ma60_22days):
-        return True
+    # 当MA60持续上行 收盘价和MA20必须稳定在MA60之上
+    if ma60_steady_22days:
+        if close_steady_22days and ma20_on_ma60_22days:
+            return True
+        else:
+            return False
 
-    if ma60_steady_33days and (close_steady_33days or ma20_on_ma60_33days):
-        return True
+    if ma60_steady_33days:
+        if close_steady_33days and ma20_on_ma60_33days:
+            return True
+        else:
+            return False
 
-    if ma60_steady_55days and (close_steady_55days or ma20_on_ma60_55days):
-        return True
+    if ma60_steady_55days:
+        if close_steady_55days and ma20_on_ma60_55days:
+            return True
+        else:
+            return False
 
-    return False
+    return True
 
 
 def is_up_hill(index, df):
@@ -249,21 +259,13 @@ def is_up_hill(index, df):
                 flag = False
         return flag
 
-    def ma30_rise_steady():
+    def steady_on_ma30():
         flag = True
         for i in range(21):
             # 如果当前 MA <= 前值
-            if ma30[index - i] < ma30[index - i - 1]:
+            if ma30[index - i] < ma30[index - i - 1] or close[index - i] < ma30[index - i]:
                 flag = False
         return flag
-
-    def steady_on_ma30():
-        tag = 0
-        for i in range(21):
-            # 如果当前 MA <= 前值
-            if close[index - i] < ma30[index - i]:
-                tag += 1
-        return tag < 3
 
     # 在MA20/MA30 获得支撑
     def support_on_ma20():
@@ -280,8 +282,7 @@ def is_up_hill(index, df):
         return flag
 
     if index > 90 and steady_on_ma60(index, df) and ma60_rise_steady() and \
-            (ma20_rise_steady() or ma30_rise_steady()) and \
-            steady_on_ma30() and support_on_ma20() and has_no_limit():
+            steady_on_ma30() and has_no_limit():
         # print('is_up_hill', df.iloc[index]['trade_date'])
         return True
 
