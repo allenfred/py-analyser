@@ -58,16 +58,26 @@ def steady_on_ma60(index, df):
         if close[index - i] < ma60[index - i]:
             close_steady_55days = False
 
-    if ma60_steady_22days and close_steady_22days and ma20_on_ma60_22days:
-        return True
+    # 当MA60持续上行 收盘价和MA20必须稳定在MA60之上
+    if ma60_steady_55days:
+        if close_steady_55days and ma20_on_ma60_55days:
+            return True
+        else:
+            return False
 
-    if ma60_steady_33days and close_steady_33days and ma20_on_ma60_33days:
-        return True
+    if ma60_steady_33days:
+        if close_steady_33days and ma20_on_ma60_33days:
+            return True
+        else:
+            return False
 
-    if ma60_steady_55days and close_steady_55days and ma20_on_ma60_55days:
-        return True
+    if ma60_steady_22days:
+        if close_steady_22days and ma20_on_ma60_22days:
+            return True
+        else:
+            return False
 
-    return False
+    return True
 
 
 # MA60 葛南维买卖八大法则
