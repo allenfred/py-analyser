@@ -1,4 +1,5 @@
 # -- coding: utf-8 -
+from config.common import START_INDEX
 from lib.signal.common.ma import is_ma20_rise, is_ma30_rise, is_ma60_rise, is_ma120_rise, \
     is_up_ma_arrange, is_up_short_ma_arrange, is_up_middle_ma_arrange, is_up_long_ma_arrange, \
     is_gold_cross, \
@@ -107,7 +108,7 @@ def long_analyze(org_df):
     stand_up_ma120 = []
     # stand_up_ma120 = [0 for _ in range(len(org_df))]
 
-    _start_at = 200
+    _start_at = START_INDEX
 
     for index in range(len(candle)):
         # set_yearly_price_position

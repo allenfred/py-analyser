@@ -1,4 +1,6 @@
 # -- coding: utf-8 -
+from config.common import START_INDEX
+
 
 def vol_analyze(df):
     """
@@ -38,7 +40,7 @@ def vol_analyze(df):
     increasingly_vol = [0 for _ in range(len(df))]
     decreasingly_vol = [0 for _ in range(len(df))]
 
-    _start_at = 200
+    _start_at = START_INDEX
 
     for index in range(len(candle)):
         if index > _start_at:

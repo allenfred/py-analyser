@@ -58,13 +58,13 @@ def steady_on_ma60(index, df):
         if close[index - i] < ma60[index - i]:
             close_steady_55days = False
 
-    if ma60_steady_22days and (close_steady_22days or ma20_on_ma60_22days):
+    if ma60_steady_22days and close_steady_22days and ma20_on_ma60_22days:
         return True
 
-    if ma60_steady_33days and (close_steady_33days or ma20_on_ma60_33days):
+    if ma60_steady_33days and close_steady_33days and ma20_on_ma60_33days:
         return True
 
-    if ma60_steady_55days and (close_steady_55days or ma20_on_ma60_55days):
+    if ma60_steady_55days and close_steady_55days and ma20_on_ma60_55days:
         return True
 
     return False
@@ -155,6 +155,7 @@ def is_ma60_second(index, candles, bias, ma, ma_slope, df):
 
     if index > 90 and steady_on_ma60(index, df) and \
             has_support_patterns(index, df) and _low_bias60 < 2:
+        print(df.iloc[index]['trade_date'], 'ma60 second')
         return True
     else:
         return False
@@ -470,11 +471,24 @@ def has_support_patterns(index, df):
     :param df:
     :return:
     """
-    if df.iloc[index]['swallow_up'] > 0 or df.iloc[index]['down_rise'] > 0 \
-            or df.iloc[index]['CDLHAMMER'] > 0 or df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 \
-            or df.iloc[index]['CDLDRAGONFLYDOJI'] > 0 or df.iloc[index]['CDLTAKURI'] > 0 \
-            or df.iloc[index]['CDLHARAMI'] > 0 or df.iloc[index]['CDLHARAMICROSS'] > 0 \
-            or df.iloc[index]['CDLPIERCING'] > 0 or df.iloc[index]['CDLLADDERBOTTOM'] > 0:
+    if df.iloc[index]['swallow_up'] > 0 \
+            or df.iloc[index]['sunrise'] > 0 \
+            or df.iloc[index]['down_screw'] > 0 \
+            or df.iloc[index]['hammer'] > 0 \
+            or df.iloc[index]['pour_hammer'] > 0 \
+            or df.iloc[index]['down_rise'] > 0 \
+            or df.iloc[index]['CDLHAMMER'] > 0 \
+            or df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 \
+            or df.iloc[index]['CDLDRAGONFLYDOJI'] > 0 \
+            or df.iloc[index]['CDLTAKURI'] > 0 \
+            or df.iloc[index]['CDLHARAMI'] > 0 \
+            or df.iloc[index]['CDLHARAMICROSS'] > 0 \
+            or df.iloc[index]['CDLPIERCING'] > 0 \
+            or df.iloc[index]['CDLLADDERBOTTOM'] > 0 \
+            or df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 \
+            or df.iloc[index]['CDLMORNINGSTAR'] > 0 \
+            or df.iloc[index]['CDLMORNINGDOJISTAR'] > 0 \
+            or df.iloc[index]['CDLPIERCING'] > 0:
         return True
 
     return False

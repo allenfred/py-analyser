@@ -16,24 +16,6 @@ from api.daily_candle import get_cn_candles
 from jobs.scan.daily_candle import scan_daily_candles
 
 if __name__ == "__main__":
-    # ts_code = '002603.SZ'
-    # ts_code = '000425.SZ'
-    # ts_code = '600129.SH'
-    # ts_code = '601699.SH'
-    # ts_code = '000933.SZ'
-    # ts_code = '601666.SH'
-    # ts_code = '003002.SZ'
-    # ts_code = '600096.SH'
-    # ts_code = '600617.SH'
-    # ts_code = '600557.SH'
-    # ts_code = '600502.SH'
-    # ts_code = '600898.SH'
-    # ts_code = '000722.SZ'
-    # ts_code = '603056.SH'
-    # ts_code = '600697.SH'
-    # ts_code = '002319.SZ'
-    ts_code = '600502.SH'
-    ts_code = '600470.SH'
     ts_code = '002561.SZ'  # 徐家汇
     ts_code = '000722.SZ'  # 湖南发展
     # ts_code = '600502.SH' # 安徽建工
@@ -61,6 +43,9 @@ if __name__ == "__main__":
     ts_code = '000948.SZ'
     ts_code = '600992.SH'
     ts_code = '002829.SZ'
+    ts_code = '688385.SH'
+    # ts_code = '300138.SZ'
+    # ts_code = '600875.SH'
 
-    scan_daily_candles(ts_code, 'CN', '2022-11-14')
+    scan_daily_candles(ts_code, 'CN', '2022-11-17')
     print('扫描成功')

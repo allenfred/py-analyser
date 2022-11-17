@@ -1,5 +1,5 @@
 # -- coding: utf-8 -
-
+from config.common import START_INDEX
 from lib.signal.stock.ma60 import is_ma60_first, is_ma60_second, is_ma60_third, is_ma60_fourth, \
     is_ma60_fifth, is_ma60_sixth, is_ma60_seventh, is_ma60_eighth
 from lib.signal.common.ma import is_up_hill, is_up_wave
@@ -26,7 +26,7 @@ def ma_analyze(org_df):
     up_wave = [0 for _ in range(len(org_df))]
     limit_up_gene = [0 for _ in range(len(org_df))]
 
-    _start_at = 200
+    _start_at = START_INDEX
 
     for index in range(len(candle)):
         if index > _start_at:
