@@ -39,13 +39,16 @@ if __name__ == "__main__":
     ts_code = '000975.SZ'
     ts_code = '002334.SZ'
     ts_code = '002868.SZ'
-    ts_code = '002197.SZ'
+    # ts_code = '002197.SZ'
     ts_code = '000948.SZ'
-    ts_code = '600992.SH'
-    ts_code = '002829.SZ'
-    ts_code = '688385.SH'
+    # ts_code = '600992.SH'
+    # ts_code = '002829.SZ'
+    # ts_code = '688385.SH'
     # ts_code = '300138.SZ'
     # ts_code = '600875.SH'
+    # ts_code = '003029.SZ'
+    ts_code = '003029.SZ'
+    ts_code = '002853.SZ'
 
     scan_daily_candles(ts_code, 'CN', '2022-11-17')
     print('扫描成功')

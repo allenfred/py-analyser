@@ -155,7 +155,7 @@ def is_ma60_second(index, candles, bias, ma, ma_slope, df):
 
     if index > 90 and steady_on_ma60(index, df) and \
             has_support_patterns(index, df) and _low_bias60 < 2:
-        print(df.iloc[index]['trade_date'], 'ma60 second')
+        # print(index, df.iloc[index]['trade_date'], 'ma60 second')
         return True
     else:
         return False
