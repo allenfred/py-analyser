@@ -199,8 +199,8 @@ def steady_on_ma60(index, df):
             close_steady_55days = False
 
     # 当MA60持续上行 收盘价和MA20必须稳定在MA60之上
-    if ma60_steady_22days:
-        if close_steady_22days and ma20_on_ma60_22days:
+    if ma60_steady_55days:
+        if close_steady_55days and ma20_on_ma60_55days:
             return True
         else:
             return False
@@ -211,8 +211,8 @@ def steady_on_ma60(index, df):
         else:
             return False
 
-    if ma60_steady_55days:
-        if close_steady_55days and ma20_on_ma60_55days:
+    if ma60_steady_22days:
+        if close_steady_22days and ma20_on_ma60_22days:
             return True
         else:
             return False
