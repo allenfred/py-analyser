@@ -966,7 +966,7 @@ def limit_up_gene(i, candles, df):
     ma60 = ma[:, 5]
 
     def steady_on_ma():
-        if _close > ma60[i] and df.iloc[i]['ma60_up'] == 1 and \
+        if _close > ma60[i] and (df.iloc[i]['ma60_up'] == 1 or df.iloc[i]['ma20_up'] == 1) and \
                 not df.iloc[i]['ma20_down'] == 1:
             return True
 

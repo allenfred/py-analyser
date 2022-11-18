@@ -50,6 +50,8 @@ if __name__ == "__main__":
     ts_code = '003029.SZ'
     ts_code = '002853.SZ'
     ts_code = '605020.SH'
+    ts_code = '601098.SH'
+    ts_code = '000722.SZ'  # 湖南发展
 
     scan_daily_candles(ts_code, 'CN', '2022-11-17')
     print('扫描成功')

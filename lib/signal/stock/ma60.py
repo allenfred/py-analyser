@@ -77,7 +77,7 @@ def steady_on_ma60(index, df):
         else:
             return False
 
-    return True
+    return False
 
 
 # MA60 葛南维买卖八大法则
@@ -191,7 +191,9 @@ def is_ma60_third(index, candles, bias, ma, ma_slope, df):
     _low = candle[2]
     close = candles[:, 3]
     _close = candle[3]
+    _pre_close = candles[index - 1][2]
     ma60_slope = ma_slope[:, 5]
+    ma20 = ma[:, 2]
     ma60 = ma[:, 5]
     _ma60 = ma60[index]
     bias60 = bias[:, 4]
@@ -199,6 +201,81 @@ def is_ma60_third(index, candles, bias, ma, ma_slope, df):
 
     if index > 90 and _ma60 > 0:
         _low_bias60 = (_low - _ma60) * 100 / _ma60
+
+    def steady_on_ma60():
+        close = df['close'].to_numpy()
+
+        ma60_steady_22days = True
+        ma20_on_ma60_22days = True
+        close_steady_22days = True
+
+        ma60_steady_33days = True
+        ma20_on_ma60_33days = True
+        close_steady_33days = True
+
+        ma60_steady_55days = True
+        ma20_on_ma60_55days = True
+        close_steady_55days = True
+
+        for i in range(21):
+            # 如果当前 MA60 <= 前值
+            if ma60[index - i] < ma60[index - i - 1]:
+                ma60_steady_22days = False
+
+            # 如果当前 MA20 < MA60
+            if ma20[index - i] < ma60[index - i]:
+                ma20_on_ma60_22days = False
+
+            # 如果收盘价低于 MA60
+            if close[index - i] < ma60[index - i]:
+                close_steady_22days = False
+
+        for i in range(33):
+            # 如果当前 MA60 <= 前值
+            if ma60[index - i] < ma60[index - i - 1]:
+                ma60_steady_33days = False
+
+            # 如果当前 MA20 < MA60
+            if ma20[index - i] < ma60[index - i]:
+                ma20_on_ma60_33days = False
+
+            # 如果收盘价低于 MA60
+            if close[index - i] < ma60[index - i]:
+                close_steady_33days = False
+
+        for i in range(55):
+            # 如果当前 MA60 <= 前值
+            if ma60[index - i] < ma60[index - i - 1]:
+                ma60_steady_55days = False
+
+            # 如果当前 MA20 < MA60
+            if ma20[index - i] < ma60[index - i]:
+                ma20_on_ma60_55days = False
+
+            # 如果收盘价低于 MA60
+            if close[index - i] < ma60[index - i]:
+                close_steady_55days = False
+
+        # 当MA60持续上行 收盘价和MA20必须稳定在MA60之上
+        if ma60_steady_55days:
+            if close_steady_55days and ma20_on_ma60_55days:
+                return True
+            else:
+                return False
+
+        if ma60_steady_33days:
+            if close_steady_33days and ma20_on_ma60_33days:
+                return True
+            else:
+                return False
+
+        if ma60_steady_22days:
+            if close_steady_22days and ma20_on_ma60_22days:
+                return True
+            else:
+                return False
+
+        return False
 
     def rise_steady():
         flag = True
@@ -208,13 +285,14 @@ def is_ma60_third(index, candles, bias, ma, ma_slope, df):
             if ma60[index - i] < ma60[index - i - 1]:
                 flag = False
 
-            if close[index - 1] < ma60[index - i]:
+            if close[index - i] < ma60[index - i]:
                 beneath_ma60_cnt += 1
 
-        return flag and 1 < beneath_ma60_cnt < 3
+        return flag and 0 < beneath_ma60_cnt < 3
 
-    if index > 90 and _close > _ma60 > _low and _bias60 < 8 and \
-            rise_steady() and candles[index - 1][2] < ma60[index - 1]:
+    if index > 90 and _close > _ma60 and _bias60 < 8 and rise_steady() and \
+            has_support_patterns(index, df):
+        # print(index, df.iloc[index]['trade_date'], 'ma60 third')
         return True
     else:
         return False

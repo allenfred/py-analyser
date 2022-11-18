@@ -243,6 +243,9 @@ def is_up_hill(index, df):
     ma30 = ma[:, 3]
     ma60 = ma[:, 5]
 
+    if index > 90 and ma60[index] > 0:
+        _low_bias60 = (low[index] - ma60[index]) * 100 / ma60[index]
+
     def ma60_rise_steady():
         flag = True
         for i in range(18):
@@ -282,7 +285,7 @@ def is_up_hill(index, df):
         return flag
 
     if index > 90 and steady_on_ma60(index, df) and ma60_rise_steady() and \
-            steady_on_ma30() and has_no_limit():
+            steady_on_ma30() and has_no_limit() and _low_bias60 < 5:
         # print('is_up_hill', df.iloc[index]['trade_date'])
         return True
 
