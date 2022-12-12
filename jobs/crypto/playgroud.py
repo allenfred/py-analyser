@@ -53,6 +53,7 @@ if __name__ == "__main__":
     inst_id = 'MASKUSDT'
     inst_id = 'CHZUSDT'
     inst_id = 'LTCUSDT'
+    inst_id = 'CTSIUSDT'
 
     gran = 900
     gran = 3600

@@ -1,5 +1,28 @@
+import pandas as pd
+import numpy as np
 import datetime
-from .database import InstrumentInfo
+# from datetime import datetime, date, timedelta
+from .database import InstrumentInfo, UsdtSwapKlines
+import mplfinance as mpf
+import matplotlib.dates as mpl_dates
+from json import loads, dumps
+
+
+def get_usdt_swap_klines(exchange, inst_id, granularity, limit=500):
+    # print(datetime.datetime.utcnow() + datetime.timedelta(hours=-20))
+    kline_list = [
+        loads(dumps(doc, default=convert_date))
+        for doc in UsdtSwapKlines.find(
+            {"exchange": exchange, "instrument_id": inst_id, "granularity": int(granularity),
+             "timestamp": {
+                 '$lte': datetime.datetime.utcnow() + datetime.timedelta(hours=0)}},
+            {"_id": 0, "__v": 0, "currency_volume": 0, "granularity": 0, "underlying_index": 0},
+        ).sort("timestamp", -1).limit(limit)
+    ]
+
+    df = (pd.DataFrame(kline_list))
+
+    return df
 
 
 def convert_date(date):
@@ -43,3 +66,12 @@ def get_tickers():
             }
         }
     ])
+
+
+def get_klines_df(exchange, inst_id, granularity, limit=1000):
+    df = get_usdt_swap_klines(exchange, inst_id, granularity, limit)
+    df = df.sort_values(by='timestamp', ascending=True)
+    df['date'] = pd.to_datetime(df.timestamp)
+    df = df.set_index('date')
+
+    return df

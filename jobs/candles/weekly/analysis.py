@@ -18,16 +18,15 @@ import time
 from datetime import datetime
 from config.common import TS_TOKEN
 
-
 pro = ts.pro_api(TS_TOKEN)
 weeklyCandleDao = WeeklyCandleDao()
 weeklyIndicatorDao = WeeklyIndicatorDao()
 weeklySignalDao = WeeklySignalDao()
 stockDao = StockDao()
 
-
 if __name__ == "__main__":
-    today = datetime.now().strftime("%Y-%m-%d")
+    # today = datetime.now().strftime("%Y-%m-%d")
+    today = '2022-12-09'
     start = time.time()
     flag = True
 
@@ -39,7 +38,7 @@ if __name__ == "__main__":
         if ts_code is None:
             break
 
-        df = weeklyCandleDao.find_by_ts_code(ts_code, 200)
+        df = weeklyCandleDao.find_by_ts_code(ts_code, 250)
         df_len = len(df)
 
         try:

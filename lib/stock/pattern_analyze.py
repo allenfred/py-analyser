@@ -90,58 +90,6 @@ def pattern_analyze(df):
         # 一阴穿四线
         drop_cross4ma.insert(index, patterns.drop_cross4ma(index, candle, df))
 
-    # for index in range(len(candle)):
-    #     # 锤子线
-    #     hammer.insert(index,  0)
-    #     # 倒锤子线
-    #     pour_hammer.insert(index,  0)
-    #     # 看涨尽头线
-    #     short_end.insert(index,  0)
-    #     # 下探上涨
-    #     down_rise.insert(index, 0)
-    #     # 看涨吞没
-    #     swallow_up.insert(index, 0)
-    #     # 好友反攻
-    #     attack_short.insert(index, 0)
-    #     # 曙光初现
-    #     first_light.insert(index, 0)
-    #     # 旭日东升
-    #     sunrise.insert(index, 0)
-    #     # 平底
-    #     flat_base.insert(index, 0)
-    #     # 涨停一字板
-    #     rise_line.insert(index, 0)
-    #     # 下跌螺旋桨
-    #     down_screw.insert(index, 0)
-    #     # 看跌尽头线
-    #     long_end.insert(index, 0)
-    #     # 看跌吞没
-    #     swallow_down.insert(index, 0)
-    #     # 吊颈线
-    #     hang_neck.insert(index, 0)
-    #     # 射击之星
-    #     shooting.insert(index, 0)
-    #     # 跌停一字板
-    #     drop_line.insert(index, 0)
-    #     # 看跌螺旋桨
-    #     up_screw.insert(index, 0)
-    #     # 向上跳空
-    #     upward_jump.insert(index, 0)
-    #     # 向下跳空
-    #     downward_jump.insert(index, 0)
-    #     # 涨停板
-    #     rise_limit.insert(index, 0)
-    #     # 跌停板
-    #     drop_limit.insert(index, 0)
-    #     # 一阳穿三线
-    #     up_cross3ma.insert(index, 0)
-    #     # 一阳穿四线
-    #     up_cross4ma.insert(index, 0)
-    #     # 一阴穿三线
-    #     drop_cross3ma.insert(index, 0)
-    #     # 一阴穿四线
-    #     drop_cross4ma.insert(index, 0)
-
     df['long_line'] = long_line
     df['marubozu'] = marubozu
     df['hammer'] = hammer

@@ -3,6 +3,83 @@ from .patterns import has_long_patterns, has_short_patterns, \
     has_bottom_patterns, has_top_patterns, \
     has_long_break_patterns, has_short_break_patterns
 
+
+def steady_on_ma120(index, df):
+    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+    close = df['close'].to_numpy()
+    ma20 = ma[:, 2]
+    ma60 = ma[:, 5]
+    ma120 = ma[:, 6]
+
+    ma120_steady_33days = True
+    ma60_on_ma120_33days = True
+    close_steady_33days = True
+
+    ma60_steady_55days = True
+    ma20_on_ma60_55days = True
+    close_steady_55days = True
+
+    for i in range(21):
+        # 如果当前 MA120 <= 前值
+        if ma60[index - i] < ma120[index - i - 1]:
+            ma60_steady_22days = False
+
+        # 如果当前 MA60 < MA120
+        if ma60[index - i] < ma120[index - i]:
+            ma20_on_ma60_22days = False
+
+        # 如果收盘价低于 MA120
+        if close[index - i] < ma120[index - i]:
+            close_steady_22days = False
+
+    for i in range(33):
+        # 如果当前 MA60 <= 前值
+        if ma120[index - i] < ma120[index - i - 1]:
+            ma60_steady_33days = False
+
+        # 如果当前 MA60 < MA120
+        if ma60[index - i] < ma120[index - i]:
+            ma20_on_ma60_33days = False
+
+        # 如果收盘价低于 MA120
+        if close[index - i] < ma120[index - i]:
+            close_steady_33days = False
+
+    for i in range(55):
+        # 如果当前 MA120 <= 前值
+        if ma120[index - i] < ma120[index - i - 1]:
+            ma60_steady_55days = False
+
+        # 如果当前 MA20 < MA120
+        if ma60[index - i] < ma120[index - i]:
+            ma20_on_ma60_55days = False
+
+        # 如果收盘价低于 MA120
+        if close[index - i] < ma120[index - i]:
+            close_steady_55days = False
+
+    # 当MA60持续上行 收盘价和MA20必须稳定在MA60之上
+    if ma60_steady_55days:
+        if close_steady_55days and ma20_on_ma60_55days:
+            return True
+        else:
+            return False
+
+    if ma60_steady_33days:
+        if close_steady_33days and ma20_on_ma60_33days:
+            return True
+        else:
+            return False
+
+    if ma60_steady_22days:
+        if close_steady_22days and ma20_on_ma60_22days:
+            return True
+        else:
+            return False
+
+    return False
+
+
 """
 MA120 葛南维买卖八大法则
 """

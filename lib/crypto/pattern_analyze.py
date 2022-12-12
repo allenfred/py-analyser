@@ -168,13 +168,13 @@ def pattern_analyze(df):
     # df['CDLDOJISTAR'] = lib.CDLDOJISTAR(open, high, low, close)
     #
     # 蜻蜓十字/T形十字 预示趋势反转
-    # df['CDLDRAGONFLYDOJI'] = lib.CDLDRAGONFLYDOJI(open, high, low, close)
+    df['CDLDRAGONFLYDOJI'] = lib.CDLDRAGONFLYDOJI(open, high, low, close)
     #
     # 墓碑十字/倒T十字 底部反转
     df['CDLGRAVESTONEDOJI'] = lib.CDLGRAVESTONEDOJI(open, high, low, close)
     #
     # Hammer 锤头
-    # df['CDLHAMMER'] = lib.CDLHAMMER(open, high, low, close)
+    df['CDLHAMMER'] = lib.CDLHAMMER(open, high, low, close)
     #
     # # Hanging Man 上吊线
     # df['CDLHANGINGMAN'] = lib.CDLHANGINGMAN(open, high, low, close)
@@ -201,7 +201,7 @@ def pattern_analyze(df):
     # df['CDLSHORTLINE'] = lib.CDLSHORTLINE(open, high, low, close)
     #
     # Takuri (Dragonfly Doji with very long lower shadow) 探水竿
-    # df['CDLTAKURI'] = lib.CDLTAKURI(open, high, low, close)
+    df['CDLTAKURI'] = lib.CDLTAKURI(open, high, low, close)
     #
     # """
     # 二日K线模式
@@ -217,10 +217,10 @@ def pattern_analyze(df):
     # df['CDLGAPSIDESIDEWHITE'] = lib.CDLGAPSIDESIDEWHITE(open, high, low, close)
     #
     # 孕线
-    # df['CDLHARAMI'] = lib.CDLHARAMI(open, high, low, close)
+    df['CDLHARAMI'] = lib.CDLHARAMI(open, high, low, close)
     #
     # 十字孕线
-    # df['CDLHARAMICROSS'] = lib.CDLHARAMICROSS(open, high, low, close)
+    df['CDLHARAMICROSS'] = lib.CDLHARAMICROSS(open, high, low, close)
     #
     # # 家鸽
     # df['CDLHOMINGPIGEON'] = lib.CDLHOMINGPIGEON(open, high, low, close)
@@ -346,7 +346,7 @@ def pattern_analyze(df):
     # df['CDLBREAKAWAY'] = lib.CDLBREAKAWAY(open, high, low, close)
     #
     # Ladder Bottom 梯底 底部反转
-    # df['CDLLADDERBOTTOM'] = lib.CDLLADDERBOTTOM(open, high, low, close)
+    df['CDLLADDERBOTTOM'] = lib.CDLLADDERBOTTOM(open, high, low, close)
     #
     # # Mat Hold 铺垫
     # df['CDLMATHOLD'] = lib.CDLMATHOLD(open, high, low, close)

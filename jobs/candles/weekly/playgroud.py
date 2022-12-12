@@ -30,13 +30,15 @@ if __name__ == "__main__":
 
     # ts_code = stockDao.find_one_weekly_not_ready(today)
     ts_code = '600389.SH'
+    ts_code = '600062.SH'
 
-    df = weeklyCandleDao.find_by_ts_code(ts_code, 200)
+    df = weeklyCandleDao.find_by_ts_code(ts_code, 250)
     df_len = len(df)
-    print(df)
+
     df = df.sort_values(by='trade_date', ascending=True)
     df['trade_date'] = pd.to_datetime(df["trade_date"], format='%Y-%m-%d')
     df['num'] = df.index[::-1].to_numpy()
+    df['ts_code'] = ts_code
     df = df.set_index('num')
 
     df = set_quota(df)

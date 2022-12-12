@@ -63,6 +63,47 @@ def has_short_patterns(index, df):
     return False
 
 
+def has_support_patterns(index, df):
+    """
+    当前Ticker 存在看涨K线形态
+    看涨吞没
+    下探上涨
+    锤头线
+    墓碑十字线
+    蜻蜓十字线
+    探水竿
+    孕线
+    十字孕线
+    刺透形态
+    梯底
+
+    :param index:
+    :param df:
+    :return:
+    """
+    if df.iloc[index]['swallow_up'] > 0 \
+            or df.iloc[index]['sunrise'] > 0 \
+            or df.iloc[index]['down_screw'] > 0 \
+            or df.iloc[index]['hammer'] > 0 \
+            or df.iloc[index]['pour_hammer'] > 0 \
+            or df.iloc[index]['down_rise'] > 0 \
+            or df.iloc[index]['CDLHAMMER'] > 0 \
+            or df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 \
+            or df.iloc[index]['CDLDRAGONFLYDOJI'] > 0 \
+            or df.iloc[index]['CDLTAKURI'] > 0 \
+            or df.iloc[index]['CDLHARAMI'] > 0 \
+            or df.iloc[index]['CDLHARAMICROSS'] > 0 \
+            or df.iloc[index]['CDLPIERCING'] > 0 \
+            or df.iloc[index]['CDLLADDERBOTTOM'] > 0 \
+            or df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 \
+            or df.iloc[index]['CDLMORNINGSTAR'] > 0 \
+            or df.iloc[index]['CDLMORNINGDOJISTAR'] > 0 \
+            or df.iloc[index]['CDLPIERCING'] > 0:
+        return True
+
+    return False
+
+
 def has_bottom_patterns(index, df):
     """
     判断当前是否存在底部看涨K线形态

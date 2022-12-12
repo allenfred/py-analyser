@@ -957,6 +957,9 @@ def limit_up_gene(i, candles, df):
     if i < _start_at:
         return 0
 
+    if 'limit' not in df.columns:
+        return False
+
     ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
 
     _open = candles[:, 0][i]

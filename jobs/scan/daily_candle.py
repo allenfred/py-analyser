@@ -56,7 +56,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
                                                       "and close is not null and high is not null and"
                                                     + " low is not null "
                                                     + "order by trade_date desc "
-                                                      "limit 250").params(ts_code=ts_code))
+                                                      "limit 300").params(ts_code=ts_code))
 
     kline_df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'high', 'close',
                                                            'low', 'pct_chg', 'vol', 'amount'])
@@ -69,7 +69,7 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
              + "cn_limit_list" + " where ts_code = :ts_code "
              + "and trade_date > '2021-01-01' "
              + "order by trade_date desc "
-               "limit 250").params(ts_code=ts_code))
+               "limit 300").params(ts_code=ts_code))
 
     limit_up_df = pd.DataFrame(limit_up_statement.fetchall(), columns=['trade_date', 'limit'])
 

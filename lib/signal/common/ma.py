@@ -5,6 +5,166 @@ import lib.signal.stock.candle as patterns
 
 # MA 信号
 
+
+def steady_on_ma60(index, df):
+    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+    close = df['close'].to_numpy()
+    ma20 = ma[:, 2]
+    ma60 = ma[:, 5]
+
+    ma60_steady_22days = True
+    ma20_on_ma60_22days = True
+    close_steady_22days = True
+
+    ma60_steady_33days = True
+    ma20_on_ma60_33days = True
+    close_steady_33days = True
+
+    ma60_steady_55days = True
+    ma20_on_ma60_55days = True
+    close_steady_55days = True
+
+    for i in range(21):
+        # 如果当前 MA60 <= 前值
+        if ma60[index - i] < ma60[index - i - 1]:
+            ma60_steady_22days = False
+
+        # 如果当前 MA20 < MA60
+        if ma20[index - i] < ma60[index - i]:
+            ma20_on_ma60_22days = False
+
+        # 如果收盘价低于 MA60
+        if close[index - i] < ma60[index - i]:
+            close_steady_22days = False
+
+    for i in range(33):
+        # 如果当前 MA60 <= 前值
+        if ma60[index - i] < ma60[index - i - 1]:
+            ma60_steady_33days = False
+
+        # 如果当前 MA20 < MA60
+        if ma20[index - i] < ma60[index - i]:
+            ma20_on_ma60_33days = False
+
+        # 如果收盘价低于 MA60
+        if close[index - i] < ma60[index - i]:
+            close_steady_33days = False
+
+    for i in range(55):
+        # 如果当前 MA60 <= 前值
+        if ma60[index - i] < ma60[index - i - 1]:
+            ma60_steady_55days = False
+
+        # 如果当前 MA20 < MA60
+        if ma20[index - i] < ma60[index - i]:
+            ma20_on_ma60_55days = False
+
+        # 如果收盘价低于 MA60
+        if close[index - i] < ma60[index - i]:
+            close_steady_55days = False
+
+    # 当MA60持续上行 收盘价和MA20必须稳定在MA60之上
+    if ma60_steady_55days:
+        if close_steady_55days and ma20_on_ma60_55days:
+            return True
+        else:
+            return False
+
+    if ma60_steady_33days:
+        if close_steady_33days and ma20_on_ma60_33days:
+            return True
+        else:
+            return False
+
+    if ma60_steady_22days:
+        if close_steady_22days and ma20_on_ma60_22days:
+            return True
+        else:
+            return False
+
+    return False
+
+
+def steady_on_ma120(index, df):
+    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+    close = df['close'].to_numpy()
+    ma20 = ma[:, 2]
+    ma60 = ma[:, 5]
+    ma120 = ma[:, 6]
+
+    ma120_steady_22days = True
+    ma60_on_ma120_22days = True
+    close_steady_22days = True
+
+    ma120_steady_33days = True
+    ma60_on_ma120_33days = True
+    close_steady_33days = True
+
+    ma120_steady_55days = True
+    ma60_on_ma120_55days = True
+    close_steady_55days = True
+
+    for i in range(21):
+        # 如果当前 MA120 <= 前值
+        if ma120[index - i] < ma120[index - i - 1]:
+            ma120_steady_22days = False
+
+        # 如果当前 MA60 < MA120
+        if ma60[index - i] < ma120[index - i]:
+            ma60_on_ma120_22days = False
+
+        # 如果收盘价低于 MA120
+        if close[index - i] < ma120[index - i]:
+            close_steady_22days = False
+
+    for i in range(33):
+        # 如果当前 MA60 <= 前值
+        if ma120[index - i] < ma120[index - i - 1]:
+            ma120_steady_33days = False
+
+        # 如果当前 MA60 < MA120
+        if ma60[index - i] < ma120[index - i]:
+            ma60_on_ma120_33days = False
+
+        # 如果收盘价低于 MA120
+        if close[index - i] < ma120[index - i]:
+            close_steady_33days = False
+
+    for i in range(55):
+        # 如果当前 MA120 <= 前值
+        if ma120[index - i] < ma120[index - i - 1]:
+            ma120_steady_55days = False
+
+        # 如果当前 MA20 < MA120
+        if ma60[index - i] < ma120[index - i]:
+            ma60_on_ma120_55days = False
+
+        # 如果收盘价低于 MA120
+        if close[index - i] < ma120[index - i]:
+            close_steady_55days = False
+
+    # 当 MA120 持续上行 收盘价和 MA60 必须稳定在 MA120 之上
+    if ma120_steady_55days:
+        if close_steady_55days and ma60_on_ma120_55days:
+            return True
+        else:
+            return False
+
+    if ma120_steady_33days:
+        if close_steady_33days and ma60_on_ma120_33days:
+            return True
+        else:
+            return False
+
+    if ma120_steady_22days:
+        if close_steady_22days and ma60_on_ma120_22days:
+            return True
+        else:
+            return False
+
+    return False
+
+
 def is_ma20_rise(index, ma):
     ma20 = ma[:, 2]
 
@@ -141,85 +301,6 @@ def is_ema120_rise(index, ema):
         return False
 
 
-def steady_on_ma60(index, df):
-    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
-    close = df['close'].to_numpy()
-    ma20 = ma[:, 2]
-    ma60 = ma[:, 5]
-
-    ma60_steady_22days = True
-    ma20_on_ma60_22days = True
-    close_steady_22days = True
-
-    ma60_steady_33days = True
-    ma20_on_ma60_33days = True
-    close_steady_33days = True
-
-    ma60_steady_55days = True
-    ma20_on_ma60_55days = True
-    close_steady_55days = True
-
-    for i in range(21):
-        # 如果当前 MA60 <= 前值
-        if ma60[index - i] < ma60[index - i - 1]:
-            ma60_steady_22days = False
-
-        # 如果当前 MA20 < MA60
-        if ma20[index - i] < ma60[index - i]:
-            ma20_on_ma60_22days = False
-
-        # 如果收盘价低于 MA60
-        if close[index - i] < ma60[index - i]:
-            close_steady_22days = False
-
-    for i in range(33):
-        # 如果当前 MA60 <= 前值
-        if ma60[index - i] < ma60[index - i - 1]:
-            ma60_steady_33days = False
-
-        # 如果当前 MA20 < MA60
-        if ma20[index - i] < ma60[index - i]:
-            ma20_on_ma60_33days = False
-
-        # 如果收盘价低于 MA60
-        if close[index - i] < ma60[index - i]:
-            close_steady_33days = False
-
-    for i in range(55):
-        # 如果当前 MA60 <= 前值
-        if ma60[index - i] < ma60[index - i - 1]:
-            ma60_steady_55days = False
-
-        # 如果当前 MA20 < MA60
-        if ma20[index - i] < ma60[index - i]:
-            ma20_on_ma60_55days = False
-
-        # 如果收盘价低于 MA60
-        if close[index - i] < ma60[index - i]:
-            close_steady_55days = False
-
-    # 当MA60持续上行 收盘价和MA20必须稳定在MA60之上
-    if ma60_steady_55days:
-        if close_steady_55days and ma20_on_ma60_55days:
-            return True
-        else:
-            return False
-
-    if ma60_steady_33days:
-        if close_steady_33days and ma20_on_ma60_33days:
-            return True
-        else:
-            return False
-
-    if ma60_steady_22days:
-        if close_steady_22days and ma20_on_ma60_22days:
-            return True
-        else:
-            return False
-
-    return True
-
-
 def is_up_hill(index, df):
     """
     上山爬坡
@@ -233,6 +314,9 @@ def is_up_hill(index, df):
     :param df:
     :return:
     """
+
+    if 'limit' not in df.columns:
+        return False
 
     ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
     close = df['close'].to_numpy()
@@ -1033,8 +1117,10 @@ def is_stand_up_ma120(index, df):
 def is_ma60_support(index, df):
     """
     MA60支撑
-    最近13个交易日MA60上行
-    最近2个交易日跌破MA60 K线收出支撑形态
+
+    1.MA60持续上行
+    2.MA60上行过程中未曾有效跌破MA60
+    3.最近2个交易日MA60附近 K线收出支撑形态
 
     :param index:
     :param df:
@@ -1044,19 +1130,19 @@ def is_ma60_support(index, df):
         return False
 
     low = df['low'].to_numpy()
-    close = df['close'].to_numpy()
     ma60 = df['ma60'].to_numpy()
 
-    def ma_rise_steady():
-        flag = True
-        for i in range(13):
-            if ma60[index - i] < ma60[index - i - 1]:
-                flag = False
-        return flag
+    def low_bias(sma, ind):
+        return round(round((low[ind] - sma[ind]) / sma[ind], 5) * 100, 2)
 
-    if ma_rise_steady() and has_support_patterns(index, df) and close[index] > ma60[index] and \
-            (low[index] <= ma60[index] or low[index - 1] <= ma60[index - 1]):
-        # print(candle[5], 'support')
+    # if steady_on_ma60(index, df) and has_support_patterns(index, df) and \
+    #         (low[index] <= ma60[index] or low[index - 1] <= ma60[index - 1]):
+    #     print(index, df.iloc[index]['trade_date'], 'ma60 support')
+    #     return True
+
+    if steady_on_ma60(index, df) and (has_support_patterns(index, df) or has_bottom_patterns(index, df)) \
+            and (low_bias(ma60, index - 1) < 1 or low_bias(ma60, index) < 1):
+        # print(index, df.iloc[index]['trade_date'], 'ma60 support')
         return True
     else:
         return False
@@ -1065,8 +1151,10 @@ def is_ma60_support(index, df):
 def is_ma120_support(index, df):
     """
     MA120支撑
-    最近13个交易日 MA120上行
-    最近2个交易日跌破MA120 K线收出支撑形态
+
+    1.MA120持续上行
+    2.MA120上行过程中未曾跌破MA120
+    3.最近2个交易日MA120附近 K线收出支撑形态
 
     :param index:
     :param df:
@@ -1079,16 +1167,19 @@ def is_ma120_support(index, df):
     close = df['close'].to_numpy()
     ma120 = df['ma120'].to_numpy()
 
-    def steady_on_ma():
-        flag = True
-        for i in range(13):
-            if ma120[index - i] < ma120[index - i - 1]:
-                flag = False
-        return flag
+    def low_bias(sma, ind):
+        return round(round((low[ind] - sma[ind]) / sma[ind], 5) * 100, 2)
 
-    if steady_on_ma() and has_support_patterns(index, df) and close[index] > ma120[index] and \
-            has_support_patterns(index - 1, df) and \
-            (low[index] <= ma120[index] or low[index - 1] <= ma120[index - 1]):
+    # if steady_on_ma120(index, df) and has_support_patterns(index, df) and close[index] > ma120[index] and \
+    #         has_support_patterns(index - 1, df) and \
+    #         (low[index] <= ma120[index] or low[index - 1] <= ma120[index - 1]):
+    #     return True
+    # else:
+    #     return False
+
+    if steady_on_ma120(index, df) and (has_support_patterns(index, df) or has_bottom_patterns(index, df)) and \
+            (low_bias(ma120, index - 1) < 1 or low_bias(ma120, index) < 1):
+        # print(index, df.iloc[index]['trade_date'], 'ma120 support')
         return True
     else:
         return False
@@ -1106,6 +1197,7 @@ def has_support_patterns(index, df):
     孕线
     十字孕线
     刺透形态
+    吞噬形态
     梯底
 
     :param index:
@@ -1121,6 +1213,7 @@ def has_support_patterns(index, df):
             or df.iloc[index]['CDLHARAMI'] > 0 \
             or df.iloc[index]['CDLHARAMICROSS'] > 0 \
             or df.iloc[index]['CDLPIERCING'] > 0 \
+            or df.iloc[index]['CDLENGULFING'] > 0 \
             or df.iloc[index]['flat_base'] > 0:
         return True
 
@@ -1139,7 +1232,7 @@ def has_bottom_patterns(index, df):
     墓碑十字/倒T十字 CDLGRAVESTONEDOJI
     晨星 CDLMORNINGSTAR
     十字晨星 CDLMORNINGDOJISTAR
-    刺透心态 CDLPIERCING
+    刺透形态 CDLPIERCING
     反击线 CDLCOUNTERATTACK
     梯底
 

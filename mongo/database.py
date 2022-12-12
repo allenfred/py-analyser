@@ -1,4 +1,10 @@
 #  -*- coding: utf-8 -*-
+import os
+import sys
+
+path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(path)
+
 from urllib.parse import quote_plus
 from pymongo import MongoClient
 from config.common import CRYPTO_DB_HOST, CRYPTO_DB_NAME, CRYPTO_DB_PASSWORD, CRYPTO_DB_USERNAME
@@ -12,11 +18,8 @@ uri = "mongodb://%s:%s@%s" % (
 client = MongoClient(uri)
 db = client[CRYPTO_DB_NAME]
 
-
 InstrumentTicker = db["instrument_tickers"]
 InstrumentInfo = db["instrument_infos"]
-# UsdtSwapKlines = db["usdt_swap_klines"]
-# UsdtSwapSignal = db["usdt_swap_signal"]
 UsdtSwapKlines = db["usdt_swap_klines"].with_options(
     codec_options=CodecOptions(tz_aware=True, tzinfo=pytz.timezone("Etc/GMT+0"))
 )
