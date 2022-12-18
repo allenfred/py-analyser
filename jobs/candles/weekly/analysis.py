@@ -25,8 +25,7 @@ weeklySignalDao = WeeklySignalDao()
 stockDao = StockDao()
 
 if __name__ == "__main__":
-    # today = datetime.now().strftime("%Y-%m-%d")
-    today = '2022-12-09'
+    today = datetime.now().strftime("%Y-%m-%d")
     start = time.time()
     flag = True
 
@@ -38,7 +37,7 @@ if __name__ == "__main__":
         if ts_code is None:
             break
 
-        df = weeklyCandleDao.find_by_ts_code(ts_code, 250)
+        df = weeklyCandleDao.find_by_ts_code(ts_code, 220)
         df_len = len(df)
 
         try:
