@@ -54,10 +54,11 @@ if __name__ == "__main__":
     inst_id = 'CHZUSDT'
     inst_id = 'LTCUSDT'
     inst_id = 'CTSIUSDT'
+    inst_id = '1000LUNCUSDT'
 
     gran = 900
     gran = 3600
-    gran = 14400
+    # gran = 14400
     exchange = 'binance'
     # exchange = 'okex'
     df = get_klines_df(exchange, inst_id, gran, 300)

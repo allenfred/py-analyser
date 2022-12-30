@@ -1000,3 +1000,8 @@ def limit_up_gene(i, candles, df):
         return 1
 
     return 0
+
+
+# 参看 西安饮食 西安旅游 拟合
+def limit_pullback():
+    return False

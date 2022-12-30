@@ -53,6 +53,7 @@ if __name__ == "__main__":
     ts_code = '601098.SH'
     ts_code = '000722.SZ'  # 湖南发展
     ts_code = '002799.SZ'  # 湖南发展
+    ts_code = '002246.SZ'  # 湖南发展
 
-    scan_daily_candles(ts_code, 'CN', '2022-12-09')
+    scan_daily_candles(ts_code, 'CN', '2022-12-29')
     print('扫描成功')

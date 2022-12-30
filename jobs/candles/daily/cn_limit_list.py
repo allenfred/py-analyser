@@ -27,14 +27,16 @@ calendarDao = TradeCalendarDao()
 stockDao = StockDao()
 
 
-# 获取每日涨停数据统计
+# 获取单日涨跌停统计数据
 def daily_limit_list():
     _start = time.time()
     _today = datetime.now().strftime("%Y%m%d")
-    # 获取单日统计数据
     df = pro.limit_list(trade_date=_today)
-    print(df)
-    limitListDao.reinsert(df)
+
+    print(today, '当日涨跌停统计数据', len(df))
+
+    if len(df) > 0:
+        limitListDao.reinsert(df)
 
 
 if __name__ == "__main__":

@@ -31,6 +31,7 @@ stockDao = StockDao()
 
 def ready_daily_klines():
     start_time = time.time()
+    _total_got_count = 0
 
     while True:
         item = calendarDao.find_one_candle_not_ready('CN')
@@ -39,7 +40,6 @@ def ready_daily_klines():
             trade_dte = datetime.strftime(item.cal_date, "%Y%m%d")
 
             is_last_req = False
-            total_got_count = 0
             offset = 0
         else:
             break
@@ -59,19 +59,21 @@ def ready_daily_klines():
                 db_df = dailyCandleDao.find_by_trade_date(item.cal_date)
                 new_df = df.loc[~df["ts_code"].isin(db_df["ts_code"].to_numpy())]
 
-                total_got_count += len(new_df)
+                _total_got_count += len(new_df)
                 dailyCandleDao.bulk_insert(new_df)
 
             except Exception as e:
                 print('Error:', e)
 
-        if total_got_count == 0:
-            print('未获取到行情数据')
+        if _total_got_count == 0:
+            print(item.cal_date, '未获取到行情数据')
             break
 
-        print('已更新 CN daily_candles ', item.cal_date, ': ', total_got_count, ' 条数据，用时 ',
+        print('已更新 CN daily_candles ', item.cal_date, ': ', _total_got_count, ' 条数据，用时 ',
               used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start_time, time.time()))
         calendarDao.set_cn_candle_ready(item.cal_date)
+
+    return _total_got_count
 
 
 def init_limit_list(_today):
@@ -82,17 +84,20 @@ def init_limit_list(_today):
     limit_df = new_df[new_df.close == new_df.up_limit]
     insert_df = limit_df[['ts_code', 'trade_date', 'close', 'pct_chg', 'limit']]
 
-    print('今日涨停:', len(insert_df))
-    
-    limitListDao.reinsert(insert_df)
+    print(_today, '今日涨停:', len(insert_df))
+
+    if len(insert_df) > 0:
+        limitListDao.reinsert(insert_df)
 
 
 if __name__ == "__main__":
     today = datetime.now().strftime("%Y-%m-%d")
     start = time.time()
 
-    ready_daily_klines()
-    init_limit_list(today)
+    total_got_count = ready_daily_klines()
+
+    if total_got_count > 0:
+        init_limit_list(today)
 
     end = time.time()
 

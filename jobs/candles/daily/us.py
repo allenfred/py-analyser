@@ -12,7 +12,7 @@ from models.us_daily_candles import USDailyCandleDao
 from models.trade_calendar import TradeCalendarDao
 from models.stocks import StockDao
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from config.common import TS_TOKEN
 from api.daily_candle import get_us_candles
 from lib.util import used_time_fmt
@@ -72,17 +72,18 @@ def ready_candles_by_date(start_time):
 
 def ready_candles_by_stock(start_time):
     all_history_candle_set = False
-    today = datetime.now().strftime("%Y-%m-%d")
+    yesterday = (datetime.now() + timedelta(hours=-24)).strftime("%Y-%m-%d")
+
     df = get_us_candles({"limit": 1, "offset": 0})
     latest_candle_date = datetime.strftime(datetime.strptime(df["trade_date"][0], "%Y%m%d"), '%Y-%m-%d')
 
-    if not latest_candle_date == today:
-        print('tushare 尚未同步 US 最新行情数据:', today)
+    if not latest_candle_date == yesterday:
+        print('tushare 尚未同步 US 最新行情数据:', yesterday)
         quit()
 
     while not all_history_candle_set:
         circle_start = time.time()
-        ts_code = stockDao.find_one_candle_not_ready('US', today)
+        ts_code = stockDao.find_one_candle_not_ready('US', yesterday)
 
         if ts_code is None:
             break
@@ -93,7 +94,7 @@ def ready_candles_by_stock(start_time):
             df['pct_chg'] = df['pct_change']
 
             # 过滤出最新candle数据 (相较于db)
-            db_df = dailyCandleDao.find_all(ts_code)
+            db_df = dailyCandleDao.find_by_ts_code(ts_code)
             new_df = df.loc[~pd.to_datetime(df["trade_date"], format='%Y-%m-%d').isin(db_df["trade_date"].to_numpy())]
 
             dailyCandleDao.bulk_insert(new_df)
@@ -108,8 +109,11 @@ def ready_candles_by_stock(start_time):
 
 if __name__ == "__main__":
     today = datetime.now().strftime("%Y-%m-%d")
+    # yesterday = (datetime.now() + timedelta(hours=-24)).strftime("%Y-%m-%d")
     start = time.time()
-    ready_candles_by_date(start)
+    # ready_candles_by_date(start)
+    ready_candles_by_stock(start)
+
     end = time.time()
 
     print(today, '用时', used_time_fmt(start, end))

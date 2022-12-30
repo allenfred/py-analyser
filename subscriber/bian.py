@@ -15,21 +15,25 @@ from lib.util import get_timestamp
 
 
 def message_handler(message):
-    if message['stream'].find('miniTicker') > 0:
-        r.publish('tickers', json.dumps(message))
-
-    if message['stream'].find('kline') > 0:
-        r.publish('klines', json.dumps(message))
+    r.publish('analyzer', json.dumps(message))
+    #
+    # if message['stream'].find('miniTicker') > 0:
+    #     r.publish('tickers', json.dumps(message))
+    #
+    # if message['stream'].find('kline') > 0:
+    #     r.publish('klines', json.dumps(message))
 
 
 insts = list(get_instruments('binance'))
-streams = ['!miniTicker@arr', 'btcusdt@kline_4h']
+streams = ['btcusdt@kline_1h']
 
-for index, item in enumerate(insts):
-    inst_id = item['instrument_id']
-    if len(streams) < 160 and inst_id.endswith('USDT'):
-        streams.append(inst_id.lower() + '@kline_15m')
-        streams.append(inst_id.lower() + '@kline_1h')
+# streams = ['!miniTicker@arr', 'btcusdt@kline_4h']
+#
+# for index, item in enumerate(insts):
+#     inst_id = item['instrument_id']
+#     if len(streams) < 160 and inst_id.endswith('USDT'):
+#         streams.append(inst_id.lower() + '@kline_15m')
+#         streams.append(inst_id.lower() + '@kline_1h')
 
 ws_client = UMFuturesWebsocketClient()
 ws_client.start()

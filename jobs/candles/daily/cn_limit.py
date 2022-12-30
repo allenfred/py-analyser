@@ -17,13 +17,16 @@ pro = ts.pro_api(TS_TOKEN)
 dailyLimitDao = CNDailyLimitDao()
 
 
+# 获取单日涨跌停价格数据
 def daily_limit():
     _start = time.time()
     _today = datetime.now().strftime("%Y%m%d")
-    # 获取单日统计数据
     df = pro.stk_limit(trade_date=_today)
-    print(df)
-    dailyLimitDao.reinsert(df)
+
+    print(today, '当日涨跌停价格数据', len(df))
+
+    if len(df) > 0:
+        dailyLimitDao.reinsert(df)
 
 
 if __name__ == "__main__":

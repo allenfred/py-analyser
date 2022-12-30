@@ -1,36 +1,6 @@
 module.exports = {
   apps: [
     {
-      name: 'sub_binance',
-      script: 'subscriber/bian.py',
-      interpreter: 'python3',
-      instances: 1,
-      exec_mode: 'fork',
-      cron_restart: '0 0 * * *', // 每天
-      watch: false,
-      autorestart: true,
-    },
-    {
-      name: 'sub_okex',
-      script: 'subscriber/okex.py',
-      interpreter: 'python3',
-      instances: 1,
-      exec_mode: 'fork',
-      cron_restart: '0 0 * * *', // 每天
-      watch: false,
-      autorestart: true,
-    },
-    {
-      name: 'sub_bybit',
-      script: 'subscriber/bybit.py',
-      interpreter: 'python3',
-      instances: 1,
-      exec_mode: 'fork',
-      cron_restart: '0 0 * * *', // 每天
-      watch: false,
-      autorestart: true,
-    },
-    {
       name: 'crypto_analyzer',
       script: 'jobs/crypto/all.py',
       interpreter: 'python3',
@@ -56,7 +26,7 @@ module.exports = {
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '0 16 * * *', // 每个交易日下午 16:00
+      cron_restart: '0 16,17,18 * * *', // 每个交易日下午 16:00 / 17:00 / 18:00
       watch: false,
       autorestart: false,
     },
