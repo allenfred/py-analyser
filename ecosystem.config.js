@@ -120,16 +120,26 @@ module.exports = {
     //      watch: false,
     //      autorestart: false,
     //    },
-    //    {
-    //      name: 'us_klines',
-    //      script: 'jobs/candles/daily/us.py',
-    //      interpreter: 'python3',
-    //      instances: 1,
-    //      exec_mode: 'fork',
-    //      cron_restart: '0 13 * * *', // 每天下午 13:00
-    //      watch: false,
-    //      autorestart: false,
-    //    },
+        {
+          name: 'us_klines',
+          script: 'jobs/candles/daily/us.py',
+          interpreter: 'python3',
+          instances: 1,
+          exec_mode: 'fork',
+          cron_restart: '0 13 * * *', // 每天下午 13:00
+          watch: false,
+          autorestart: false,
+        },
+        {
+          name: 'us_daily_history',
+          script: 'jobs/candles/history/us_daily.py',
+          interpreter: 'python3',
+          instances: 1,
+          exec_mode: 'fork',
+          cron_restart: '0 0 * * 7', // 每周日 0时
+          watch: false,
+          autorestart: false,
+        },
     //    {
     //      name: 'analysis_HK',
     //      script: 'jobs/analysis/daily/hk.py',

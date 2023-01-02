@@ -106,3 +106,6 @@ venv.bak/
 
 # TA-Lib
 ta-lib/
+
+# candle csv file
+csv/

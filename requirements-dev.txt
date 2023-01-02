@@ -77,3 +77,4 @@ wrapt==1.14.1
 xlrd==2.0.1
 yfinance==0.1.87
 zope.interface==5.4.0
+yahoo-fin=0.8.9.1

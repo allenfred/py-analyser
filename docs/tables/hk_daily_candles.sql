@@ -7,7 +7,7 @@ CREATE TABLE `hk_daily_candles` (
   `low` float,
   `close` float,
   `pre_close` float COMMENT '昨收价',
-  `change` float COMMENT '涨跌额',
+  `chg` float COMMENT '涨跌额',
   `pct_chg` float COMMENT '涨跌幅',
   `vol` float COMMENT '成交量',
   `amount` float COMMENT '成交额',

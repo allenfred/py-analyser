@@ -1,4 +1,4 @@
-# 导入:
+import pymysql.cursors
 from sqlalchemy import Column, Integer, String, Date, Float, select, text
 from sqlalchemy.ext.declarative import declarative_base
 from .db import DBSession
@@ -82,6 +82,15 @@ def get_obj(candle):
 class USDailyCandleDao:
     def __init__(self):
         self.session = DBSession()
+
+    def open_connection(self):
+        # Connect to the database
+        self.conn = pymysql.connect(host='121.4.15.211',
+                                    user='dev',
+                                    password='04f5d5a3b91006a8',
+                                    database='quant',
+                                    local_infile=1,
+                                    cursorclass=pymysql.cursors.DictCursor)
 
     def find_latest_candle(self):
         s = text("select trade_date, open, close, high, low from us_daily_candles order by trade_date desc limit 1;")
@@ -214,3 +223,50 @@ class USDailyCandleDao:
         self.session.close()
 
         return df
+
+    def load_local_file(self, path):
+        self.open_connection()
+
+        with self.conn:
+            with self.conn.cursor() as cursor:
+                # ts_code, trade_date, close, open, high, low, chg, pre_close, pct_chg, vol, amount, total_mv, pe, pb, turnover_rate
+
+                # Create a new record
+                sql = """
+                LOAD DATA LOCAL INFILE %s INTO TABLE us_daily_candles
+                FIELDS TERMINATED BY ","
+                LINES TERMINATED BY "\n"
+                IGNORE 1 LINES 
+                (ts_code, trade_date, @close, @open, @high, @low, @chg, @pre_close, @pct_chg, @vol, @amount, @total_mv, @pe, @pb, @turnover_rate)
+                SET
+                close = NULLIF(@close,0),
+                open = NULLIF(@open,0),
+                high = NULLIF(@high,0),
+                low = NULLIF(@low,0),
+                chg = NULLIF(@chg,0),
+                pre_close = NULLIF(@pre_close,0),
+                pct_chg = NULLIF(@pct_chg,0),
+                vol = NULLIF(@vol,0),
+                amount = NULLIF(@amount,0),
+                total_mv = NULLIF(@total_mv,0),
+                pe = NULLIF(@pe,0),
+                pb = NULLIF(@pb,0),
+                turnover_rate = NULLIF(@turnover_rate,0);
+                """
+                # sql = """
+                #                 LOAD DATA LOCAL INFILE %s INTO TABLE us_daily_candles
+                #                 FIELDS TERMINATED BY ","
+                #                 LINES TERMINATED BY "\n"
+                #                 IGNORE 1 LINES
+                #                 (@vone, @vtwo, @vthree, @vfour, @vfive)
+                #                 SET
+                #                 one = NULLIF(@vone,''),
+                #                 two = NULLIF(@vtwo,''),
+                #                 three = NULLIF(@vthree,''),
+                #                 four = NULLIF(@vfour,'');
+                #                 """
+                cursor.execute(sql, (path))
+
+            # connection is not autocommit by default. So you must commit to save
+            # your changes.
+            self.conn.commit()

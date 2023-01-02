@@ -1,6 +1,7 @@
 import tushare as ts
 import pandas as pd
 from config.common import TS_TOKEN
+import yfinance as yf
 
 pro = ts.pro_api(TS_TOKEN)
 
@@ -74,12 +75,19 @@ def get_us_candles(options):
         "pct_change",
         "vol",
         "amount",
-        "vwap",
         "total_mv",
         "pe",
         "pb",
         "change",
         "turnover_ratio"
     ])
+
+    df['turnover_rate'] = df['turnover_ratio']
+    df['pct_chg'] = df['pct_change']
+    df['chg'] = df['change']
+    
+    df = df[
+        ['ts_code', 'trade_date', 'close', 'open', 'high', 'low', 'chg',
+         'pre_close', 'pct_chg', 'vol', 'amount', 'total_mv', 'pe', 'pb', 'turnover_rate']]
 
     return df

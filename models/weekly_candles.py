@@ -17,7 +17,7 @@ class WeeklyCandle(Base):
     low = Column(Float)  # 最低价
     close = Column(Float)  # 收盘价
     pre_close = Column(Float)  # 昨收价
-    change = Column(Float)  # 涨跌额
+    chg = Column(Float)  # 涨跌额
     pct_chg = Column(Float)  # 涨跌幅
     vol = Column(Float)  # 成交量
     amount = Column(Float)  # 成交额
@@ -35,7 +35,7 @@ def get_obj(candle):
         low=candle.get('low', None),
         close=candle.get('close', None),
         pre_close=candle.get('pre_close', None),
-        change=candle.get('change', None),
+        chg=candle.get('chg', None),
         pct_chg=candle.get('pct_chg', None),
         vol=candle.get('vol', None),
         amount=candle.get('amount', None)
@@ -61,7 +61,8 @@ class WeeklyCandleDao:
         s = text("select trade_date, open, close, high, low, pct_chg, vol from weekly_candles where ts_code = :ts_code "
                  "order by trade_date desc limit 0,:limit;")
         statement = self.session.execute(s.params(ts_code=ts_code, limit=limit))
-        df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg', 'vol'])
+        df = pd.DataFrame(statement.fetchall(),
+                          columns=['trade_date', 'open', 'close', 'high', 'low', 'pct_chg', 'vol'])
         self.session.close()
 
         return df
@@ -133,8 +134,8 @@ class WeeklyCandleDao:
                         row.close = obj.close
                     if obj.pre_close is not None:
                         row.pre_close = obj.pre_close
-                    if obj.change is not None:
-                        row.change = obj.change
+                    if obj.chg is not None:
+                        row.chg = obj.chg
                     if obj.pct_chg is not None:
                         row.pct_chg = obj.pct_chg
                     if obj.vol is not None:

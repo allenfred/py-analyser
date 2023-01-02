@@ -22,7 +22,7 @@ class HKDailyCandle(Base):
     low = Column(Float)  # 最低价
     close = Column(Float)  # 收盘价
     pre_close = Column(Float)  # 昨收价
-    change = Column(Float)  # 涨跌额
+    chg = Column(Float)  # 涨跌额
     pct_chg = Column(Float)  # 涨跌幅
     vol = Column(Float)  # 成交量
     amount = Column(Float)  # 成交额
