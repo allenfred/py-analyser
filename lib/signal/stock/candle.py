@@ -969,8 +969,7 @@ def limit_up_gene(i, candles, df):
     ma60 = ma[:, 5]
 
     def steady_on_ma():
-        if _close > ma60[i] and (df.iloc[i]['ma60_up'] == 1 or df.iloc[i]['ma20_up'] == 1) and \
-                not df.iloc[i]['ma20_down'] == 1:
+        if _close > ma60[i] and (df.iloc[i]['ma60_up'] == 1 or df.iloc[i]['ma30_up'] == 1):
             return True
 
         return False
@@ -995,13 +994,15 @@ def limit_up_gene(i, candles, df):
                 flag = False
         return flag
 
-    if steady_on_ma() and back_limit_zone() and has_no_crazy_up():
+    # if steady_on_ma() and back_limit_zone() and has_no_crazy_up():
+    if steady_on_ma() and back_limit_zone():
         # print('limit_up_gene', df.iloc[i]['trade_date'], i)
         return 1
 
     return 0
 
 
+# 涨停回调
 # 参看 西安饮食 西安旅游 拟合
 def limit_pullback():
     return False

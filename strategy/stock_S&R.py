@@ -25,6 +25,7 @@ ts_code = "000610.SZ"  # 西安旅游
 ts_code = "000721.SZ"  # 西安饮食
 ts_code = "002264.SZ"  # 北化股份
 ts_code = "002246.SZ"  # 北化股份
+ts_code = '002246.SZ'  # 湖南发展
 
 statement = dailyCandleDao.session.execute(
     text("select trade_date, open, high, close, low, pct_chg, amount*1000 as volume "
