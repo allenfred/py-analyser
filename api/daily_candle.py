@@ -28,6 +28,8 @@ def get_cn_candles(options):
         "amount"
     ])
 
+    df['chg'] = df['change']
+
     return df
 
 
@@ -52,6 +54,8 @@ def get_hk_candles(options):
         "vol",
         "amount"
     ])
+
+    df['chg'] = df['change']
 
     return df
 
@@ -85,7 +89,7 @@ def get_us_candles(options):
     df['turnover_rate'] = df['turnover_ratio']
     df['pct_chg'] = df['pct_change']
     df['chg'] = df['change']
-    
+
     df = df[
         ['ts_code', 'trade_date', 'close', 'open', 'high', 'low', 'chg',
          'pre_close', 'pct_chg', 'vol', 'amount', 'total_mv', 'pe', 'pb', 'turnover_rate']]

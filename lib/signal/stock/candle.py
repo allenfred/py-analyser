@@ -936,73 +936,24 @@ def drop_cross4ma(i, candles, df):
     return 0
 
 
-def limit_up_gene(i, candles, df):
+def morning_star(i, candles, df):
     """
-    description: 涨停基因(看涨)
-    标准 1:
-    最近22个交易日有涨停
-    价格 回调至上个涨停区间 0.5
+    早晨之星
 
-    标准 2:
-    最近20个交易日有涨停
-    价格 回调至上个涨停区间
-    回调至 MA20/MA60 附近
-
-    :param i: 当前tick
+    :param i:
     :param candles:
     :param df:
-    :return: boolean
+    :return:
     """
 
-    if i < _start_at:
-        return 0
 
-    if 'limit' not in df.columns:
-        return False
+def morning_doji(i, candles, df):
+    """
+    早晨十字星
 
-    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
-
-    _open = candles[:, 0][i]
-    _low = candles[:, 2][i]
-    _close = candles[:, 3][i]
-    ma20 = ma[:, 2]
-    ma60 = ma[:, 5]
-
-    def steady_on_ma():
-        if _close > ma60[i] and (df.iloc[i]['ma60_up'] == 1 or df.iloc[i]['ma30_up'] == 1):
-            return True
-
-        return False
-
-    # 回调至涨停区间
-    def back_limit_zone():
-        flag = False
-
-        for j in range(1, 21):
-            if df.iloc[i - j]['limit'] == 'U' and \
-                    (df.iloc[i - j]['close'] > _close or df.iloc[i - j]['close'] * 0.95 > _low) and \
-                    (df.iloc[i]['bias24'] < 10 and df.iloc[i]['bias60'] < 10):
-                flag = True
-
-        return flag
-
-    # 最近22个交易日内无连续上涨行情
-    def has_no_crazy_up():
-        flag = True
-        for j in range(0, 21):
-            if df.iloc[i - j]['bias24'] > 30:
-                flag = False
-        return flag
-
-    # if steady_on_ma() and back_limit_zone() and has_no_crazy_up():
-    if steady_on_ma() and back_limit_zone():
-        # print('limit_up_gene', df.iloc[i]['trade_date'], i)
-        return 1
-
-    return 0
-
-
-# 涨停回调
-# 参看 西安饮食 西安旅游 拟合
-def limit_pullback():
+    :param i:
+    :param candles:
+    :param df:
+    :return:
+    """
     return False

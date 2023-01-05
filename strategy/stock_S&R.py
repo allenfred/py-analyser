@@ -26,12 +26,14 @@ ts_code = "000721.SZ"  # 西安饮食
 ts_code = "002264.SZ"  # 北化股份
 ts_code = "002246.SZ"  # 北化股份
 ts_code = '002246.SZ'  # 湖南发展
+ts_code = '000815.SZ'  # 湖南发展
 
 statement = dailyCandleDao.session.execute(
     text("select trade_date, open, high, close, low, pct_chg, amount*1000 as volume "
          "from "
          + "cn_daily_candles" + " where ts_code = :ts_code "
          + "and trade_date > '2020-01-01' and open is not null "
+         # " and trade_date < '2022-10-27' "
            "and close is not null and high is not null and"
          + " low is not null "
          + "order by trade_date desc "
@@ -48,7 +50,8 @@ df['date'] = df['trade_date'].apply(mpl_dates.date2num)
 
 df = df.loc[:, ['date', 'open', 'high', 'low', 'close', 'volume']]
 
-df = get_stock_klines(ts_code)
+
+# df = get_stock_klines(ts_code)
 
 
 def is_support(df, i):
@@ -93,6 +96,7 @@ for i in range(2, df.shape[0] - 2):
 
 
 def plot_candle():
+    print(hlines)
     mpf.plot(df, volume=True, style='yahoo', type='candle', mav=[10, 20, 60],
              hlines=dict(hlines=hlines, colors=['r'], linestyle='-.', linewidths=1, alpha=0.8),
              figscale=1.35)
