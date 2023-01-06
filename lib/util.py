@@ -1,11 +1,13 @@
 from talib import SMA, EMA, MACD, ATR, LINEARREG_SLOPE
 import talib as lib
-from lib.quota.bias import bias
-from lib.quota.ma_slope import slope
-from lib.quota.magic_nine_turn import td
 import platform
 import datetime
 import numpy as np
+
+from lib.quota.bias import bias
+from lib.quota.ma_slope import slope
+from lib.quota.magic_nine_turn import td
+from lib.signal.common.hlines import calc_hlines
 
 
 def is_mac_os():

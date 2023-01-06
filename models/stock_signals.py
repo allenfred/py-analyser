@@ -13,13 +13,6 @@ class StockSignal(Base):
     ts_code = Column(String)
     exchange = Column(String)  # 交易所代码
 
-    yearly_price_position = Column(SmallInteger)
-    yearly_price_position10 = Column(SmallInteger)
-    yearly_price_position20 = Column(SmallInteger)
-    yearly_price_position30 = Column(SmallInteger)
-    yearly_price_position50 = Column(SmallInteger)
-    yearly_price_position70 = Column(SmallInteger)
-
     ma20_up = Column(SmallInteger)
     ema20_up = Column(SmallInteger)
     ma30_up = Column(SmallInteger)
@@ -176,6 +169,8 @@ class StockSignal(Base):
     increasingly_vol = Column(SmallInteger)
     decreasingly_vol = Column(SmallInteger)
 
+    hlines = Column(String)
+
 
 def get_obj(signal):
     signal = {k: v if not pd.isna(v) else None for k, v in signal.items()}
@@ -183,13 +178,6 @@ def get_obj(signal):
     return StockSignal(
         ts_code=signal.get('ts_code', None),
         exchange=signal.get('exchange', None),
-
-        yearly_price_position=signal.get('yearly_price_position', None),
-        yearly_price_position10=signal.get('yearly_price_position10', None),
-        yearly_price_position20=signal.get('yearly_price_position20', None),
-        yearly_price_position30=signal.get('yearly_price_position30', None),
-        yearly_price_position50=signal.get('yearly_price_position50', None),
-        yearly_price_position70=signal.get('yearly_price_position70', None),
 
         ma20_up=signal.get('ma20_up', None),
         ema20_up=signal.get('ema20_up', None),
@@ -348,6 +336,9 @@ def get_obj(signal):
         decrease_vol=signal.get('decrease_vol', None),
         increasingly_vol=signal.get('increasingly_vol', None),
         decreasingly_vol=signal.get('decreasingly_vol', None),
+
+        hlines=signal.get('hlines', None),
+
     )
 
 
@@ -371,19 +362,6 @@ class StockSignalDao:
             if row is None:
                 self.session.add(obj)
             else:
-                if obj.yearly_price_position is not None:
-                    row.yearly_price_position = obj.yearly_price_position
-                if obj.yearly_price_position10 is not None:
-                    row.yearly_price_position10 = obj.yearly_price_position10
-                if obj.yearly_price_position20 is not None:
-                    row.yearly_price_position20 = obj.yearly_price_position20
-                if obj.yearly_price_position30 is not None:
-                    row.yearly_price_position30 = obj.yearly_price_position30
-                if obj.yearly_price_position50 is not None:
-                    row.yearly_price_position50 = obj.yearly_price_position50
-                if obj.yearly_price_position70 is not None:
-                    row.yearly_price_position70 = obj.yearly_price_position70
-
                 if obj.ma20_up is not None:
                     row.ma20_up = obj.ma20_up
                 if obj.ema20_up is not None:
@@ -672,6 +650,9 @@ class StockSignalDao:
                     row.increasingly_vol = obj.increasingly_vol
                 if obj.decreasingly_vol is not None:
                     row.decreasingly_vol = obj.decreasingly_vol
+
+                if obj.hlines is not None:
+                    row.hlines = obj.hlines
 
         except Exception as e:
             print('Error:', e)

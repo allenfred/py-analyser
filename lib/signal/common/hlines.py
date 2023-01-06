@@ -51,7 +51,7 @@ def calc_hlines(df, index):
             if is_far_from_level(l):
                 levels.append((i, l))
                 hlines.append(l)
-    print(df.iloc[index]['trade_date'], index, hlines)
+
     return hlines
 
 
@@ -121,7 +121,58 @@ def limit_up_gene(i, candles, df):
     return 0
 
 
-# 涨停回调
 # 参看 西安饮食 西安旅游 拟合
 def limit_pullback(df, index):
+    """
+    涨停回调
+    1.
+    :param df:
+    :param index:
+    :return:
+    """
+
+    return False
+
+
+def up_pullback(df, index):
+    """
+    上涨回调
+
+    :param df:
+    :param index:
+    :return:
+    """
+    return False
+
+
+def down_pullback(df, index):
+    """
+    下跌回调
+
+    :param df:
+    :param index:
+    :return:
+    """
+    return False
+
+
+def hline_support(df, index):
+    """
+    水平支撑
+
+    :param df:
+    :param index:
+    :return:
+    """
+    return False
+
+
+def hline_resistance(df, index):
+    """
+    水平阻力
+
+    :param df:
+    :param index:
+    :return:
+    """
     return False

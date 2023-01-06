@@ -1,7 +1,5 @@
 import tushare as ts
-import pandas as pd
 from config.common import TS_TOKEN
-import yfinance as yf
 
 pro = ts.pro_api(TS_TOKEN)
 

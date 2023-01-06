@@ -3,8 +3,7 @@ from config.common import START_INDEX
 from lib.signal.stock.ma60 import is_ma60_first, is_ma60_second, is_ma60_third, is_ma60_fourth, \
     is_ma60_fifth, is_ma60_sixth, is_ma60_seventh, is_ma60_eighth
 from lib.signal.common.ma import is_up_hill, is_up_wave
-import lib.signal.stock.candle as patterns
-from lib.signal.common.hlines import calc_hlines
+import lib.signal.common.hlines as Hlines
 
 
 def ma_analyze(org_df):
@@ -73,10 +72,10 @@ def ma_analyze(org_df):
                 up_wave[index] = 1
 
             # 涨停基因
-            if patterns.limit_up_gene(index, candle, org_df):
+            if Hlines.limit_up_gene(index, candle, org_df):
                 limit_up_gene[index] = 1
 
-            hlines[index] = calc_hlines(org_df, index)
+            hlines[index] = Hlines.calc_hlines(org_df, index)
 
     org_df['ma60_first'] = ma60_first
     org_df['ma60_second'] = ma60_second
@@ -90,5 +89,6 @@ def ma_analyze(org_df):
     org_df['up_hill'] = up_hill
     org_df['up_wave'] = up_wave
     org_df['limit_up_gene'] = limit_up_gene
+    org_df['hlines'] = hlines
 
     return org_df
