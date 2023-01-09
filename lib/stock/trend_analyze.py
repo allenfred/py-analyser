@@ -12,7 +12,7 @@ def trend_analyze(org_df):
     up_break = [0 for _ in range(len(org_df))]
     hline_support = [0 for _ in range(len(org_df))]
 
-    _start_at = len(org_df) - 20
+    _start_at = len(org_df) - 10
 
     for index in range(len(candle)):
         if index > _start_at:

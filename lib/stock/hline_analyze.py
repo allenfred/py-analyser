@@ -8,7 +8,8 @@ def hline_analyze(org_df):
 
     hlines = [[] for _ in range(len(org_df))]
 
-    _start_at = START_INDEX
+    # _start_at = START_INDEX
+    _start_at = len(org_df) - 1
 
     for index in range(len(candle)):
         if index >= _start_at:
