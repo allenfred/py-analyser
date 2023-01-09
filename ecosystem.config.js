@@ -151,7 +151,7 @@ module.exports = {
     //      autorestart: false,
     //    },
         {
-          name: 'analysis_US',
+          name: 'us_analysis',
           script: 'jobs/analysis/daily/us.py',
           interpreter: 'python3',
           instances: 1,
