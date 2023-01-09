@@ -6,6 +6,7 @@ import sys
 path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 sys.path.append(path)
 
+import pandas as pd
 from models.us_daily_candles import USDailyCandleDao
 from models.stocks import StockDao
 from sqlalchemy import text
@@ -44,23 +45,29 @@ if __name__ == "__main__":
         print('没有K线数据')
         quit()
 
-    if is_mac_os():
-        limit = 5
-
     scan_date = candle['trade_date']
 
     while True:
         time.sleep(0.2)
-        stock_stmts = stockDao.session.execute(text("select ts_code from stocks where (scan_date is null or scan_date"
-                                                    " < :scan_date) and exchange = 'US' limit "
+        stock_stmts = stockDao.session.execute(text("select ts_code, total_mv from stocks where ("
+                                                    "scan_date is null or scan_date"
+                                                    " < :scan_date) and exchange = 'US' and amount > 10000000 "
+                                                    "order by ts_code limit "
                                                     + str(limit)).params(scan_date=scan_date))
-        stock_result = stock_stmts.fetchall()
+
+        df = pd.DataFrame(stock_stmts.fetchall(), columns=['ts_code', 'total_mv'])
         stockDao.session.commit()
 
-        if len(stock_result) == 0:
+        if len(df) == 0:
             print(today, 'US 没有需要扫描的股票')
             break
+        ts_code = df.iloc[0]['ts_code']
+        total_mv = df.iloc[0]['total_mv']
 
-        multi_scan(stock_result)
-        total_scan_cnt += len(stock_result)
+        if total_mv is not None and total_mv < 1000000000:
+            stockDao.update({'ts_code': ts_code, 'scan_date': scan_date, 'list_status': 'L'})
+        else:
+            scan_daily_candles(ts_code, 'US', scan_date)
+
+        total_scan_cnt += 1
         print(today, "US 当前已扫描股票个数", total_scan_cnt, ",总用时", used_time_fmt(job_start, time.time()))

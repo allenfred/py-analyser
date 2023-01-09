@@ -24,37 +24,33 @@ calendarDao = TradeCalendarDao()
 stockDao = StockDao()
 
 
-def ready_candles_by_date(start_time):
+def update_daily(start_time):
     while True:
         circle_start = time.time()
         item = calendarDao.find_one_candle_not_ready('US')
 
-        if item:
-            trade_dte = datetime.strftime(item.cal_date, "%Y%m%d")
-            is_last_req = False
-            total_got_count = 0
-            offset = 0
-        else:
+        if not item:
             print('所有交易日K线已准备完成')
             break
+
+        trade_dte = datetime.strftime(item.cal_date, "%Y%m%d")
+        is_last_req = False
+        total_got_count = 0
+        offset = 0
+        kline_df = []
 
         while not is_last_req:
             req_start = time.time()
             try:
-                df = get_us_candles({"trade_date": trade_dte, "limit": 2000, "offset": offset})
-                df = df.sort_values(by='trade_date', ascending=False)
+                df = get_us_candles({"trade_date": trade_dte, "limit": 5000, "offset": offset})
+                kline_df.append(df.sort_values(by='trade_date', ascending=False))
 
-                if len(df) < 2000:
+                total_got_count += len(df)
+
+                if len(df) < 5000:
                     is_last_req = True
                 else:
                     offset += len(df)
-
-                # 过滤出最新candle数据 (相较于db)
-                db_df = dailyCandleDao.find_by_trade_date(item.cal_date)
-                new_df = df.loc[~df["ts_code"].isin(db_df["ts_code"].to_numpy())]
-
-                total_got_count += len(new_df)
-                dailyCandleDao.bulk_insert(new_df)
 
                 print('当前请求 US daily_candles ', item.cal_date, ': ', len(df), ' 条数据，用时 ',
                       used_time_fmt(req_start, time.time()))
@@ -65,9 +61,44 @@ def ready_candles_by_date(start_time):
             print(trade_dte, '未获取到行情数据')
             break
 
+        filepath = Path(path + '/csv/us/daily/' + trade_dte + '.csv')
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+        result = pd.concat(kline_df)
+        result = result.sort_values(by='ts_code', ascending=True)
+        result.to_csv(filepath, index=False)
+
+        update_stocks(result)
+        dailyCandleDao.load_local_file(str(filepath))
+
         print('已更新 US daily_candles ', item.cal_date, ': ', total_got_count, ' 条数据，用时 ',
               used_time_fmt(circle_start, time.time()), ', 总用时 ', used_time_fmt(start_time, time.time()))
+
         calendarDao.set_us_candle_ready(item.cal_date)
+
+
+def update_stocks(df):
+    item = calendarDao.find_one_candle_not_ready('US')
+    trade_dte = datetime.strftime(item.cal_date, "%Y%m%d")
+    filepath = Path(path + '/csv/us/stock/' + trade_dte + '.csv')
+    filepath.parent.mkdir(parents=True, exist_ok=True)
+
+    stocks = stockDao.find_all('US')
+    stocks = stocks.drop(columns=['amount', 'close', 'total_mv'])
+    kline_df = df[['amount', 'close', 'ts_code', 'total_mv']]
+
+    result = stocks.merge(kline_df, left_index=True, how='left', on='ts_code')
+
+    result = result[['id', 'ts_code', 'symbol', 'name', 'area', 'industry',
+                     'fullname', 'enname', 'cnspell', 'market', 'exchange', 'list_status',
+                     'list_date', 'delist_date', 'is_hs',
+                     'turnover_rate', 'turnover_rate_f', 'volume_ratio', 'pe',
+                     'pe_ttm', 'pb', 'ps', 'ps_ttm', 'dv_ratio', 'dv_ttm',
+                     'total_share', 'float_share', 'free_share', 'total_mv', 'circ_mv',
+                     'scan_date', 'candle_date', 'indicator_date', 'weekly_date', 'amount',
+                     'ex_date', 'close']]
+    result.to_csv(filepath, index=False)
+
+    stockDao.update_us_from_file(str(filepath))
 
 
 if __name__ == "__main__":
@@ -75,7 +106,9 @@ if __name__ == "__main__":
     # yesterday = (datetime.now() + timedelta(hours=-24)).strftime("%Y-%m-%d")
 
     start = time.time()
-    ready_candles_by_date(start)
+
+    # ready_candles_by_date(start)
+    update_daily(start)
 
     end = time.time()
 

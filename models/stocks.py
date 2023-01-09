@@ -1,3 +1,5 @@
+import pymysql.cursors
+
 from sqlalchemy import Table, MetaData, Column, Integer, String, Date, SmallInteger, Float, select, insert, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.mysql.dml import Insert
@@ -141,6 +143,49 @@ def get_obj(item):
 class StockDao:
     def __init__(self):
         self.session = DBSession()
+
+    def open_connection(self):
+        # Connect to the database
+        self.conn = pymysql.connect(host='121.4.15.211',
+                                    user='dev',
+                                    password='04f5d5a3b91006a8',
+                                    database='quant',
+                                    local_infile=1,
+                                    cursorclass=pymysql.cursors.DictCursor)
+
+    def find_all(self, exchange):
+        exchange_query = " exchange = 'SSE' or exchange = 'SZSE' "
+        if exchange == 'HK':
+            exchange_query = "exchange = 'HK'"
+        if exchange == 'US':
+            exchange_query = "exchange = 'US'"
+
+        stock_stmts = self.session.execute(text("select "
+                                                "id, ts_code, symbol, name, area, industry, "
+                                                "fullname, enname, cnspell, market, exchange, list_status, "
+                                                "list_date, delist_date, is_hs, turnover_rate, turnover_rate_f, "
+                                                "volume_ratio, pe, pe_ttm, pb, ps, ps_ttm, dv_ratio, dv_ttm, "
+                                                "total_share, float_share, free_share, total_mv, circ_mv, "
+                                                "scan_date, candle_date, indicator_date, weekly_date, amount, "
+                                                "ex_date, close "
+                                                "from stocks where " + exchange_query))
+
+        stocks = pd.DataFrame(stock_stmts.fetchall(), columns=["id", "ts_code", "symbol", "name", "area", "industry",
+                                                               "fullname", "enname", "cnspell", "market", "exchange",
+                                                               "list_status",
+                                                               "list_date", "delist_date", "is_hs", "turnover_rate",
+                                                               "turnover_rate_f",
+                                                               "volume_ratio", "pe", "pe_ttm", "pb", "ps", "ps_ttm",
+                                                               "dv_ratio", "dv_ttm",
+                                                               "total_share", "float_share", "free_share", "total_mv",
+                                                               "circ_mv",
+                                                               "scan_date", "candle_date", "indicator_date",
+                                                               "weekly_date", "amount",
+                                                               "ex_date", "close"])
+
+        self.session.close()
+
+        return stocks
 
     def find_one_candle_not_ready(self, area, candle_date):
         exchange_query = "(exchange = 'SSE' or exchange = 'SZSE')"
@@ -384,7 +429,59 @@ class StockDao:
             except Exception as e:
                 print('Error:', e)
 
-            self.session.commit()
+        self.session.commit()
+
         self.session.close()
 
         return df
+
+    def update_us_from_file(self, path):
+        self.open_connection()
+
+        with self.conn:
+            with self.conn.cursor() as cursor:
+                # replace all to update
+
+                sql = """
+                      LOAD DATA LOCAL INFILE %s REPLACE INTO TABLE stocks
+                      FIELDS TERMINATED BY ","
+                      LINES TERMINATED BY "\n"
+                      IGNORE 1 LINES 
+                      (id, ts_code, symbol, name, area, industry, 
+                        fullname, enname, cnspell, market, exchange, list_status, 
+                        list_date, delist_date, is_hs, 
+                        @turnover_rate, @turnover_rate_f, @volume_ratio, @pe, 
+                        @pe_ttm, @pb, @ps, @ps_ttm, @dv_ratio, @dv_ttm, 
+                        @total_share, @float_share, @free_share, @total_mv, @circ_mv, 
+                        @scan_date, @candle_date, @indicator_date, @weekly_date, @amount, 
+                        @ex_date, @close)
+                      SET
+                        turnover_rate = NULLIF(@turnover_rate,0),
+                        turnover_rate_f = NULLIF(@turnover_rate_f,0),
+                        volume_ratio = NULLIF(@volume_ratio,0),
+                        pe = NULLIF(@pe,0),
+                        pe_ttm = NULLIF(@pe_ttm,0),
+                        pb = NULLIF(@pb,0),
+                        ps = NULLIF(@ps,0),
+                        ps_ttm = NULLIF(@ps_ttm,0),
+                        dv_ratio = NULLIF(@dv_ratio,0),
+                        dv_ttm = NULLIF(@dv_ttm,0),
+                        total_share = NULLIF(@total_share,0),
+                        float_share = NULLIF(@float_share,0),
+                        free_share = NULLIF(@free_share,0),
+                        total_mv = NULLIF(@total_mv,0),
+                        circ_mv = NULLIF(@circ_mv,0),
+                        scan_date = NULLIF(@scan_date,""),
+                        candle_date = NULLIF(@candle_date,""),
+                        indicator_date = NULLIF(@indicator_date,""),
+                        weekly_date = NULLIF(@weekly_date,""),
+                        ex_date = NULLIF(@ex_date,""),
+                        amount = NULLIF(@amount,0),
+                        close = NULLIF(@close,0);
+                      """
+
+                cursor.execute(sql, path)
+
+            # connection is not autocommit by default. So you must commit to save
+            # your changes.
+            self.conn.commit()

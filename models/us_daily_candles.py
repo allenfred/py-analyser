@@ -229,7 +229,8 @@ class USDailyCandleDao:
 
         with self.conn:
             with self.conn.cursor() as cursor:
-                # ts_code, trade_date, close, open, high, low, chg, pre_close, pct_chg, vol, amount, total_mv, pe, pb, turnover_rate
+                # ts_code, trade_date, close, open, high, low, chg, pre_close,
+                # pct_chg, vol, amount, total_mv, pe, pb, turnover_rate
 
                 # Create a new record
                 sql = """
@@ -253,19 +254,8 @@ class USDailyCandleDao:
                 pb = NULLIF(@pb,0),
                 turnover_rate = NULLIF(@turnover_rate,0);
                 """
-                # sql = """
-                #                 LOAD DATA LOCAL INFILE %s INTO TABLE us_daily_candles
-                #                 FIELDS TERMINATED BY ","
-                #                 LINES TERMINATED BY "\n"
-                #                 IGNORE 1 LINES
-                #                 (@vone, @vtwo, @vthree, @vfour, @vfive)
-                #                 SET
-                #                 one = NULLIF(@vone,''),
-                #                 two = NULLIF(@vtwo,''),
-                #                 three = NULLIF(@vthree,''),
-                #                 four = NULLIF(@vfour,'');
-                #                 """
-                cursor.execute(sql, (path))
+
+                cursor.execute(sql, path)
 
             # connection is not autocommit by default. So you must commit to save
             # your changes.
