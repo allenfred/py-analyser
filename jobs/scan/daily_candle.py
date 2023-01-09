@@ -18,7 +18,7 @@ from models.stocks import StockDao
 from sqlalchemy import text
 from lib.stock.analyze import analyze
 from lib.util import set_quota, used_time_fmt
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import time
 
 stockDao = StockDao()
@@ -93,7 +93,6 @@ def scan_daily_candles(ts_code, exchange_type, scan_date):
         try:
             df = set_quota(df)
             df_len = len(df)
-
             df = analyze(df)
 
             small_df = df.iloc[df_len - 5: df_len]

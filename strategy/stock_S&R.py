@@ -4,6 +4,7 @@ import mplfinance as mpf
 import matplotlib.dates as mpl_dates
 from sqlalchemy import text
 from klines import get_stock_klines, get_crypto_klines
+import lib.signal.common.hline_fractal as Hlines
 
 from models.cn_daily_candles import CNDailyCandleDao
 
@@ -26,7 +27,15 @@ ts_code = "000721.SZ"  # 西安饮食
 ts_code = "002264.SZ"  # 北化股份
 ts_code = "002246.SZ"  # 北化股份
 ts_code = '002246.SZ'  # 湖南发展
-ts_code = '000815.SZ'  # 湖南发展
+ts_code = '000716.SZ'  # 黑芝麻
+
+ts_code = '000722.SZ'  # 湖南发展
+ts_code = '002799.SZ'  # 湖南发展
+ts_code = '002246.SZ'  # 湖南发展
+ts_code = '000721.SZ'  # 西安饮食
+ts_code = '600056.SH'  # 中国医药
+# ts_code = '000610.SZ'  # 西安旅游
+ts_code = '000721.SZ'  # 西安饮食
 
 statement = dailyCandleDao.session.execute(
     text("select trade_date, open, high, close, low, pct_chg, amount*1000 as volume "
@@ -37,7 +46,7 @@ statement = dailyCandleDao.session.execute(
            "and close is not null and high is not null and"
          + " low is not null "
          + "order by trade_date desc "
-           "limit 250").params(ts_code=ts_code))
+           "limit 300").params(ts_code=ts_code))
 
 kline_df = pd.DataFrame(statement.fetchall(), columns=['trade_date', 'open', 'high', 'close',
                                                        'low', 'pct_chg', 'volume'])
@@ -51,52 +60,8 @@ df['date'] = df['trade_date'].apply(mpl_dates.date2num)
 df = df.loc[:, ['date', 'open', 'high', 'low', 'close', 'volume']]
 
 
-# df = get_stock_klines(ts_code)
-
-
-def is_support(df, i):
-    support = df['low'][i] < df['low'][i - 1] < df['low'][i - 2] and \
-              df['low'][i] < df['low'][i + 1] < df['low'][i + 2]
-
-    return support
-
-
-def is_resistance(df, i):
-    resistance = df['high'][i] > df['high'][i - 1] > df['high'][i - 2] and \
-                 df['high'][i] > df['high'][i + 1] > df['high'][i + 2]
-
-    return resistance
-
-
-# volatility 波动率
-s = np.mean(df['high'] - df['low'])
-
-
-def is_far_from_level(l):
-    return np.sum([abs(l - x) < s for x in levels]) == 0
-
-
-levels = []
-hlines = []
-
-for i in range(2, df.shape[0] - 2):
-    if is_support(df, i):
-        l = df['low'][i]
-
-        if is_far_from_level(l):
-            levels.append((i, l))
-            hlines.append(l)
-
-    elif is_resistance(df, i):
-        l = df['high'][i]
-
-        if is_far_from_level(l):
-            levels.append((i, l))
-            hlines.append(l)
-
-
 def plot_candle():
-    print(hlines)
+    hlines = Hlines.calc_hlines(df, len(df))
     mpf.plot(df, volume=True, style='yahoo', type='candle', mav=[10, 20, 60],
              hlines=dict(hlines=hlines, colors=['r'], linestyle='-.', linewidths=1, alpha=0.8),
              figscale=1.35)

@@ -1,5 +1,6 @@
 # -- coding: utf-8 -
 import talib as lib
+from config.common import START_INDEX
 import lib.signal.stock.candle as patterns
 
 
@@ -11,84 +12,111 @@ def pattern_analyze(df):
 
     candle = df[['open', 'high', 'low', 'close', 'pct_chg', 'trade_date']].to_numpy()
 
-    long_line = []
-    marubozu = []
-    hammer = []
-    pour_hammer = []
-    short_end = []
-    swallow_up = []
-    attack_short = []
-    first_light = []
-    sunrise = []
-    flat_base = []
-    rise_line = []
-    down_screw = []
-    long_end = []
-    swallow_down = []
-    hang_neck = []
-    shooting = []
-    drop_line = []
-    up_screw = []
-    down_rise = []
+    long_line = [0 for _ in range(len(df))]
+    marubozu = [0 for _ in range(len(df))]
+    hammer = [0 for _ in range(len(df))]
+    pour_hammer = [0 for _ in range(len(df))]
+    short_end = [0 for _ in range(len(df))]
+    swallow_up = [0 for _ in range(len(df))]
+    attack_short = [0 for _ in range(len(df))]
+    first_light = [0 for _ in range(len(df))]
+    sunrise = [0 for _ in range(len(df))]
+    flat_base = [0 for _ in range(len(df))]
+    rise_line = [0 for _ in range(len(df))]
+    down_screw = [0 for _ in range(len(df))]
+    long_end = [0 for _ in range(len(df))]
+    swallow_down = [0 for _ in range(len(df))]
+    hang_neck = [0 for _ in range(len(df))]
+    shooting = [0 for _ in range(len(df))]
+    drop_line = [0 for _ in range(len(df))]
+    up_screw = [0 for _ in range(len(df))]
+    down_rise = [0 for _ in range(len(df))]
 
-    upward_jump = []
-    downward_jump = []
-    up_cross3ma = []
-    up_cross4ma = []
-    drop_cross3ma = []
-    drop_cross4ma = []
+    upward_jump = [0 for _ in range(len(df))]
+    downward_jump = [0 for _ in range(len(df))]
+    up_cross3ma = [0 for _ in range(len(df))]
+    up_cross4ma = [0 for _ in range(len(df))]
+    drop_cross3ma = [0 for _ in range(len(df))]
+    drop_cross4ma = [0 for _ in range(len(df))]
+
+    _start_at = START_INDEX - 100
 
     for index in range(len(candle)):
-        # 大阳线
-        long_line.insert(index, patterns.long_line(index, candle))
-        # 光头光脚
-        marubozu.insert(index, patterns.marubozu(index, candle))
-        # 锤子线
-        hammer.insert(index, patterns.hammer(index, candle))
-        # 倒锤子线
-        pour_hammer.insert(index, patterns.pour_hammer(index, candle))
-        # 看涨尽头线
-        short_end.insert(index, patterns.short_end(index, candle))
-        # 下探上涨
-        down_rise.insert(index, patterns.down_rise(index, candle))
-        # 看涨吞没
-        swallow_up.insert(index, patterns.swallow_up(index, candle))
-        # 好友反攻
-        attack_short.insert(index, patterns.attack_short(index, candle))
-        # 曙光初现
-        first_light.insert(index, patterns.first_light(index, candle))
-        # 旭日东升
-        sunrise.insert(index, patterns.sunrise(index, candle))
-        # 平底
-        flat_base.insert(index, patterns.flat_base(index, candle))
-        # 涨停一字板
-        rise_line.insert(index, patterns.rise_line(index, candle))
-        # 下跌螺旋桨
-        down_screw.insert(index, patterns.down_screw(index, candle))
-        # 看跌尽头线
-        long_end.insert(index, patterns.long_end(index, candle))
-        # 看跌吞没
-        swallow_down.insert(index, patterns.swallow_down(index, candle))
-        # 吊颈线
-        hang_neck.insert(index, patterns.hang_neck(index, candle))
-        # 射击之星
-        shooting.insert(index, patterns.shooting(index, candle))
-        # 跌停一字板
-        drop_line.insert(index, patterns.drop_line(index, candle))
-        # 看跌螺旋桨
-        up_screw.insert(index, patterns.up_screw(index, candle))
-        # 向上跳空
-        upward_jump.insert(index, patterns.upward_jump(index, candle))
-        # 向下跳空
-        downward_jump.insert(index, patterns.downward_jump(index, candle))
-        # 一阳穿三线
-        up_cross3ma.insert(index, patterns.up_cross3ma(index, candle, df))
-        # 一阳穿四线
-        up_cross4ma.insert(index, patterns.up_cross4ma(index, candle, df))
-        # 一阴穿三线
-        drop_cross3ma.insert(index, patterns.drop_cross3ma(index, candle, df))
-        # 一阴穿四线
-        drop_cross4ma.insert(index, patterns.drop_cross4ma(index, candle, df))
+        if index >= _start_at:
+            # 大阳线
+            long_line[index] = patterns.long_line(index, candle)
+
+            # 光头光脚
+            marubozu[index] = patterns.marubozu(index, candle)
+
+            # 锤子线
+            hammer[index] = patterns.hammer(index, candle)
+
+            # 倒锤子线
+            pour_hammer[index] = patterns.pour_hammer(index, candle)
+
+            # 看涨尽头线
+            short_end[index] = patterns.short_end(index, candle)
+
+            # 下探上涨
+            down_rise[index] = patterns.down_rise(index, candle)
+
+            # 看涨吞没
+            swallow_up[index] = patterns.swallow_up(index, candle)
+
+            # 好友反攻
+            attack_short[index] = patterns.attack_short(index, candle)
+
+            # 曙光初现
+            first_light[index] = patterns.first_light(index, candle)
+
+            # 旭日东升
+            sunrise[index] = patterns.sunrise(index, candle)
+
+            # 平底
+            flat_base[index] = patterns.flat_base(index, candle)
+
+            # 涨停一字板
+            rise_line[index] = patterns.rise_line(index, candle)
+
+            # 下跌螺旋桨
+            down_screw[index] = patterns.down_screw(index, candle)
+
+            # 看跌尽头线
+            long_end[index] = patterns.long_end(index, candle)
+
+            # 看跌吞没
+            swallow_down[index] = patterns.swallow_down(index, candle)
+
+            # 吊颈线
+            hang_neck[index] = patterns.hang_neck(index, candle)
+
+            # 射击之星
+            shooting[index] = patterns.shooting(index, candle)
+
+            # 跌停一字板
+            drop_line[index] = patterns.drop_line(index, candle)
+
+            # 看跌螺旋桨
+            up_screw[index] = patterns.up_screw(index, candle)
+
+            # 向上跳空
+            upward_jump[index] = patterns.upward_jump(index, candle)
+
+            # 向下跳空
+            downward_jump[index] = patterns.downward_jump(index, candle)
+
+            # 一阳穿三线
+            up_cross3ma[index] = patterns.up_cross3ma(index, candle, df)
+
+            # 一阳穿四线
+            up_cross4ma[index] = patterns.up_cross4ma(index, candle, df)
+
+            # 一阴穿三线
+            drop_cross3ma[index] = patterns.drop_cross3ma(index, candle, df)
+
+            # 一阴穿四线
+            drop_cross4ma[index] = patterns.drop_cross4ma(index, candle, df)
 
     df['long_line'] = long_line
     df['marubozu'] = marubozu

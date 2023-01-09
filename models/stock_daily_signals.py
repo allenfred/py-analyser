@@ -173,6 +173,13 @@ class StockDailySignal(Base):
     decreasingly_vol = Column(SmallInteger)
 
     hlines = Column(String)
+    limit_pullback = Column(SmallInteger)
+    up_pullback = Column(SmallInteger)
+    down_pullback = Column(SmallInteger)
+    up_break = Column(SmallInteger)
+    down_break = Column(SmallInteger)
+    hline_support = Column(SmallInteger)
+    hline_resistance = Column(SmallInteger)
 
 
 def get_obj(signal):
@@ -343,6 +350,13 @@ def get_obj(signal):
         decreasingly_vol=signal.get('decreasingly_vol', None),
 
         hlines=signal.get('hlines', None),
+        limit_pullback=signal.get('limit_pullback', None),
+        up_pullback=signal.get('up_pullback', None),
+        down_pullback=signal.get('down_pullback', None),
+        up_break=signal.get('up_break', None),
+        down_break=signal.get('down_break', None),
+        hline_support=signal.get('hline_support', None),
+        hline_resistance=signal.get('hline_resistance', None),
     )
 
 
@@ -730,6 +744,20 @@ class StockDailySignalDao:
 
                 if obj.hlines is not None:
                     row.hlines = obj.hlines
+                if obj.limit_pullback is not None:
+                    row.limit_pullback = obj.limit_pullback
+                if obj.up_pullback is not None:
+                    row.up_pullback = obj.up_pullback
+                if obj.down_pullback is not None:
+                    row.down_pullback = obj.down_pullback
+                if obj.up_break is not None:
+                    row.up_break = obj.up_break
+                if obj.down_break is not None:
+                    row.down_break = obj.down_break
+                if obj.hline_support is not None:
+                    row.hline_support = obj.hline_support
+                if obj.hline_resistance is not None:
+                    row.hline_resistance = obj.hline_resistance
 
         except Exception as e:
             print('Error:', e)

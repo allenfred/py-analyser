@@ -126,7 +126,7 @@ module.exports = {
           interpreter: 'python3',
           instances: 1,
           exec_mode: 'fork',
-          cron_restart: '0 13 * * *', // 每天下午 13:00
+          cron_restart: '0 10,11,12,13 * * *', // 每天下午 13:00
           watch: false,
           autorestart: false,
         },
@@ -150,15 +150,15 @@ module.exports = {
     //      watch: false,
     //      autorestart: false,
     //    },
-    //    {
-    //      name: 'analysis_US',
-    //      script: 'jobs/analysis/daily/us.py',
-    //      interpreter: 'python3',
-    //      instances: 1,
-    //      exec_mode: 'fork',
-    //      cron_restart: '0 11 * * *', // 每天上午 11:00
-    //      watch: false,
-    //      autorestart: false,
-    //    },
+        {
+          name: 'analysis_US',
+          script: 'jobs/analysis/daily/us.py',
+          interpreter: 'python3',
+          instances: 1,
+          exec_mode: 'fork',
+          cron_restart: '0 12 * * *', // 每天上午 12:00
+          watch: false,
+          autorestart: false,
+        },
   ],
 };

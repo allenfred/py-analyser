@@ -62,7 +62,15 @@ CREATE TABLE `weekly_signals` (
   `hang_neck` tinyint(1) COMMENT '吊颈线(short)',
   `shooting` tinyint(1) COMMENT '射击之星(short)',
   `up_screw` tinyint(1) COMMENT '上涨螺旋桨(short)',
-  `down_screw` tinyint(1) COMMENT '下跌螺旋桨(long)'
+  `down_screw` tinyint(1) COMMENT '下跌螺旋桨(long)',
+  `hlines` varchar(255) COMMENT '水平位',
+  `limit_pullback` tinyint(1) COMMENT '涨停回调',
+  `up_pullback` tinyint(1) COMMENT '上涨回调',
+  `down_pullback` tinyint(1) COMMENT '下跌反弹',
+  `up_break` tinyint(1) COMMENT '向上突破',
+  `down_break` tinyint(1) COMMENT '向下突破',
+  `hline_support` tinyint(1) COMMENT '水平支撑',
+  `hline_resistance` tinyint(1) COMMENT '水平阻力'
 );
 
 CREATE INDEX `weekly_signals_index_ts_code` ON `weekly_signals` (`ts_code`);

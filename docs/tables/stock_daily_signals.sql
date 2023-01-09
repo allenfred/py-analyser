@@ -3,12 +3,6 @@ CREATE TABLE `stock_daily_signals` (
   `ts_code` varchar(255) NOT NULL COMMENT 'TS代码',
   `exchange` varchar(255) NOT NULL COMMENT '交易所代码 SSE SZSE HK US',
   `trade_date` date NOT NULL COMMENT '交易日期',
-  `yearly_price_position` tinyint(5),
-  `yearly_price_position10` tinyint(5),
-  `yearly_price_position20` tinyint(5),
-  `yearly_price_position30` tinyint(5),
-  `yearly_price_position50` tinyint(5),
-  `yearly_price_position70` tinyint(5),
   `ma20_up` tinyint(2) COMMENT 'MA20上行',
   `ema20_up` tinyint(2) COMMENT 'EMA20上行',
   `ma30_up` tinyint(2) COMMENT 'MA30上行',
@@ -129,7 +123,15 @@ CREATE TABLE `stock_daily_signals` (
   `ma60_fifth` tinyint(1),
   `ma60_sixth` tinyint(1),
   `ma60_seventh` tinyint(1),
-  `ma60_eighth` tinyint(1)
+  `ma60_eighth` tinyint(1),
+   `hlines` varchar(255) COMMENT '水平位',
+  `limit_pullback` tinyint(1) COMMENT '涨停回调',
+  `up_pullback` tinyint(1) COMMENT '上涨回调',
+  `down_pullback` tinyint(1) COMMENT '下跌反弹',
+  `up_break` tinyint(1) COMMENT '向上突破',
+  `down_break` tinyint(1) COMMENT '向下突破',
+  `hline_support` tinyint(1) COMMENT '水平支撑',
+  `hline_resistance` tinyint(1) COMMENT '水平阻力'
 );
 
 CREATE INDEX `stock_daily_signals_index_exchange` ON `stock_daily_signals` (`exchange`);

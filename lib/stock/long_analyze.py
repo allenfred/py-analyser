@@ -111,21 +111,6 @@ def long_analyze(org_df):
     _start_at = START_INDEX
 
     for index in range(len(candle)):
-        # set_yearly_price_position
-        high_price = max(high[index - 259: index + 1]) if index >= 260 else max(high)
-        low_price = min(low[index - 259: index + 1]) if index >= 260 else min(low)
-
-        price_range = high_price - low_price
-        price_pct_position = round((close[index] - low_price) * 100 / price_range, 1)
-        yearly_price_position.insert(index, price_pct_position)
-
-        # yearly_price_position
-        yearly_price_position10.insert(index, 1 if 10 >= yearly_price_position[index] else 0)
-        yearly_price_position20.insert(index, 1 if 20 >= yearly_price_position[index] else 0)
-        yearly_price_position30.insert(index, 1 if 30 >= yearly_price_position[index] else 0)
-        yearly_price_position50.insert(index, 1 if 50 >= yearly_price_position[index] else 0)
-        yearly_price_position70.insert(index, 1 if 70 >= yearly_price_position[index] else 0)
-
         # MA上行
         if index > _start_at:
             ma20_up.insert(index, 1 if is_ma20_rise(index, ma) else 0)
@@ -242,13 +227,6 @@ def long_analyze(org_df):
 
         ma60_support.insert(index, 1 if is_ma60_support(index, org_df) else 0)
         ma120_support.insert(index, 1 if is_ma120_support(index, org_df) else 0)
-
-    org_df['yearly_price_position'] = yearly_price_position
-    org_df['yearly_price_position10'] = yearly_price_position10
-    org_df['yearly_price_position20'] = yearly_price_position20
-    org_df['yearly_price_position30'] = yearly_price_position30
-    org_df['yearly_price_position50'] = yearly_price_position50
-    org_df['yearly_price_position70'] = yearly_price_position70
 
     org_df['ma20_up'] = ma20_up
     org_df['ema20_up'] = ema20_up

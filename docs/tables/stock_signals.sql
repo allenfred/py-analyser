@@ -128,7 +128,15 @@ CREATE TABLE `stock_signals` (
   `ma60_fifth` tinyint(1),
   `ma60_sixth` tinyint(1),
   `ma60_seventh` tinyint(1),
-  `ma60_eighth` tinyint(1)
+  `ma60_eighth` tinyint(1),
+  `hlines` varchar(255) COMMENT '水平位',
+  `limit_pullback` tinyint(1) COMMENT '涨停回调',
+  `up_pullback` tinyint(1) COMMENT '上涨回调',
+  `down_pullback` tinyint(1) COMMENT '下跌反弹',
+  `up_break` tinyint(1) COMMENT '向上突破',
+  `down_break` tinyint(1) COMMENT '向下突破',
+  `hline_support` tinyint(1) COMMENT '水平支撑',
+  `hline_resistance` tinyint(1) COMMENT '水平阻力'
 );
 
 CREATE INDEX `stock_signals_index_exchange` ON `stock_signals` (`exchange`);

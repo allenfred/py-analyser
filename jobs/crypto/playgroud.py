@@ -55,6 +55,7 @@ if __name__ == "__main__":
     inst_id = 'LTCUSDT'
     inst_id = 'CTSIUSDT'
     inst_id = '1000LUNCUSDT'
+    inst_id = 'OCEANUSDT'
 
     gran = 900
     gran = 3600
