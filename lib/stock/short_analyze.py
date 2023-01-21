@@ -1,4 +1,8 @@
 # -- coding: utf-8 -
+from config.common import START_INDEX
+from lib.signal.common.ma import is_ma20_down, is_ma30_down, is_ma60_down, is_ma120_down, \
+    is_ema20_down, is_ema30_down, is_ema60_down, is_ema120_down
+
 
 def short_analyze(org_df):
     """
@@ -55,62 +59,64 @@ def short_analyze(org_df):
     ema60_slope = ema_slope[:, 5]
     ema120_slope = ema_slope[:, 6]
 
-    ma20_down = []
-    ema20_down = []
-    ma30_down = []
-    ema30_down = []
-    ma60_down = []
-    ema60_down = []
-    ma120_down = []
-    ema120_down = []
+    ma20_down = [0 for _ in range(len(org_df))]
+    ema20_down = [0 for _ in range(len(org_df))]
+    ma30_down = [0 for _ in range(len(org_df))]
+    ema30_down = [0 for _ in range(len(org_df))]
+    ma60_down = [0 for _ in range(len(org_df))]
+    ema60_down = [0 for _ in range(len(org_df))]
+    ma120_down = [0 for _ in range(len(org_df))]
+    ema120_down = [0 for _ in range(len(org_df))]
 
-    down_ma_arrange = []
-    down_ema_arrange = []
+    down_ma_arrange = [0 for _ in range(len(org_df))]
+    down_ema_arrange = [0 for _ in range(len(org_df))]
 
-    down_short_ma_arrange1 = []
-    down_short_ma_arrange2 = []
-    down_short_ema_arrange1 = []
-    down_short_ema_arrange2 = []
+    down_short_ma_arrange1 = [0 for _ in range(len(org_df))]
+    down_short_ma_arrange2 = [0 for _ in range(len(org_df))]
+    down_short_ema_arrange1 = [0 for _ in range(len(org_df))]
+    down_short_ema_arrange2 = [0 for _ in range(len(org_df))]
 
-    down_middle_ma_arrange1 = []
-    down_middle_ma_arrange2 = []
-    down_middle_ema_arrange1 = []
-    down_middle_ema_arrange2 = []
+    down_middle_ma_arrange1 = [0 for _ in range(len(org_df))]
+    down_middle_ma_arrange2 = [0 for _ in range(len(org_df))]
+    down_middle_ema_arrange1 = [0 for _ in range(len(org_df))]
+    down_middle_ema_arrange2 = [0 for _ in range(len(org_df))]
 
-    down_long_ma_arrange1 = []
-    down_long_ma_arrange2 = []
-    down_long_ema_arrange1 = []
-    down_long_ema_arrange2 = []
+    down_long_ma_arrange1 = [0 for _ in range(len(org_df))]
+    down_long_ma_arrange2 = [0 for _ in range(len(org_df))]
+    down_long_ema_arrange1 = [0 for _ in range(len(org_df))]
+    down_long_ema_arrange2 = [0 for _ in range(len(org_df))]
 
-    ma_dead_cross1 = []
-    ma_dead_cross2 = []
-    ma_dead_cross3 = []
-    ma_dead_cross4 = []
+    ma_dead_cross1 = [0 for _ in range(len(org_df))]
+    ma_dead_cross2 = [0 for _ in range(len(org_df))]
+    ma_dead_cross3 = [0 for _ in range(len(org_df))]
+    ma_dead_cross4 = [0 for _ in range(len(org_df))]
 
-    ma_dead_valley = []
+    ma_dead_valley = [0 for _ in range(len(org_df))]
 
     # 断头铡刀
-    ma_knife = []
+    ma_knife = [0 for _ in range(len(org_df))]
     # 乌云密布
-    ma_dark_cloud = []
+    ma_dark_cloud = [0 for _ in range(len(org_df))]
     # 战机起航
-    ma_set_sail = []
+    ma_set_sail = [0 for _ in range(len(org_df))]
     # 气贯长虹
-    ma_supreme = []
+    ma_supreme = [0 for _ in range(len(org_df))]
     # 绝命跳
-    ma_dead_jump = []
+    ma_dead_jump = [0 for _ in range(len(org_df))]
 
-    down_ma_spider = []
+    down_ma_spider = [0 for _ in range(len(org_df))]
 
-    up_td8 = []
-    up_td9 = []
+    up_td8 = [0 for _ in range(len(org_df))]
+    up_td9 = [0 for _ in range(len(org_df))]
 
-    up_bias6 = []
-    up_bias12 = []
-    up_bias24 = []
-    up_bias60 = []
-    up_bias72 = []
-    up_bias120 = []
+    up_bias6 = [0 for _ in range(len(org_df))]
+    up_bias12 = [0 for _ in range(len(org_df))]
+    up_bias24 = [0 for _ in range(len(org_df))]
+    up_bias60 = [0 for _ in range(len(org_df))]
+    up_bias72 = [0 for _ in range(len(org_df))]
+    up_bias120 = [0 for _ in range(len(org_df))]
+
+    _start_at = START_INDEX
 
     for index in range(len(candle)):
         _open = open[index]
@@ -151,251 +157,169 @@ def short_analyze(org_df):
         _ema60_slope = ema60_slope[index]
         _ema120_slope = ema120_slope[index]
 
-        # MA20下行
-        if index > 60 and max(ma20_slope[index - 4: index]) < 0:
-            ma20_down.insert(index, 1)
-        else:
-            ma20_down.insert(index, 0)
+        if index > _start_at:
+            # MA20下行
+            ma20_down[index] = is_ma20_down(index, ma)
 
-        # EMA20下行
-        if index > 60 and max(ema20_slope[index - 4: index]) < 0:
-            ema20_down.insert(index, 1)
-        else:
-            ema20_down.insert(index, 0)
+            # EMA20下行
+            ema20_down[index] = is_ema20_down(index, ma)
 
-        # MA30下行
-        if index > 60 and max(ma30_slope[index - 4: index]) < 0:
-            ma30_down.insert(index, 1)
-        else:
-            ma30_down.insert(index, 0)
+            # MA30下行
+            ma30_down[index] = is_ma30_down(index, ma)
 
-        # EMA30下行
-        if index > 60 and max(ema30_slope[index - 4: index]) < 0:
-            ema30_down.insert(index, 1)
-        else:
-            ema30_down.insert(index, 0)
+            # EMA30下行
+            ema30_down[index] = is_ema30_down(index, ma)
 
-        # MA60下行
-        if index > 90 and max(ma60_slope[index - 6: index]) < 0:
-            ma60_down.insert(index, 1)
-        else:
-            ma60_down.insert(index, 0)
+            # MA60下行
+            ma60_down[index] = is_ma60_down(index, ma)
 
-        # EMA60下行
-        if index > 90 and max(ema60_slope[index - 6: index]) < 0:
-            ema60_down.insert(index, 1)
-        else:
-            ema60_down.insert(index, 0)
+            # EMA60下行
+            ema60_down[index] = is_ema60_down(index, ma)
 
-        # MA120下行
-        if index > 150 and max(ma120_slope[index - 13: index]) < 0:
-            ma120_down.insert(index, 1)
-        else:
-            ma120_down.insert(index, 0)
+            # MA120下行
+            ma120_down[index] = is_ma120_down(index, ma)
 
-        # EMA120下行
-        if index > 150 and max(ema120_slope[index - 13: index]) < 0:
-            ema120_down.insert(index, 1)
-        else:
-            ema120_down.insert(index, 0)
+            # EMA120下行
+            ema120_down[index] = is_ema120_down(index, ma)
 
-        # MA空头排列（5/10/20/60）
-        if _ma5_slope < 0 and _ma10_slope < 0 and _ma20_slope < 0 and _ma60_slope < 0 \
-                and _ma5 < _ma10 < _ma20 < _ma60:
-            down_ma_arrange.insert(index, 1)
-        else:
-            down_ma_arrange.insert(index, 0)
+            # MA空头排列（5/10/20/60）
 
-        # EMA空头排列（5/10/20/60）
-        if _ema5_slope < 0 and _ema10_slope < 0 and _ema20_slope < 0 and _ema60_slope < 0 \
-                and _ema5 < _ema10 < _ema20 < _ema60:
-            down_ema_arrange.insert(index, 1)
-        else:
-            down_ema_arrange.insert(index, 0)
+            if _ma5_slope < 0 and _ma10_slope < 0 and _ma20_slope < 0 and _ma60_slope < 0 \
+                    and _ma5 < _ma10 < _ma20 < _ma60:
+                down_ma_arrange[index] = 1
 
-        # MA短期组合空头排列（5/10/20）
-        if _ma5_slope < 0 and _ma10_slope < 0 and _ma20_slope < 0 \
-                and _ma5 < _ma10 < _ma20:
-            down_short_ma_arrange1.insert(index, 1)
-        else:
-            down_short_ma_arrange1.insert(index, 0)
+            # EMA空头排列（5/10/20/60）
+            if _ema5_slope < 0 and _ema10_slope < 0 and _ema20_slope < 0 and _ema60_slope < 0 \
+                    and _ema5 < _ema10 < _ema20 < _ema60:
+                down_ema_arrange[index] = 1
 
-        # MA短期组合空头排列（5/10/30）
-        if _ma5_slope < 0 and _ma10_slope < 0 and _ma30_slope < 0 \
-                and _ma5 < _ma10 < _ma30:
-            down_short_ma_arrange2.insert(index, 1)
-        else:
-            down_short_ma_arrange2.insert(index, 0)
+            # MA短期组合空头排列（5/10/20）
+            if _ma5_slope < 0 and _ma10_slope < 0 and _ma20_slope < 0 \
+                    and _ma5 < _ma10 < _ma20:
+                down_short_ma_arrange1[index] = 1
 
-        # EMA短期组合空头排列（5/10/20）
-        if _ema5_slope < 0 and _ema10_slope < 0 and _ema20_slope < 0 \
-                and _ema5 < _ema10 < _ema20:
-            down_short_ema_arrange1.insert(index, 1)
-        else:
-            down_short_ema_arrange1.insert(index, 0)
+            # MA短期组合空头排列（5/10/30）
+            if _ma5_slope < 0 and _ma10_slope < 0 and _ma30_slope < 0 \
+                    and _ma5 < _ma10 < _ma30:
+                down_short_ma_arrange2[index] = 1
 
-        # EMA短期组合空头排列（5/10/30）
-        if _ema5_slope < 0 and _ema10_slope < 0 and _ema30_slope < 0 \
-                and _ema5 < _ema10 < _ema30:
-            down_short_ema_arrange2.insert(index, 1)
-        else:
-            down_short_ema_arrange2.insert(index, 0)
+            # EMA短期组合空头排列（5/10/20）
+            if _ema5_slope < 0 and _ema10_slope < 0 and _ema20_slope < 0 \
+                    and _ema5 < _ema10 < _ema20:
+                down_short_ema_arrange1[index] = 1
 
-        # MA中期组合空头排列（10/20/60）
-        if _ma10_slope < 0 and _ma20_slope < 0 and _ma60_slope < 0 \
-                and _ma10 < _ma20 < _ma60:
-            down_middle_ma_arrange1.insert(index, 1)
-        else:
-            down_middle_ma_arrange1.insert(index, 0)
+            # EMA短期组合空头排列（5/10/30）
+            if _ema5_slope < 0 and _ema10_slope < 0 and _ema30_slope < 0 \
+                    and _ema5 < _ema10 < _ema30:
+                down_short_ema_arrange2[index] = 1
 
-        # MA中期组合空头排列（10/20/55）
-        if _ma10_slope < 0 and _ma20_slope < 0 and _ma55_slope < 0 \
-                and _ma10 < _ma20 < _ma55:
-            down_middle_ma_arrange2.insert(index, 1)
-        else:
-            down_middle_ma_arrange2.insert(index, 0)
+            # MA中期组合空头排列（10/20/60）
+            if _ma10_slope < 0 and _ma20_slope < 0 and _ma60_slope < 0 \
+                    and _ma10 < _ma20 < _ma60:
+                down_middle_ma_arrange1[index] = 1
 
-        # EMA中期组合空头排列（10/20/60）
-        if _ema10_slope < 0 and _ema20_slope < 0 and _ema60_slope < 0 \
-                and _ema10 < _ema20 < _ema60:
-            down_middle_ema_arrange1.insert(index, 1)
-        else:
-            down_middle_ema_arrange1.insert(index, 0)
+            # MA中期组合空头排列（10/20/55）
+            if _ma10_slope < 0 and _ma20_slope < 0 and _ma55_slope < 0 \
+                    and _ma10 < _ma20 < _ma55:
+                down_middle_ma_arrange2[index] = 1
 
-        # EMA中期组合空头排列（10/20/55）
-        if _ema10_slope < 0 and _ema20_slope < 0 and _ema55_slope < 0 \
-                and _ema10 < _ema20 < _ema55:
-            down_middle_ema_arrange2.insert(index, 1)
-        else:
-            down_middle_ema_arrange2.insert(index, 0)
+            # EMA中期组合空头排列（10/20/60）
+            if _ema10_slope < 0 and _ema20_slope < 0 and _ema60_slope < 0 \
+                    and _ema10 < _ema20 < _ema60:
+                down_middle_ema_arrange1[index] = 1
 
-        # MA长期组合空头排列（20/55/120）
-        if _ma20_slope < 0 and _ma55_slope < 0 and _ma120_slope < 0 \
-                and _ma20 < _ma55 < _ma120:
-            down_long_ma_arrange1.insert(index, 1)
-        else:
-            down_long_ma_arrange1.insert(index, 0)
+            # EMA中期组合空头排列（10/20/55）
+            if _ema10_slope < 0 and _ema20_slope < 0 and _ema55_slope < 0 \
+                    and _ema10 < _ema20 < _ema55:
+                down_middle_ema_arrange2[index] = 1
 
-        # MA长期组合空头排列（30/60/120）
-        if _ma30_slope < 0 and _ma60_slope < 0 and _ma120_slope < 0 \
-                and _ma30 < _ma60 < _ma120:
-            down_long_ma_arrange2.insert(index, 1)
-        else:
-            down_long_ma_arrange2.insert(index, 0)
+            # MA长期组合空头排列（20/55/120）
+            if _ma20_slope < 0 and _ma55_slope < 0 and _ma120_slope < 0 \
+                    and _ma20 < _ma55 < _ma120:
+                down_long_ma_arrange1[index] = 1
 
-        # EMA长期组合空头排列（20/55/120）
-        if _ema20_slope < 0 and _ema55_slope < 0 and _ema120_slope < 0 \
-                and _ema20 < _ema55 < _ema120:
-            down_long_ema_arrange1.insert(index, 1)
-        else:
-            down_long_ema_arrange1.insert(index, 0)
+            # MA长期组合空头排列（30/60/120）
+            if _ma30_slope < 0 and _ma60_slope < 0 and _ma120_slope < 0 \
+                    and _ma30 < _ma60 < _ma120:
+                down_long_ma_arrange2[index] = 1
 
-        # EMA长期组合空头排列（30/60/120）
-        if _ema30_slope < 0 and _ema60_slope < 0 and _ema120_slope < 0 \
-                and _ema30 < _ema60 < _ema120:
-            down_long_ema_arrange2.insert(index, 1)
-        else:
-            down_long_ema_arrange2.insert(index, 0)
+            # EMA长期组合空头排列（20/55/120）
+            if _ema20_slope < 0 and _ema55_slope < 0 and _ema120_slope < 0 \
+                    and _ema20 < _ema55 < _ema120:
+                down_long_ema_arrange1[index] = 1
 
-        # MA死亡交叉（5/10）
-        if ma[index][0] < ma[index][1] and ma[index - 1][0] > ma[index - 1][1] and \
-                ma_slope[index][0] < 0 and ma_slope[index][1] < 0:
-            ma_dead_cross1.insert(index, 1)
-        else:
-            ma_dead_cross1.insert(index, 0)
+            # EMA长期组合空头排列（30/60/120）
+            if _ema30_slope < 0 and _ema60_slope < 0 and _ema120_slope < 0 \
+                    and _ema30 < _ema60 < _ema120:
+                down_long_ema_arrange2[index] = 1
 
-        # MA死亡交叉（5/20）
-        if ma[index][0] < ma[index][2] and ma[index - 1][0] > ma[index - 1][2] and \
-                ma_slope[index][0] < 0 and ma_slope[index][2] < 0:
-            ma_dead_cross2.insert(index, 1)
-        else:
-            ma_dead_cross2.insert(index, 0)
+            # MA死亡交叉（5/10）
+            if ma[index][0] < ma[index][1] and ma[index - 1][0] > ma[index - 1][1] and \
+                    ma_slope[index][0] < 0 and ma_slope[index][1] < 0:
+                ma_dead_cross1[index] = 1
 
-        # MA死亡交叉（10/20）
-        if ma[index][1] < ma[index][2] and ma[index - 1][1] > ma[index - 1][2] and \
-                ma_slope[index][1] < 0 and ma_slope[index][2] < 0:
-            ma_dead_cross3.insert(index, 1)
-        else:
-            ma_dead_cross3.insert(index, 0)
+            # MA死亡交叉（5/20）
+            if ma[index][0] < ma[index][2] and ma[index - 1][0] > ma[index - 1][2] and \
+                    ma_slope[index][0] < 0 and ma_slope[index][2] < 0:
+                ma_dead_cross2[index] = 1
 
-        # MA死亡交叉（10/30）
-        if ma[index][1] < ma[index][3] and ma[index - 1][1] > ma[index - 1][3] and \
-                ma_slope[index][1] < 0 and ma_slope[index][3] < 0:
-            ma_dead_cross4.insert(index, 1)
-        else:
-            ma_dead_cross4.insert(index, 0)
+            # MA死亡交叉（10/20）
+            if ma[index][1] < ma[index][2] and ma[index - 1][1] > ma[index - 1][2] and \
+                    ma_slope[index][1] < 0 and ma_slope[index][2] < 0:
+                ma_dead_cross3[index] = 1
 
-        # MA死亡谷
-        if is_ma_dead_valley(index, ma_dead_cross1, ma_dead_cross2, ma_dead_cross3):
-            ma_dead_valley.insert(index, 1)
-        else:
-            ma_dead_valley.insert(index, 0)
+            # MA死亡交叉（10/30）
+            if ma[index][1] < ma[index][3] and ma[index - 1][1] > ma[index - 1][3] and \
+                    ma_slope[index][1] < 0 and ma_slope[index][3] < 0:
+                ma_dead_cross4[index] = 1
 
-        # MA毒蜘蛛
-        if is_ma_spider(index, ma, ma_dead_cross1, ma_dead_cross2, ma_dead_cross3, ma_dead_cross4):
-            down_ma_spider.insert(index, 1)
-        else:
-            down_ma_spider.insert(index, 0)
+            # MA死亡谷
+            if is_ma_dead_valley(index, ma_dead_cross1, ma_dead_cross2, ma_dead_cross3):
+                ma_dead_valley[index] = 1
 
-        # MA断头铡刀
-        if is_ma_knife(index, candle, ma, ma_slope):
-            ma_knife.insert(index, 1)
-        else:
-            ma_knife.insert(index, 0)
+            # MA毒蜘蛛
+            if is_ma_spider(index, ma, ma_dead_cross1, ma_dead_cross2, ma_dead_cross3, ma_dead_cross4):
+                down_ma_spider[index] = 1
 
-        # MA乌云密布
-        if is_ma_dark_cloud(index, ma_slope):
-            ma_dark_cloud.insert(index, 1)
-        else:
-            ma_dark_cloud.insert(index, 0)
+            # MA断头铡刀
+            if is_ma_knife(index, candle, ma, ma_slope):
+                ma_knife[index] = 1
 
-        # TD_8
-        if td[index][0] == 8:
-            up_td8.insert(index, 1)
-        else:
-            up_td8.insert(index, 0)
+            # MA乌云密布
+            if is_ma_dark_cloud(index, ma_slope):
+                ma_dark_cloud[index] = 1
 
-        # TD_9
-        if td[index][0] == 9:
-            up_td9.insert(index, 1)
-        else:
-            up_td9.insert(index, 0)
+            # TD_8
+            if td[index][0] == 8:
+                up_td8[index] = 1
 
-        # bias6
-        if bias[index][0] < -3:
-            up_bias6.insert(index, 1)
-        else:
-            up_bias6.insert(index, 0)
+            # TD_9
+            if td[index][0] == 9:
+                up_td9[index] = 1
 
-        # bias12
-        if bias[index][1] < -4.5:
-            up_bias12.insert(index, 1)
-        else:
-            up_bias12.insert(index, 0)
+            # bias6
+            if bias[index][0] < -3:
+                up_bias6[index] = 1
 
-        # bias24
-        if bias[index][2] < -7:
-            up_bias24.insert(index, 1)
-        else:
-            up_bias24.insert(index, 0)
+            # bias12
+            if bias[index][1] < -4.5:
+                up_bias12[index] = 1
 
-        # bias72
-        if bias[index][4] < -11:
-            up_bias72.insert(index, 1)
-        else:
-            up_bias72.insert(index, 0)
+            # bias24
+            if bias[index][2] < -7:
+                up_bias24[index] = 1
 
-        # bias60 不作为单独信号 需结合趋势判断上涨回踩形态
-        if 1.5 >= bias[index][3] >= -1.5:
-            up_bias60.insert(index, 1)
-        else:
-            up_bias60.insert(index, 0)
+            # bias72
+            if bias[index][4] < -11:
+                up_bias72[index] = 1
 
-        # bias120 不作为单独信号 需结合趋势判断上涨回踩形态
-        if 1 >= bias[index][5] >= -1:
-            up_bias120.insert(index, 1)
-        else:
-            up_bias120.insert(index, 0)
+            # bias60 不作为单独信号 需结合趋势判断上涨回踩形态
+            if 1.5 >= bias[index][3] >= -1.5:
+                up_bias60[index] = 1
+
+            # bias120 不作为单独信号 需结合趋势判断上涨回踩形态
+            if 1 >= bias[index][5] >= -1:
+                up_bias120[index] = 1
 
     org_df['ma20_down'] = ma20_down
     org_df['ema20_down'] = ema20_down

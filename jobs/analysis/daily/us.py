@@ -51,7 +51,8 @@ if __name__ == "__main__":
         time.sleep(0.2)
         stock_stmts = stockDao.session.execute(text("select ts_code, total_mv from stocks where ("
                                                     "scan_date is null or scan_date"
-                                                    " < :scan_date) and exchange = 'US' and amount > 10000000 "
+                                                    " < :scan_date) and exchange = 'US' "
+                                                    "and amount > 10000000 "
                                                     "order by ts_code limit "
                                                     + str(limit)).params(scan_date=scan_date))
 

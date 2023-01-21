@@ -5,7 +5,8 @@ _start_at = 100
 
 def is_strong_bull(df, i):
     """
-    量价配合
+    强势多头
+
     1.强势K线形态
     2.成交量
 
@@ -14,6 +15,25 @@ def is_strong_bull(df, i):
     :return:
     """
     if (df.iloc[i]['long_line'] > 0 or df.iloc[i]['marubozu'] > 0 or df.iloc[i]['limit'] == 'U') and \
+            (df.iloc[i]['high_vol'] > 0 or df.iloc[i]['large_vol'] > 0 or df.iloc[i]['huge_vol'] > 0
+             or df.iloc[i]['max_vol'] > 0 or df.iloc[i]['increasingly_vol'] > 0):
+        return True
+
+    return False
+
+
+def is_strong_bear(df, i):
+    """
+    强势空头
+
+    1.强势K线形态
+    2.成交量
+
+    :param df:
+    :param i:
+    :return:
+    """
+    if (df.iloc[i]['long_line'] < 0 or df.iloc[i]['marubozu'] < 0 or df.iloc[i]['limit'] == 'D') and \
             (df.iloc[i]['high_vol'] > 0 or df.iloc[i]['large_vol'] > 0 or df.iloc[i]['huge_vol'] > 0
              or df.iloc[i]['max_vol'] > 0 or df.iloc[i]['increasingly_vol'] > 0):
         return True
@@ -40,10 +60,10 @@ def has_support_patterns(df, index):
     :param index:
     :return:
     """
-    if df.iloc[index]['swallow_up'] > 0 or \
-            df.iloc[index]['down_rise'] > 0 or \
-            df.iloc[index]['CDLHAMMER'] > 0 or \
-            df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 \
+    if df.iloc[index]['swallow_up'] > 0 \
+            or df.iloc[index]['down_rise'] > 0 \
+            or df.iloc[index]['CDLHAMMER'] > 0 \
+            or df.iloc[index]['CDLGRAVESTONEDOJI'] > 0 \
             or df.iloc[index]['CDLDRAGONFLYDOJI'] > 0 \
             or df.iloc[index]['CDLTAKURI'] > 0 \
             or df.iloc[index]['CDLHARAMI'] > 0 \
@@ -89,6 +109,43 @@ def has_bottom_patterns(df, index):
             df.iloc[index]['CDLPIERCING'] > 0 or \
             df.iloc[index]['CDLCOUNTERATTACK'] > 0 or \
             df.iloc[index]['flat_base'] > 0:
+        return True
+
+    return False
+
+
+def has_top_patterns(df, index):
+    """
+    判断当前是否存在顶部看跌K线形态
+
+    看跌吞没
+    吞噬模式 CDLENGULFING
+    吊颈线
+    射击之星
+    看跌螺旋桨
+    一阴穿三线
+    一阴穿四线
+    长脚十字 CDLLONGLEGGEDDOJI
+    乌云压顶 CDLDARKCLOUDCOVER
+    黄昏之星 CDLEVENINGSTAR
+    黄昏十字星 CDLEVENINGDOJISTAR
+
+    :param df:
+    :param index:
+    :return:
+    """
+
+    if df.iloc[index]['swallow_down'] > 0 or \
+            df.iloc[index]['CDLENGULFING'] < 0 or \
+            df.iloc[index]['hang_neck'] > 0 or \
+            df.iloc[index]['shooting'] > 0 or \
+            df.iloc[index]['up_screw'] > 0 or \
+            df.iloc[index]['drop_cross3ma'] < 0 or \
+            df.iloc[index]['drop_cross4ma'] < 0 or \
+            df.iloc[index]['CDLLONGLEGGEDDOJI'] < 0 or \
+            df.iloc[index]['CDLDARKCLOUDCOVER'] < 0 or \
+            df.iloc[index]['CDLEVENINGSTAR'] < 0 or \
+            df.iloc[index]['CDLEVENINGDOJISTAR'] < 0:
         return True
 
     return False

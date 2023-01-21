@@ -2,12 +2,33 @@ import yfinance as yf
 import yahoo_fin.stock_info as si
 from datetime import datetime, timedelta
 
+"""
+    get_analysts_info() 
+    get_balance_sheet()
+    get_cash_flow()
+    get_data()
+    get_day_gainers()
+    get_day_losers()
+    get_day_most_active()
+    get_holders()
+    get_income_statement()
+    get_live_price()
+    get_quote_table()
+    get_top_crypto()
+    get_stats()
+    get_stats_valuation()
+    tickers_dow()
+    tickers_nasdaq()
+    tickers_other()
+    tickers_sp500()
+"""
+
 #
 # com_info = si.get_company_info("msft")
-msft = yf.Ticker("MSFT")
+# msft = yf.Ticker("MSFT")
 
 # access each ticker using (example)
-print(msft.info)
+# print(msft.info)
 # print(msft.history(period="1"))
 # print(msft.history(start="2012-01-01", end="2022-12-31"))
 # print(msft.actions)
@@ -38,15 +59,17 @@ print(msft.info)
 # 获取实时价格
 # quote = si.get_quote_data('msft')
 
-print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-
 # 获取指定股票历史K线 1d 1wk 1mo
 # ['open', 'high', 'low', 'close', 'adjclose', 'volume', 'ticker']
-msft_data = si.get_data('msft', start_date='01/01/2012', end_date='31/12/2022', interval='1d')
+# msft_data = si.get_data('msft', start_date='01/01/2012', end_date='31/12/2022', interval='1d')
 
-print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+# print(msft_data.columns)
+# print(msft_data)
 
-print(msft_data.columns)
-print(msft_data)
-# print(splits)
-# print(len(tickers))
+
+# 获取股票基本信息
+# quote_table = si.get_quote_table("aapl", dict_result=False)
+# quote_table = si.get_quote_table("eurn", dict_result=False)
+quote_table = si.get_quote_table("baba", dict_result=False)
+
+print(quote_table)

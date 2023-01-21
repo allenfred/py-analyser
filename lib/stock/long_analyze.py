@@ -41,13 +41,6 @@ def long_analyze(org_df):
     ema60 = ema[:, 5]
     ema120 = ema[:, 6]
 
-    yearly_price_position = []
-    yearly_price_position10 = []
-    yearly_price_position20 = []
-    yearly_price_position30 = []
-    yearly_price_position50 = []
-    yearly_price_position70 = []
-
     ma20_up = []
     ema20_up = []
     ma30_up = []
