@@ -56,9 +56,10 @@ if __name__ == "__main__":
     inst_id = 'CTSIUSDT'
     inst_id = '1000LUNCUSDT'
     inst_id = 'OCEANUSDT'
+    inst_id = '1000XECUSDT'
 
     gran = 900
-    gran = 3600
+    # gran = 3600
     # gran = 14400
     exchange = 'binance'
     # exchange = 'okex'

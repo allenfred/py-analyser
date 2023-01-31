@@ -14,7 +14,8 @@ def is_strong_bull(df, i):
     :param i:
     :return:
     """
-    if (df.iloc[i]['long_line'] > 0 or df.iloc[i]['marubozu'] > 0 or df.iloc[i]['limit'] == 'U') and \
+    if (df.iloc[i]['long_line'] > 0 or df.iloc[i]['marubozu'] > 0 or (
+            'limit' in df.columns and df.iloc[i]['limit'] == 'U')) and \
             (df.iloc[i]['high_vol'] > 0 or df.iloc[i]['large_vol'] > 0 or df.iloc[i]['huge_vol'] > 0
              or df.iloc[i]['max_vol'] > 0 or df.iloc[i]['increasingly_vol'] > 0):
         return True
@@ -33,7 +34,8 @@ def is_strong_bear(df, i):
     :param i:
     :return:
     """
-    if (df.iloc[i]['long_line'] < 0 or df.iloc[i]['marubozu'] < 0 or df.iloc[i]['limit'] == 'D') and \
+    if (df.iloc[i]['long_line'] < 0 or df.iloc[i]['marubozu'] < 0 or (
+            'limit' in df.columns and df.iloc[i]['limit'] == 'D')) and \
             (df.iloc[i]['high_vol'] > 0 or df.iloc[i]['large_vol'] > 0 or df.iloc[i]['huge_vol'] > 0
              or df.iloc[i]['max_vol'] > 0 or df.iloc[i]['increasingly_vol'] > 0):
         return True
