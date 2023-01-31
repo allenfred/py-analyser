@@ -20,17 +20,19 @@ if __name__ == "__main__":
     cur_min = time.localtime().tm_min
     cur_hour = time.localtime().tm_hour
     insts = list(get_instruments())
+    scan_cnt = 0
 
     for index, item in enumerate(insts):
         time.sleep(0.2)
         _start = time.time()
         if item['quote_currency'] == 'USDT' and item['volume_24h'] > 10000000:
+            scan_cnt += 1
             analyzer.run(item, 900)
             if cur_min == 0:
                 analyzer.run(item, 3600)
-            if cur_hour - ((cur_hour % 4) * 4) == 0 and cur_min == 0 and item['volume_24h'] > 100000000:
+            if cur_hour % 4 == 0 and cur_min == 0 and item['volume_24h'] > 50000000:
                 analyzer.run(item, 7200)
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     r.publish('analyzer', 'done')
-    print(now, 'Analyzer 合约数', len(insts), ' 总用时 ', used_time_fmt(start, time.time()))
+    print(now, 'Analyzer 合约数', scan_cnt, ' 总用时 ', used_time_fmt(start, time.time()))

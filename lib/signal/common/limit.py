@@ -26,7 +26,7 @@ def limit_up_gene(i, candles, df):
         return 0
 
     if 'limit' not in df.columns:
-        return False
+        return 0
 
     ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
 
@@ -85,6 +85,9 @@ def limit_pullback(df, i):
     :param i:
     :return:
     """
+
+    if 'limit' not in df.columns:
+        return 0
 
     _close = df.iloc[i]['close']
     _low = df.iloc[i]['low']
