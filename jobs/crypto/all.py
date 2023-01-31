@@ -28,10 +28,9 @@ if __name__ == "__main__":
             analyzer.run(item, 900)
             if cur_min == 0:
                 analyzer.run(item, 3600)
-            if cur_hour % 4 == 0 and cur_min == 0:
+            if cur_hour - ((cur_hour % 4) * 4) == 0 and cur_min == 0 and item['volume_24h'] > 100000000:
                 analyzer.run(item, 7200)
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     r.publish('analyzer', 'done')
     print(now, 'Analyzer 合约数', len(insts), ' 总用时 ', used_time_fmt(start, time.time()))
-
