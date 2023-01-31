@@ -24,7 +24,7 @@ if __name__ == "__main__":
     for index, item in enumerate(insts):
         time.sleep(0.2)
         _start = time.time()
-        if item['quote_currency'] == 'USDT':
+        if item['quote_currency'] == 'USDT' and item['volume_24h'] > 10000000:
             analyzer.run(item, 900)
             if cur_min == 0:
                 analyzer.run(item, 3600)
