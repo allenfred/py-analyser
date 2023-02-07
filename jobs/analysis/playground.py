@@ -59,5 +59,5 @@ if __name__ == "__main__":
     # ts_code = '000610.SZ'  # 西安旅游
     # ts_code = '000721.SZ'  # 西安饮食
 
-    scan_daily_candles(ts_code, 'CN', '2022-01-20')
+    scan_daily_candles(ts_code, 'CN', '2023-02-06')
     print('扫描成功')

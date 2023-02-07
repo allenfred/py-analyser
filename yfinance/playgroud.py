@@ -55,9 +55,11 @@ from datetime import datetime, timedelta
 
 # 道指 成分股
 # tickers = si.tickers_dow()
+# print(tickers)
 
 # 获取实时价格
 # quote = si.get_quote_data('msft')
+# print(quote)
 
 # 获取指定股票历史K线 1d 1wk 1mo
 # ['open', 'high', 'low', 'close', 'adjclose', 'volume', 'ticker']
@@ -70,6 +72,6 @@ from datetime import datetime, timedelta
 # 获取股票基本信息
 # quote_table = si.get_quote_table("aapl", dict_result=False)
 # quote_table = si.get_quote_table("eurn", dict_result=False)
-quote_table = si.get_quote_table("baba", dict_result=False)
+# quote_table = si.get_quote_table("baba", dict_result=False)
 
-print(quote_table)
+# print(quote_table)

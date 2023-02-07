@@ -27,13 +27,25 @@ def trend_analyze(org_df):
             if Hlines.up_pullback(org_df, index):
                 up_pullback[index] = 1
 
+            # 下跌反弹
+            if Hlines.down_pullback(org_df, index):
+                down_pullback[index] = 1
+
             # 向上突破
             if Hlines.up_break(org_df, index):
                 up_break[index] = 1
 
-            # 向上突破
+            # 向下突破
+            if Hlines.down_break(org_df, index):
+                down_break[index] = 1
+
+            # 水平支撑
             if Hlines.hline_support(org_df, index):
                 hline_support[index] = 1
+
+            # 水平阻力
+            if Hlines.hline_resistance(org_df, index):
+                hline_resistance[index] = 1
 
     org_df['limit_pullback'] = limit_pullback
     org_df['up_pullback'] = up_pullback
