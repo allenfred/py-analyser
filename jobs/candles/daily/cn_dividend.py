@@ -76,7 +76,7 @@ if __name__ == "__main__":
     start = time.time()
 
     check_daily_dividend()
-
+    
     end = time.time()
 
     print(today, '总用时', used_time_fmt(start, end))
