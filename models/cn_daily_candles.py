@@ -221,8 +221,8 @@ class CNDailyCandleDao:
         if len(df) == 0:
             return 0
 
-        conn = mysql.connector.connect(host="8.210.170.98", user='dev',
-                                       password='dev123456', database='quant')
+        conn = mysql.connector.connect(host="121.4.15.211", user='dev',
+                                       password='04f5d5a3b91006a8', database='quant')
         cursor = conn.cursor()
         ts_code = df['ts_code'][0]
         querysql = 'select id, trade_date, open, high, low, close from cn_daily_candles ' \

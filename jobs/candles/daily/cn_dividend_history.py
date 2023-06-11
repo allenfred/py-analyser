@@ -22,26 +22,26 @@ calendarDao = TradeCalendarDao()
 stockDao = StockDao()
 
 
-def check_daily_dividend():
+def check_history_dividend():
     _start = time.time()
     _today = datetime.now().strftime("%Y%m%d")
+    year_ago = (datetime.now() - timedelta(days=360)).strftime("%Y%m%d")
 
-    # 获取当天是除权除息日的股票
-    df = pro.dividend(ex_date=_today, fields='ts_code,div_proc,stk_div,record_date,ex_date')
-    df = df.loc[~df['ts_code'].str.contains('BJ')]
-    year_ago = (datetime.now() - timedelta(days=600)).strftime("%Y%m%d")
-    print(_today, '当日除权除息股票(除BJ): ', len(df), '只')
+    check_days = 0
+    while check_days < 180:
+        ex_date = (datetime.now() - timedelta(days=check_days)).strftime("%Y%m%d")
+        # 获取除权除息日的股票
+        df = pro.dividend(ex_date=ex_date, fields='ts_code,div_proc,stk_div,record_date,ex_date')
+        print(ex_date, df['ts_code'].to_numpy())
 
-    for row in df.itertuples():
-        _t = time.time()
-        time.sleep(0.2)
-        k_df = ts.pro_bar(ts_code=row.ts_code, adj='qfq', start_date=year_ago, end_date=today)
-        print(row.ts_code, '获取K线用时', round(time.time() - _t, 2), 's')
-        k_df = k_df.round(2)
+        for row in df.itertuples():
+            k_df = ts.pro_bar(ts_code=row.ts_code, adj='qfq', start_date=year_ago, end_date=_today)
 
-        stockDao.update({'ts_code': row.ts_code, 'ex_date': row.ex_date})
-        cnt = dailyCandleDao.reinsert(k_df)
-        print(row.ts_code, '更新K线完成: ', cnt, ',当前用时', round(time.time() - _start, 2), 's')
+            stockDao.update({'ts_code': row.ts_code, 'ex_date': row.ex_date})
+            dailyCandleDao.bulk_update(k_df)
+            print(row.ts_code, '更新K线完成, 当前用时', round(time.time() - _start, 2), 's')
+
+        check_days += 1
 
     _end = time.time()
     print('除权除息 更新总用时', round(_end - _start, 2), 's')
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     today = datetime.now().strftime("%Y-%m-%d")
     start = time.time()
 
-    check_daily_dividend()
+    check_history_dividend()
 
     end = time.time()
 
