@@ -233,13 +233,15 @@ class CNDailyCandleDao:
         updated_rows_cnt = 0
         for item in db_df.itertuples():
             dte = datetime.strftime(item.trade_date, "%Y%m%d")
-            i = df[df['trade_date'] == dte].iloc[0]
+            
+            if len(df[df['trade_date'] == dte]) > 0:
+                i = df[df['trade_date'] == dte].iloc[0]
 
-            if not (i.open == item.open and i.high == item.high and i.low == item.low and i.close == item.close):
-                updated_rows_cnt += 1
-                sql = 'update cn_daily_candles set open = %s, high = %s, low = %s, close = %s ' \
-                      'where id = %s;'
-                cursor.execute(sql, (float(i.open), float(i.high), float(i.low), float(i.close), item.id))
+                if not (i.open == item.open and i.high == item.high and i.low == item.low and i.close == item.close):
+                    updated_rows_cnt += 1
+                    sql = 'update cn_daily_candles set open = %s, high = %s, low = %s, close = %s ' \
+                          'where id = %s;'
+                    cursor.execute(sql, (float(i.open), float(i.high), float(i.low), float(i.close), item.id))
 
         conn.commit()
         cursor.close()
