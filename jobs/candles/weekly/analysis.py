@@ -52,6 +52,7 @@ if __name__ == "__main__":
 
                 # 更新weekly signal
                 df = analyze(df)
+
                 small_df = df.iloc[df_len - 10: df_len]
                 weeklySignalDao.reinsert(small_df, ts_code)
 

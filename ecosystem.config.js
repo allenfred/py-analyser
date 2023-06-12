@@ -96,7 +96,7 @@ module.exports = {
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '0 22 * * *', // 每天下午 22:00
+      cron_restart: '0 22 * * 5', // 每周五 22:00
       watch: false,
       autorestart: false,
     },
@@ -106,7 +106,7 @@ module.exports = {
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '30 22 * * *', // 每天下午 22:30
+      cron_restart: '30 22 * * 5', // 每周五 22:30
       watch: false,
       autorestart: false,
     },
@@ -116,7 +116,7 @@ module.exports = {
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '0 10,11,12,13 * * *', // 每天下午 13:00
+      cron_restart: '0 11,12,13 * * *', // 每天 11:00/12:00/13:00
       watch: false,
       autorestart: false,
     },
@@ -136,7 +136,7 @@ module.exports = {
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '0 12 * * *', // 每天上午 12:00
+      cron_restart: '30 13 * * *', // 每天 13:30
       watch: false,
       autorestart: false,
     },

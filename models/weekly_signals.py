@@ -250,6 +250,7 @@ class WeeklySignalDao:
 
         for index, item in df.iterrows():
             item = item.to_dict()
+            item['hlines'] = ','.join(str(x) for x in item['hlines'])
             item = {k: v if not pd.isna(v) else None for k, v in item.items()}
             items.insert(index, item)
 
