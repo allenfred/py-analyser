@@ -536,8 +536,8 @@ class StockSignalDao:
                     row.up_td9 = obj.up_td9
                 if obj.down_td8 is not None:
                     row.down_td8 = obj.down_td8
-                if obj.down_td8 is not None:
-                    row.down_td8 = obj.down_td8
+                if obj.down_td9 is not None:
+                    row.down_td9 = obj.down_td9
 
                 if obj.up_bias6 is not None:
                     row.up_bias6 = obj.up_bias6
