@@ -178,6 +178,8 @@ class StockSignal(Base):
     hline_support = Column(SmallInteger)
     hline_resistance = Column(SmallInteger)
 
+    strong_rise = Column(SmallInteger)
+
 
 def get_obj(signal):
     signal = {k: v if not pd.isna(v) else None for k, v in signal.items()}
@@ -353,6 +355,7 @@ def get_obj(signal):
         hline_support=signal.get('hline_support', None),
         hline_resistance=signal.get('hline_resistance', None),
 
+        strong_rise=signal.get('strong_rise', None),
     )
 
 
@@ -681,6 +684,9 @@ class StockSignalDao:
                     row.hline_support = obj.hline_support
                 if obj.hline_resistance is not None:
                     row.hline_resistance = obj.hline_resistance
+
+                if obj.strong_rise is not None:
+                    row.strong_rise = obj.strong_rise
 
         except Exception as e:
             print('Error:', e)

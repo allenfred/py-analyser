@@ -101,6 +101,8 @@ class WeeklySignal(Base):
     hline_support = Column(SmallInteger)
     hline_resistance = Column(SmallInteger)
 
+    strong_rise = Column(SmallInteger)
+
 
 def get_obj(signal):
     signal = signal.to_dict()
@@ -190,6 +192,7 @@ def get_obj(signal):
         down_break=signal.get('down_break', None),
         hline_support=signal.get('hline_support', None),
         hline_resistance=signal.get('hline_resistance', None),
+        strong_rise=signal.get('strong_rise', None),
     )
 
 

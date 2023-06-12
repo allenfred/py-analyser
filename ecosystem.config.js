@@ -61,26 +61,6 @@ module.exports = {
       autorestart: false,
     },
     {
-      name: 'cn_sh_analysis',
-      script: 'jobs/analysis/daily/cn_sh.py',
-      interpreter: 'python3',
-      instances: 1,
-      exec_mode: 'fork',
-      cron_restart: '0 17 * * *', // 每个交易日下午 17:00
-      watch: false,
-      autorestart: false,
-    },
-    {
-      name: 'cn_sz_analysis',
-      script: 'jobs/analysis/daily/cn_sz.py',
-      interpreter: 'python3',
-      instances: 1,
-      exec_mode: 'fork',
-      cron_restart: '0 17 * * *', // 每个交易日下午 17:00
-      watch: false,
-      autorestart: false,
-    },
-    {
       name: 'cn_limit_list',
       script: 'jobs/candles/daily/cn_limit_list.py',
       interpreter: 'python3',

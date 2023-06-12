@@ -5,6 +5,62 @@ import lib.signal.stock.candle as patterns
 
 # MA 信号
 
+def is_strong_rise(index, df):
+    """
+    强势上涨
+    1.ma120 连续13日上行
+    2.ma60 连续13日上行
+    2.ma20/ma30 连续13日上行
+    3.收盘价 连续13日位于ma60之上
+    4.收盘价 过去13日不能超过1根K线位于ma30之下
+    :param index:
+    :param df:
+    :return:
+    """
+    ma = df[['ma20', 'ma30', 'ma60', 'ma120']].to_numpy()
+    close = df['close'].to_numpy()
+    ma20 = ma[:, 0]
+    ma30 = ma[:, 1]
+    ma60 = ma[:, 2]
+    ma120 = ma[:, 3]
+
+    ma20_steady_13days = True
+    ma30_steady_13days = True
+    ma60_steady_13days = True
+    ma120_steady_13days = True
+
+    ma20_on_ma60_13days = True
+    ma60_on_ma120_13days = True
+    close_below_ma20_cnt = 0
+
+    for i in range(13):
+        # 如果当前 MA120 <= 前值
+        if ma120[index - i] < ma120[index - i - 1]:
+            ma120_steady_13days = False
+
+        # 如果当前 MA60 <= 前值
+        if ma60[index - i] < ma60[index - i - 1]:
+            ma60_steady_13days = False
+
+        # 如果当前 MA20 <= 前值
+        if ma20[index - i] < ma20[index - i - 1]:
+            ma20_steady_13days = False
+
+        # 如果当前 MA20 < MA60
+        if ma20[index - i] < ma60[index - i]:
+            ma20_on_ma60_13days = False
+
+        # 如果当前 MA60 < MA120
+        if ma60[index - i] < ma120[index - i]:
+            ma60_on_ma120_13days = False
+
+    for i in range(13):
+        # 如果收盘价低于 MA20
+        if close[index - i] < ma20[index - i]:
+            close_below_ma20_cnt += 1
+
+    return ma60_steady_13days and ma20_steady_13days and ma20_on_ma60_13days and close_below_ma20_cnt < 2
+
 
 def steady_on_ma60(index, df):
     ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
@@ -590,7 +646,7 @@ def is_up_wave(index, df):
         return False
 
     if index > 180 and ma120_rise_steady() and long_on_ma120():
-        # print(index, 'is_up_wave', df.iloc[index]['trade_date'], long_on_ma60(), long_on_ma120())
+        # print(index, 'is_up_wave', df.iloc[index]['trade_date'], long_on_ma120())
         return True
 
     return False
