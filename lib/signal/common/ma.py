@@ -59,7 +59,72 @@ def is_strong_rise(index, df):
         if close[index - i] < ma20[index - i]:
             close_below_ma20_cnt += 1
 
-    return ma60_steady_13days and ma20_steady_13days and ma20_on_ma60_13days and close_below_ma20_cnt < 2
+    return \
+        close_steady_on_ma60(index, df) and \
+        ma60_steady_13days and ma20_steady_13days and \
+        ma20_on_ma60_13days and close_below_ma20_cnt < 2
+
+
+def close_steady_on_ma60(index, df):
+    ma60 = df['ma60'].to_numpy()
+    close = df['close'].to_numpy()
+
+    ma60_steady_22days = True
+    close_steady_22days = True
+
+    ma60_steady_33days = True
+    close_steady_33days = True
+
+    ma60_steady_55days = True
+    close_steady_55days = True
+
+    for i in range(21):
+        # 如果当前 MA60 <= 前值
+        if ma60[index - i] < ma60[index - i - 1]:
+            ma60_steady_22days = False
+
+        # 如果收盘价低于 MA60
+        if close[index - i] < ma60[index - i]:
+            close_steady_22days = False
+
+    for i in range(33):
+        # 如果当前 MA60 <= 前值
+        if ma60[index - i] < ma60[index - i - 1]:
+            ma60_steady_33days = False
+
+        # 如果收盘价低于 MA60
+        if close[index - i] < ma60[index - i]:
+            close_steady_33days = False
+
+    for i in range(55):
+        # 如果当前 MA60 <= 前值
+        if ma60[index - i] < ma60[index - i - 1]:
+            ma60_steady_55days = False
+
+        # 如果收盘价低于 MA60
+        if close[index - i] < ma60[index - i]:
+            close_steady_55days = False
+
+    # 当MA60持续上行 收盘价必须稳定在MA60之上
+    if ma60_steady_55days:
+        if close_steady_55days:
+            return True
+        else:
+            return False
+
+    if ma60_steady_33days:
+        if close_steady_33days:
+            return True
+        else:
+            return False
+
+    if ma60_steady_22days:
+        if close_steady_22days:
+            return True
+        else:
+            return False
+
+    return True
 
 
 def steady_on_ma60(index, df):
