@@ -10,9 +10,9 @@ def is_strong_rise(index, df):
     强势上涨
     1.ma120 连续13日上行
     2.ma60 连续13日上行 且在ma120之上运行
-    2.ma20/ma30 连续13日上行
+    # 2.ma20/ma30 连续13日上行
     3.收盘价 连续13日位于ma60之上
-    4.收盘价 过去13日不能超过1根K线位于ma30之下
+    # 4.收盘价 过去13日不能超过1根K线位于ma30之下
     :param index:
     :param df:
     :return:
@@ -54,16 +54,17 @@ def is_strong_rise(index, df):
         if ma60[index - i] < ma120[index - i]:
             ma60_on_ma120_13days = False
 
-    for i in range(13):
-        # 如果收盘价低于 MA20
-        if close[index - i] < ma20[index - i]:
-            close_below_ma20_cnt += 1
+    # for i in range(13):
+    #     # 如果收盘价低于 MA20
+    #     if close[index - i] < ma20[index - i]:
+    #         close_below_ma20_cnt += 1
 
     return \
         close_steady_on_ma60(index, df) and \
         ma60_on_ma120_13days and \
-        ma60_steady_13days and ma20_steady_13days and \
-        ma20_on_ma60_13days and close_below_ma20_cnt < 2
+        ma60_steady_13days
+    # and ma20_steady_13days and \
+    # ma20_on_ma60_13days and close_below_ma20_cnt < 2
 
 
 def close_steady_on_ma60(index, df):
