@@ -1,7 +1,7 @@
 # -- coding: utf-8 -
 from config.common import START_INDEX
 import lib.signal.common.limit as limit
-import lib.signal.common.hline_strategy as Hlines
+import lib.signal.common.trend_strategy as Hlines
 
 
 def trend_analyze(org_df):

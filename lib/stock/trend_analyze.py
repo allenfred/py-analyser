@@ -1,7 +1,7 @@
 # -- coding: utf-8 -
 from config.common import START_INDEX
 import lib.signal.common.limit as limit
-import lib.signal.common.hline_strategy as Hlines
+import lib.signal.common.trend_strategy as trend
 
 
 def trend_analyze(org_df):
@@ -20,32 +20,32 @@ def trend_analyze(org_df):
     for index in range(len(candle)):
         if index > _start_at:
             # 涨停回调
-            if limit.limit_pullback(org_df, index):
-                limit_pullback[index] = 1
+            # if limit.limit_pullback(org_df, index):
+            #     limit_pullback[index] = 1
 
             # 上涨回调
-            if Hlines.up_pullback(org_df, index):
+            if trend.up_pullback(org_df, index):
                 up_pullback[index] = 1
 
             # 下跌反弹
-            if Hlines.down_pullback(org_df, index):
+            if trend.down_pullback(org_df, index):
                 down_pullback[index] = 1
 
             # 向上突破
-            if Hlines.up_break(org_df, index):
-                up_break[index] = 1
+            # if trend.up_break(org_df, index):
+            #     up_break[index] = 1
 
             # 向下突破
-            if Hlines.down_break(org_df, index):
-                down_break[index] = 1
+            # if trend.down_break(org_df, index):
+            #     down_break[index] = 1
 
             # 水平支撑
-            if Hlines.hline_support(org_df, index):
-                hline_support[index] = 1
+            # if trend.hline_support(org_df, index):
+            #     hline_support[index] = 1
 
             # 水平阻力
-            if Hlines.hline_resistance(org_df, index):
-                hline_resistance[index] = 1
+            # if trend.hline_resistance(org_df, index):
+            #     hline_resistance[index] = 1
 
     org_df['limit_pullback'] = limit_pullback
     org_df['up_pullback'] = up_pullback

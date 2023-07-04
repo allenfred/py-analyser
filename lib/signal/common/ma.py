@@ -5,33 +5,38 @@ import lib.signal.stock.candle as patterns
 
 # MA 信号
 
+def is_up_trend(index, df):
+    """
+    趋势上涨
+
+    :param index:
+    :param df:
+    :return:
+    """
+
+    return steady_on_ma120(index, df)
+
+
 def is_strong_rise(index, df):
     """
-    强势上涨
+    强势上涨:
+
     1.ma120 连续13日上行
-    2.ma60 连续13日上行 且在ma120之上运行
-    # 2.ma20/ma30 连续13日上行
+    2.ma60  连续13日上行
+    3.ma60  连续13日在ma120之上运行
     3.收盘价 连续13日位于ma60之上
-    # 4.收盘价 过去13日不能超过1根K线位于ma30之下
     :param index:
     :param df:
     :return:
     """
     ma = df[['ma20', 'ma30', 'ma60', 'ma120']].to_numpy()
     close = df['close'].to_numpy()
-    ma20 = ma[:, 0]
-    ma30 = ma[:, 1]
     ma60 = ma[:, 2]
     ma120 = ma[:, 3]
 
-    ma20_steady_13days = True
-    ma30_steady_13days = True
     ma60_steady_13days = True
-    ma120_steady_13days = True
 
-    ma20_on_ma60_13days = True
     ma60_on_ma120_13days = True
-    close_below_ma20_cnt = 0
 
     for i in range(13):
         # 如果当前 MA120 <= 前值
@@ -42,29 +47,15 @@ def is_strong_rise(index, df):
         if ma60[index - i] < ma60[index - i - 1]:
             ma60_steady_13days = False
 
-        # 如果当前 MA20 <= 前值
-        if ma20[index - i] < ma20[index - i - 1]:
-            ma20_steady_13days = False
-
-        # 如果当前 MA20 < MA60
-        if ma20[index - i] < ma60[index - i]:
-            ma20_on_ma60_13days = False
-
         # 如果当前 MA60 < MA120
         if ma60[index - i] < ma120[index - i]:
             ma60_on_ma120_13days = False
 
-    # for i in range(13):
-    #     # 如果收盘价低于 MA20
-    #     if close[index - i] < ma20[index - i]:
-    #         close_below_ma20_cnt += 1
-
     return \
         close_steady_on_ma60(index, df) and \
+        steady_on_ma120(index, df) and \
         ma60_on_ma120_13days and \
         ma60_steady_13days
-    # and ma20_steady_13days and \
-    # ma20_on_ma60_13days and close_below_ma20_cnt < 2
 
 
 def close_steady_on_ma60(index, df):
@@ -209,83 +200,46 @@ def steady_on_ma60(index, df):
 
 
 def steady_on_ma120(index, df):
+    """
+    MA120趋势上行
+
+    1.MA120连续上行
+    2.MA60穿越MA120之后, 需保持在MA120之上
+    3.收盘价保持在MA120之上
+    :param index:
+    :param df:
+    :return:
+    """
     ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
     close = df['close'].to_numpy()
-    ma20 = ma[:, 2]
     ma60 = ma[:, 5]
     ma120 = ma[:, 6]
 
-    ma120_steady_22days = True
-    ma60_on_ma120_22days = True
-    close_steady_22days = True
+    ma60_upon_ma120 = True
+    close_upon_ma120 = True
 
-    ma120_steady_33days = True
-    ma60_on_ma120_33days = True
-    close_steady_33days = True
+    # 先计算MA120何时开始反转
+    ma120_i = 0
+    while ma120_i < 90:
+        # 如果当前 MA120 < 前值
+        if ma120[index - ma120_i] < ma120[index - ma120_i - 1]:
+            break
+        ma120_i += 1
 
-    ma120_steady_55days = True
-    ma60_on_ma120_55days = True
-    close_steady_55days = True
+    # MA120连续上行至少13个交易日
+    if ma120_i < 13:
+        return False
 
-    for i in range(21):
-        # 如果当前 MA120 <= 前值
-        if ma120[index - i] < ma120[index - i - 1]:
-            ma120_steady_22days = False
-
+    for i in range(ma120_i - 7):
         # 如果当前 MA60 < MA120
         if ma60[index - i] < ma120[index - i]:
-            ma60_on_ma120_22days = False
+            ma60_upon_ma120 = False
 
         # 如果收盘价低于 MA120
         if close[index - i] < ma120[index - i]:
-            close_steady_22days = False
+            close_upon_ma120 = False
 
-    for i in range(33):
-        # 如果当前 MA60 <= 前值
-        if ma120[index - i] < ma120[index - i - 1]:
-            ma120_steady_33days = False
-
-        # 如果当前 MA60 < MA120
-        if ma60[index - i] < ma120[index - i]:
-            ma60_on_ma120_33days = False
-
-        # 如果收盘价低于 MA120
-        if close[index - i] < ma120[index - i]:
-            close_steady_33days = False
-
-    for i in range(55):
-        # 如果当前 MA120 <= 前值
-        if ma120[index - i] < ma120[index - i - 1]:
-            ma120_steady_55days = False
-
-        # 如果当前 MA20 < MA120
-        if ma60[index - i] < ma120[index - i]:
-            ma60_on_ma120_55days = False
-
-        # 如果收盘价低于 MA120
-        if close[index - i] < ma120[index - i]:
-            close_steady_55days = False
-
-    # 当 MA120 持续上行 收盘价和 MA60 必须稳定在 MA120 之上
-    if ma120_steady_55days:
-        if close_steady_55days and ma60_on_ma120_55days:
-            return True
-        else:
-            return False
-
-    if ma120_steady_33days:
-        if close_steady_33days and ma60_on_ma120_33days:
-            return True
-        else:
-            return False
-
-    if ma120_steady_22days:
-        if close_steady_22days and ma60_on_ma120_22days:
-            return True
-        else:
-            return False
-
-    return False
+    return ma60_upon_ma120 and close_upon_ma120
 
 
 def is_ma20_rise(index, ma):

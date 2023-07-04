@@ -1,5 +1,6 @@
 import numpy as np
 from .util import has_support_patterns, has_bottom_patterns, has_top_patterns, is_strong_bull, is_strong_bear
+from .ma import is_up_trend
 
 _start_at = 100
 
@@ -8,52 +9,16 @@ def up_pullback(df, i):
     """
     上涨回调
 
-    1.短中期处于上涨趋势 (MA20/MA30/MA60 上行)
-    2.回撤至关键水平位附近
-    3.关键水平位附近出现见底支撑K线形态
+    1.is_up_trend
+    2.回撤至MA60/MA120附近（0 < bias60/bias120 < 5）
+    3.出现看涨K线形态
 
     :param df:
     :param i:
     :return:
     """
-
-    _close = df.iloc[i]['close']
-    _low = df.iloc[i]['low']
-    hlines = df.iloc[i]['hlines']
-
-    def up_trend():
-        return df.iloc[i]['ma20_up'] == 1 or df.iloc[i]['ma30_up'] == 1 or df.iloc[i]['ma60_up'] == 1
-
-    def back_key_level():
-        valid_level = False
-        up_recently = True
-        bad_kline_cnt = 0
-
-        for j in range(len(hlines)):
-            if df.iloc[i]['close'] > hlines[j] > df.iloc[i]['low']:
-                key_hline = hlines[j]
-
-                if key_hline > 0:
-                    for k in range(30):
-                        # 如果收盘价低于水平位 视为 bad kline
-                        if df.iloc[i - k]['high'] > key_hline > df.iloc[i - k]['low'] \
-                                and df.iloc[i - k]['close'] < key_hline:
-                            bad_kline_cnt += 1
-
-                    for j in range(1, 8):
-                        if df.iloc[i - j]['close'] < key_hline:
-                            up_recently = False
-
-                    if bad_kline_cnt <= 3:
-                        valid_level = True
-
-        return valid_level and up_recently
-
-    if up_trend() and back_key_level() and \
-            (has_support_patterns(df, i) or has_bottom_patterns(df, i)
-             or has_support_patterns(df, i - 1) or has_bottom_patterns(df, i - 1)
-             or has_support_patterns(df, i - 2) or has_bottom_patterns(df, i - 2)):
-        # print(df.iloc[i]['trade_date'], 'up_pullback')
+    if df.iloc[i]['up_trend'] == 1 and \
+            (0 <= df.iloc[i]['bias60'] <= 5 or 0 <= df.iloc[i]['bias120'] <= 5):
         return 1
 
     return 0

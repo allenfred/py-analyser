@@ -129,8 +129,8 @@ def hammer(i, candles):
     up_shadow_len = math.fabs(_high - _close if _open < _close else _high - _open)
     up_one_third = _high - (k_len / 3)
 
-    # 最近21日最低价
-    lowest_low = min(low[i - 20: i + 1])
+    # 最近15日最低价
+    lowest_low = min(low[i - 15: i + 1])
 
     # 开盘价和收盘价都位于k线上方1/3处 (即：下影线长度占k线长度的2/3以上）
     # 上影线长度需小于柱体长度的1/5
@@ -175,8 +175,8 @@ def pour_hammer(i, candles):
     bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
     bottom_one_third = _low + (k_len / 3)
 
-    # 最近21日最低价
-    lowest_low = min(low[i - 20: i + 1])
+    # 最近15日最低价
+    lowest_low = min(low[i - 15: i + 1])
 
     # 开盘价和收盘价都位于k线下方1/3处 (即：上影线长度占k线长度的2/3以上）
     # 下影线长度需小于柱体长度的1/5
@@ -401,8 +401,8 @@ def attack_short(i, candles):
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
 
-    # 最近21日最低价
-    lowest_low = min(low[i - 20: i + 1])
+    # 最近15日最低价
+    lowest_low = min(low[i - 15: i + 1])
 
     # 下跌趋势中 前一根K线为中阴线或大阴线 当日K线为跳空低开的中阳线或大阳线
     # 当日K线跳空低开
@@ -442,8 +442,8 @@ def first_light(i, candles):
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
 
-    # 最近21日最低价
-    lowest_low = min(low[i - 20: i + 1])
+    # 最近15日最低价
+    lowest_low = min(low[i - 15: i + 1])
 
     # 下跌趋势中 前一根K线为中阴线或大阴线 当日K线为跳空低开的中阳线或大阳线
     # 当日K线跳空低开
@@ -484,8 +484,8 @@ def sunrise(i, candles):
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
 
-    # 最近21日最低价
-    lowest_low = min(low[i - 20: i + 1])
+    # 最近15日最低价
+    lowest_low = min(low[i - 15: i + 1])
 
     if pct_chg[i - 1] < -3 and pct_chg[i] > 3 and lowest_low == low[i - 1] and \
             _close > open[i - 1] > _open > close[i - 1]:
@@ -570,12 +570,11 @@ def swallow_up(i, candles):
     """
     description: 看涨吞没
     有效标准：
-    1.市场处于清晰的下降趋势
-    2.之前的趋势超长，或非常剧烈的震荡
-    3.第二根K线必须吞没第一根
-    4.第二根K线实体必须大于K线长度的 2/3
-    5.第二根实体必须与第一个实体颜色相反
-    6.第二根K线涨幅大于 3%
+    1.市场处于清晰的下降趋势(短期)
+    2.第二根K线必须吞没第一根
+    3.第二根K线实体必须大于K线长度的 2/3
+    4.第二根实体必须与第一个实体颜色相反
+    5.第二根K线涨幅大于 3%
 
     :param i: 当前tick
     :param candles:
@@ -595,8 +594,8 @@ def swallow_up(i, candles):
     pre_close = candles[:, 3][i - 1]
     pre_low = candles[:, 2][i - 1]
 
-    # 最近20日最低价
-    lowest_low = min(candles[:, 2][i - 20: i + 1])
+    # 最近15日最低价
+    lowest_low = min(candles[:, 2][i - 15: i + 1])
 
     # 今昨两日最低价为最近21日最低价 (最近20日呈下跌趋势)
     if (lowest_low == pre_low or lowest_low == _low) \
@@ -612,11 +611,10 @@ def swallow_down(i, candles):
     description: 看跌吞没
     有效标准：
     1.市场处于清晰的上涨趋势
-    2.之前的趋势超长，或非常剧烈的震荡
-    3.第二根K线必须吞没第一根
-    4.第二根K线实体必须大于K线长度的 2/3
-    5.第二根实体必须与第一个实体颜色相反
-    6.第二根K线跌幅大于 3%
+    2.第二根K线必须吞没第一根
+    3.第二根K线实体必须大于K线长度的 2/3
+    4.第二根实体必须与第一个实体颜色相反
+    5.第二根K线跌幅大于 3%
 
     :param i: 当前tick
     :param candles:
@@ -636,10 +634,10 @@ def swallow_down(i, candles):
     pre_close = candles[:, 3][i - 1]
     pre_high = candles[:, 1][i - 1]
 
-    # 最近20日最高价
-    highest_high = max(candles[:, 1][i - 20: i + 1])
+    # 最近15日最高价
+    highest_high = max(candles[:, 1][i - 15: i + 1])
 
-    # 今昨两日最高价为最近21日最高价 (最近21日呈上涨趋势)
+    # 今昨两日最高价为最近15日最高价 (最近15日呈上涨趋势)
     if (highest_high == pre_high or highest_high == _high) \
             and _open > pre_close > pre_open > _close \
             and bar_len > k_len / 2 and candles[:, 4][i] <= -3:
@@ -721,7 +719,7 @@ def up_screw(i, candles):
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
 
-    up_shadow_len = math.fabs(_open - _high if _open < _close else _close - _high)
+    up_shadow_len = math.fabs(_close - _high if _open < _close else _open - _high)
     bottom_shadow_len = math.fabs(_open - _low if _open < _close else _close - _low)
 
     if max(high[i - 9: i - 1]) < _high and \

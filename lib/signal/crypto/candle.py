@@ -730,7 +730,6 @@ def down_rise(i, candles):
     3.第二根K线必须吞没第一根
     4.第二根K线实体必须大于K线长度的 2/3
     5.第二根实体必须与第一个实体颜色相反
-    6.第二根K线涨幅大于 3%
 
     :param i: 当前tick
     :param candles:
@@ -750,7 +749,7 @@ def down_rise(i, candles):
     pre_close = candles[:, 3][i - 1]
 
     if _open < pre_close < _close and _open < pre_open < _close and \
-            bar_len > k_len / 2 and candles[:, 4][i] >= 3:
+            bar_len >= k_len / 2 and candles[:, 4][i] >= 3:
         return 1
 
     return 0
@@ -765,7 +764,6 @@ def swallow_up(i, candles):
     3.第二根K线必须吞没第一根
     4.第二根K线实体必须大于K线长度的 2/3
     5.第二根实体必须与第一个实体颜色相反
-    6.第二根K线涨幅大于 3%
 
     :param i: 当前tick
     :param candles:
@@ -791,7 +789,7 @@ def swallow_up(i, candles):
     # 今昨两日最低价为最近13日最低价 (最近13日呈下跌趋势)
     if (lowest_low == pre_low or lowest_low == _low) \
             and _open < pre_close < pre_open < _close and \
-            bar_len > k_len / 2:
+            bar_len >= k_len / 2:
         return 1
 
     return 0
