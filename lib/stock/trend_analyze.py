@@ -15,7 +15,7 @@ def trend_analyze(org_df):
     hline_support = [0 for _ in range(len(org_df))]
     hline_resistance = [0 for _ in range(len(org_df))]
 
-    _start_at = len(org_df) - 10
+    _start_at = START_INDEX
 
     for index in range(len(candle)):
         if index > _start_at:
