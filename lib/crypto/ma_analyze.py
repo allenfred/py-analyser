@@ -2,7 +2,7 @@
 
 import lib.signal.crypto.ma60 as ma60
 import lib.signal.crypto.ma120 as ma120
-from lib.signal.common.ma import is_up_hill, is_up_wave, is_strong_rise
+from lib.signal.common.ma import is_up_hill, is_up_wave, is_strong_rise, is_up_trend
 
 
 def ma_analyze(org_df):
@@ -30,6 +30,7 @@ def ma_analyze(org_df):
     ma120_seventh = [0 for _ in range(len(org_df))]
     ma120_eighth = [0 for _ in range(len(org_df))]
 
+    up_trend = [0 for _ in range(len(org_df))]
     up_hill = [0 for _ in range(len(org_df))]
     up_wave = [0 for _ in range(len(org_df))]
     strong_rise = [0 for _ in range(len(org_df))]
@@ -55,6 +56,10 @@ def ma_analyze(org_df):
             ma120_sixth[index] = ma120.sixth(index, candle, bias, ma, org_df)
             ma120_seventh[index] = ma120.seventh(index, candle, bias, ma, org_df)
             ma120_eighth[index] = ma120.eighth(index, candle, bias, ma, org_df)
+
+            # 趋势上涨
+            if is_up_trend(index, org_df):
+                up_trend[index] = 1
 
             # 上山爬坡
             # if is_up_hill(index, org_df):
@@ -86,6 +91,7 @@ def ma_analyze(org_df):
     org_df['ma120_seventh'] = ma120_seventh
     org_df['ma120_eighth'] = ma120_eighth
 
+    org_df['up_trend'] = up_trend
     # org_df['up_hill'] = up_hill
     org_df['up_wave'] = up_wave
     org_df['strong_rise'] = strong_rise
