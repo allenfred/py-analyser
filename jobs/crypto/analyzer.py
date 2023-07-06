@@ -67,7 +67,8 @@ def run(inst, gran):
                 'ma120_first', 'ma120_second', 'ma120_third', 'ma120_fourth',
                 'ma120_fifth', 'ma120_sixth', 'ma120_seventh', 'ma120_eighth',
                 'ma20_up', 'ema20_up', 'ma30_up', 'ema30_up', 'ma60_up', 'ema60_up', 'ma120_up', 'ema120_up',
-                'ma_gold_cross1', 'ma_gold_cross2', 'ma_gold_cross3', 'ma_gold_cross4']
+                'ma_gold_cross1', 'ma_gold_cross2', 'ma_gold_cross3', 'ma_gold_cross4',
+                'up_trend', 'down_trend', 'strong_rise', 'strong_decline']
 
         _data = {}
         for i, v in enumerate(signal.keys()):
@@ -82,6 +83,7 @@ def run(inst, gran):
             else:
                 _data[v] = signal.get(v)
 
+        print(_data['down_trend'])
         UsdtSwapSignal.update_one({"timestamp": _data["timestamp"], "instrument_id": inst_id,
                                    "granularity": gran, "exchange": _data["exchange"]}, {"$set": _data}, upsert=True)
         print(exchange, inst_id, gran, ', Analyze用时 ', used_time_fmt(_analyze_start, time.time()))

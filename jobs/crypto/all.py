@@ -26,7 +26,7 @@ if __name__ == "__main__":
         time.sleep(0.2)
 
         _start = time.time()
-        if item['quote_currency'] == 'USDT' and item['volume_24h'] > 10000000:
+        if not item['exchange'] == 'bybit' and item['quote_currency'] == 'USDT' and item['volume_24h'] > 10000000:
             scan_cnt += 1
             analyzer.run(item, 900)
             if cur_min == 0:

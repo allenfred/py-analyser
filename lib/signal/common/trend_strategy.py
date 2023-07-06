@@ -28,9 +28,9 @@ def down_pullback(df, i):
     """
     下跌反弹
 
-    1.短中期处于下跌趋势 (MA20/MA30/MA60 下行)
-    2.反弹至关键水平位附近
-    3.关键水平位附近出现空头阻力K线形态
+    1.is_down_trend (MA60/MA120 下行)
+    2.反弹至MA60/MA120附近（-5 < bias60/bias120 < 0）
+    3.出现空头阻力K线形态
 
     :param df:
     :param i:
@@ -39,41 +39,13 @@ def down_pullback(df, i):
 
     _close = df.iloc[i]['close']
     _low = df.iloc[i]['low']
-    hlines = df.iloc[i]['hlines']
 
-    def down_trend():
-        return df.iloc[i]['ma20_down'] == 1 or df.iloc[i]['ma30_down'] == 1 or df.iloc[i]['ma60_down'] == 1
-
-    def back_key_level():
-        valid_level = False
-        down_recently = True
-        bad_kline_cnt = 0
-
-        for j in range(len(hlines)):
-            if df.iloc[i]['high'] > hlines[j] > df.iloc[i]['close']:
-                key_hline = hlines[j]
-
-                if key_hline > 0:
-                    for k in range(30):
-                        # 如果收盘价高于水平位 视为 bad kline
-                        if df.iloc[i - k]['high'] > key_hline > df.iloc[i - k]['low'] \
-                                and df.iloc[i - k]['close'] > key_hline:
-                            bad_kline_cnt += 1
-
-                    for j in range(1, 8):
-                        if df.iloc[i - j]['close'] > key_hline:
-                            down_recently = False
-
-                    if bad_kline_cnt <= 3:
-                        valid_level = True
-
-        return valid_level and down_recently
-
-    if down_trend() and back_key_level() and \
-            (has_support_patterns(df, i) or has_bottom_patterns(df, i)
-             or has_support_patterns(df, i - 1) or has_bottom_patterns(df, i - 1)
-             or has_support_patterns(df, i - 2) or has_bottom_patterns(df, i - 2)):
-        # print(df.iloc[i]['trade_date'], 'up_pullback')
+    # if df.iloc[i]['up_trend'] == 1 and \
+    #         (has_support_patterns(df, i) or has_bottom_patterns(df, i)
+    #          or has_support_patterns(df, i - 1) or has_bottom_patterns(df, i - 1)
+    #          or has_support_patterns(df, i - 2) or has_bottom_patterns(df, i - 2)):
+    if df.iloc[i]['up_trend'] == 1 and \
+            (-5 <= df.iloc[i]['bias60'] <= 0 or -5 < df.iloc[i]['bias120'] <= 0):
         return 1
 
     return 0

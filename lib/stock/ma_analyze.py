@@ -2,7 +2,7 @@
 from config.common import START_INDEX
 from lib.signal.stock.ma60 import is_ma60_first, is_ma60_second, is_ma60_third, is_ma60_fourth, \
     is_ma60_fifth, is_ma60_sixth, is_ma60_seventh, is_ma60_eighth
-from lib.signal.common.ma import is_up_hill, is_up_wave, is_strong_rise, is_up_trend
+from lib.signal.common.ma import is_up_hill, is_up_wave, is_strong_rise, is_up_trend, is_down_trend
 from lib.signal.common.macd import is_macd_gold_cross, is_macd_zero_gold_cross
 import lib.signal.common.limit as limit
 
@@ -24,6 +24,7 @@ def ma_analyze(org_df):
     ma60_eighth = [0 for _ in range(len(org_df))]
 
     up_trend = [0 for _ in range(len(org_df))]
+    down_trend = [0 for _ in range(len(org_df))]
     up_hill = [0 for _ in range(len(org_df))]
     up_wave = [0 for _ in range(len(org_df))]
     limit_up_gene = [0 for _ in range(len(org_df))]
@@ -72,6 +73,10 @@ def ma_analyze(org_df):
             if is_up_trend(index, org_df):
                 up_trend[index] = 1
 
+            # 趋势上涨
+            if is_down_trend(index, org_df):
+                down_trend[index] = 1
+
             # 上山爬坡
             if is_up_hill(index, org_df):
                 up_hill[index] = 1
@@ -106,6 +111,7 @@ def ma_analyze(org_df):
     org_df['ma60_eighth'] = ma60_eighth
 
     org_df['up_trend'] = up_trend
+    org_df['down_trend'] = down_trend
     org_df['up_hill'] = up_hill
     org_df['up_wave'] = up_wave
     org_df['limit_up_gene'] = limit_up_gene
