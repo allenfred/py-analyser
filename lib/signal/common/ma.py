@@ -5,107 +5,9 @@ import lib.signal.stock.candle as patterns
 
 # MA 信号
 
-def is_up_trend(index, df):
-    """
-    趋势上涨
 
-    :param index:
-    :param df:
-    :return:
-    """
-
-    return steady_on_ma120(index, df)
-
-
-def is_down_trend(index, df):
-    """
-    趋势下跌
-
-    :param index:
-    :param df:
-    :return:
-    """
-
-    return steady_below_ma120(index, df)
-
-
-def is_strong_decline(index, df):
-    """
-    强势下跌:
-
-    1.ma120 连续13日下行
-    2.ma60  连续13日下行
-    3.ma60  连续13日在ma120之下运行
-    3.收盘价 连续13日位于ma60之下
-    :param index:
-    :param df:
-    :return:
-    """
-    ma = df[['ma20', 'ma30', 'ma60', 'ma120']].to_numpy()
-    close = df['close'].to_numpy()
-    ma60 = ma[:, 2]
-    ma120 = ma[:, 3]
-
-    close_below_ma60_13days = True
-    ma60_decline_13days = True
-    ma60_below_ma120_13days = True
-
-    for i in range(13):
-        # 如果当前 MA60 > 前值
-        if ma60[index - i] > ma60[index - i - 1]:
-            ma60_decline_13days = False
-
-        # 如果当前 close > 前值
-        if close[index - i] > ma60[index - i]:
-            close_below_ma60_13days = False
-
-        # 如果当前 MA60 > MA120
-        if ma60[index - i] > ma120[index - i]:
-            ma60_below_ma120_13days = False
-
-    return \
-        ma60_decline_13days and close_below_ma60_13days and ma60_below_ma120_13days and \
-        steady_on_ma60(index, df) and steady_on_ma120(index, df)
-
-
-def is_strong_rise(index, df):
-    """
-    强势上涨:
-    120日 ma60/ma120 呈微笑曲线
-
-    1.ma120 连续13日上行
-    2.ma60  连续13日上行
-    3.ma60  连续13日在ma120之上运行
-    4.收盘价 连续13日位于ma60之上
-    :param index:
-    :param df:
-    :return:
-    """
-    ma = df[['ma20', 'ma30', 'ma60', 'ma120']].to_numpy()
-    close = df['close'].to_numpy()
-    ma60 = ma[:, 2]
-    ma120 = ma[:, 3]
-
-    close_on_ma60_13days = True
-    ma60_steady_13days = True
-    ma60_on_ma120_13days = True
-
-    for i in range(13):
-        # 如果当前 MA60 <= 前值
-        if ma60[index - i] < ma60[index - i - 1]:
-            ma60_steady_13days = False
-
-        # 如果当前 close <= 前值
-        if close[index - i] < ma60[index - i]:
-            close_on_ma60_13days = False
-
-        # 如果当前 MA60 < MA120
-        if ma60[index - i] < ma120[index - i]:
-            ma60_on_ma120_13days = False
-
-    return \
-        ma60_steady_13days and close_on_ma60_13days and ma60_on_ma120_13days and \
-        steady_below_ma120(index, df)
+def steady_below_ma60(index, df):
+    return True
 
 
 def steady_on_ma60(index, df):
@@ -1379,11 +1281,6 @@ def is_ma60_support(index, df):
     def low_bias(sma, ind):
         return round(round((low[ind] - sma[ind]) / sma[ind], 5) * 100, 2)
 
-    # if steady_on_ma60(index, df) and has_support_patterns(index, df) and \
-    #         (low[index] <= ma60[index] or low[index - 1] <= ma60[index - 1]):
-    #     print(index, df.iloc[index]['trade_date'], 'ma60 support')
-    #     return True
-
     if steady_on_ma60(index, df) and (has_support_patterns(index, df) or has_bottom_patterns(index, df)) \
             and (low_bias(ma60, index - 1) < 1 or low_bias(ma60, index) < 1):
         # print(index, df.iloc[index]['trade_date'], 'ma60 support')
@@ -1414,16 +1311,8 @@ def is_ma120_support(index, df):
     def low_bias(sma, ind):
         return round(round((low[ind] - sma[ind]) / sma[ind], 5) * 100, 2)
 
-    # if steady_on_ma120(index, df) and has_support_patterns(index, df) and close[index] > ma120[index] and \
-    #         has_support_patterns(index - 1, df) and \
-    #         (low[index] <= ma120[index] or low[index - 1] <= ma120[index - 1]):
-    #     return True
-    # else:
-    #     return False
-
     if steady_on_ma120(index, df) and (has_support_patterns(index, df) or has_bottom_patterns(index, df)) and \
             (low_bias(ma120, index - 1) < 1 or low_bias(ma120, index) < 1):
-        # print(index, df.iloc[index]['trade_date'], 'ma120 support')
         return True
     else:
         return False

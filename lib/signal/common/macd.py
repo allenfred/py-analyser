@@ -9,8 +9,8 @@ def is_macd_zero_gold_cross(index, df):
     macd = df['macd'].to_numpy()
     diff = df['diff'].to_numpy()
     dea = df['dea'].to_numpy()
-    
-    return 1
+
+    return 0
 
 
 def is_macd_gold_cross(index, df):
@@ -22,4 +22,4 @@ def is_macd_gold_cross(index, df):
     :return:
     """
 
-    return 1
+    return 0

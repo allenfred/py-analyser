@@ -24,6 +24,7 @@ if __name__ == "__main__":
     ts_code = '002281.SZ'
     ts_code = '301183.SZ'
     ts_code = '300315.SZ'
+    ts_code = '300148.SZ'
 
     scan_daily_candles(ts_code, 'CN', '2023-07-05')
     print('扫描成功')

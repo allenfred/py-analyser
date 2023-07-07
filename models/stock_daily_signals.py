@@ -182,6 +182,13 @@ class StockDailySignal(Base):
     hline_resistance = Column(SmallInteger)
 
     strong_rise = Column(SmallInteger)
+    strong_decline = Column(SmallInteger)
+
+    up_trend = Column(SmallInteger)
+    down_trend = Column(SmallInteger)
+
+    macd_zero_gold_cross = Column(SmallInteger)
+    macd_gold_cross = Column(SmallInteger)
 
 
 def get_obj(signal):
@@ -361,6 +368,13 @@ def get_obj(signal):
         hline_resistance=signal.get('hline_resistance', None),
 
         strong_rise=signal.get('strong_rise', None),
+        strong_decline=signal.get('strong_decline', None),
+
+        up_trend=signal.get('up_trend', None),
+        down_trend=signal.get('down_trend', None),
+
+        macd_gold_cross=signal.get('macd_gold_cross', None),
+        macd_zero_gold_cross=signal.get('macd_zero_gold_cross', None),
     )
 
 
@@ -765,6 +779,18 @@ class StockDailySignalDao:
 
                 if obj.strong_rise is not None:
                     row.strong_rise = obj.strong_rise
+                if obj.strong_decline is not None:
+                    row.strong_decline = obj.strong_decline
+
+                if obj.up_trend is not None:
+                    row.up_trend = obj.up_trend
+                if obj.down_trend is not None:
+                    row.down_trend = obj.down_trend
+
+                if obj.macd_gold_cross is not None:
+                    row.macd_gold_cross = obj.macd_gold_cross
+                if obj.macd_zero_gold_cross is not None:
+                    row.macd_zero_gold_cross = obj.macd_zero_gold_cross
 
         except Exception as e:
             print('Error:', e)

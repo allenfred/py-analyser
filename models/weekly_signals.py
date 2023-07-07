@@ -102,6 +102,13 @@ class WeeklySignal(Base):
     hline_resistance = Column(SmallInteger)
 
     strong_rise = Column(SmallInteger)
+    strong_decline = Column(SmallInteger)
+
+    up_trend = Column(SmallInteger)
+    down_trend = Column(SmallInteger)
+
+    macd_zero_gold_cross = Column(SmallInteger)
+    macd_gold_cross = Column(SmallInteger)
 
 
 def get_obj(signal):
@@ -192,7 +199,15 @@ def get_obj(signal):
         down_break=signal.get('down_break', None),
         hline_support=signal.get('hline_support', None),
         hline_resistance=signal.get('hline_resistance', None),
+
         strong_rise=signal.get('strong_rise', None),
+        strong_decline=signal.get('strong_decline', None),
+
+        up_trend=signal.get('up_trend', None),
+        down_trend=signal.get('down_trend', None),
+
+        macd_gold_cross=signal.get('macd_gold_cross', None),
+        macd_zero_gold_cross=signal.get('macd_zero_gold_cross', None),
     )
 
 

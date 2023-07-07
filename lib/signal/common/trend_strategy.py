@@ -1,15 +1,122 @@
 import numpy as np
 from .util import has_support_patterns, has_bottom_patterns, has_top_patterns, is_strong_bull, is_strong_bear
-from .ma import is_up_trend
 
 _start_at = 100
+
+
+def is_up_trend(index, df):
+    """
+    趋势上涨
+
+    :param index:
+    :param df:
+    :return:
+    """
+
+    return df.iloc[index]['steady_on_ma120'] == 1
+
+
+def is_down_trend(index, df):
+    """
+    趋势下跌
+
+    :param index:
+    :param df:
+    :return:
+    """
+
+    return df.iloc[index]['steady_below_ma120'] == 1
+
+
+def is_strong_decline(index, df):
+    """
+    强势下跌:
+
+    1.ma120 连续13日下行
+    2.ma60  连续13日下行
+    3.ma60  连续13日在ma120之下运行
+    3.收盘价 连续13日位于ma60之下
+    :param index:
+    :param df:
+    :return:
+    """
+    ma = df[['ma20', 'ma30', 'ma60', 'ma120']].to_numpy()
+    close = df['close'].to_numpy()
+    ma60 = ma[:, 2]
+    ma120 = ma[:, 3]
+
+    close_below_ma60_13days = True
+    ma60_decline_13days = True
+    ma60_below_ma120_13days = True
+
+    for i in range(13):
+        # 如果当前 MA60 > 前值
+        if ma60[index - i] > ma60[index - i - 1]:
+            ma60_decline_13days = False
+
+        # 如果当前 close > 前值
+        if close[index - i] > ma60[index - i]:
+            close_below_ma60_13days = False
+
+        # 如果当前 MA60 > MA120
+        if ma60[index - i] > ma120[index - i]:
+            ma60_below_ma120_13days = False
+
+    return \
+        ma60_decline_13days and close_below_ma60_13days and ma60_below_ma120_13days and \
+        df.iloc[index]['steady_below_ma60'] == 1 and df.iloc[index]['steady_below_ma120'] == 1
+
+
+def is_strong_rise(index, df):
+    """
+    强势上涨:
+    120日 ma60/ma120 呈微笑曲线
+
+    1.ma120 连续13日上行
+    2.ma60  连续13日上行
+    3.ma60  连续13日在ma120之上运行
+    4.收盘价 连续13日位于ma60之上
+    :param index:
+    :param df:
+    :return:
+    """
+    ma = df[['ma20', 'ma30', 'ma60', 'ma120']].to_numpy()
+    close = df['close'].to_numpy()
+    ma60 = ma[:, 2]
+    ma120 = ma[:, 3]
+
+    close_on_ma60_13days = True
+    ma60_steady_13days = True
+    ma60_on_ma120_13days = True
+
+    for i in range(13):
+        # 如果当前 MA60 <= 前值
+        if ma60[index - i] < ma60[index - i - 1]:
+            ma60_steady_13days = False
+
+        # 如果当前 close <= 前值
+        if close[index - i] < ma60[index - i]:
+            close_on_ma60_13days = False
+
+        # 如果当前 MA60 < MA120
+        if ma60[index - i] < ma120[index - i]:
+            ma60_on_ma120_13days = False
+
+    # if \
+    #         ma60_steady_13days and close_on_ma60_13days and ma60_on_ma120_13days and \
+    #                 steady_on_ma120(index, df):
+    #     print(df.iloc[index]['trade_date'], 'is_strong_rise')
+
+    return \
+        ma60_steady_13days and close_on_ma60_13days and ma60_on_ma120_13days and \
+        df.iloc[index]['steady_on_ma120'] == 1
 
 
 def up_pullback(df, i):
     """
     上涨回调
 
-    1.is_up_trend
+    1.is_up_trend  (steady_on_ma120)
     2.回撤至MA60/MA120附近（0 < bias60/bias120 < 5）
     3.出现看涨K线形态
 
