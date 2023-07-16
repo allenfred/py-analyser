@@ -378,8 +378,9 @@ def attack_short(i, candles):
     description: 好友反攻 (看涨)
     有效标准：
     1.市场处于清晰的下跌趋势
-    2.当前K线收出好友反攻形态
-    3.当前K线最低价为近期最低价
+    2.前一根K线为中阴线或大阴线
+    3.当日K线为跳空低开的中阳线或大阳线
+    4.当日K线收盘价与前日K线收盘价相近
 
     param {*} i 当前时间tick
     param {*} candles
@@ -401,12 +402,9 @@ def attack_short(i, candles):
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
 
-    # 最近15日最低价
-    lowest_low = min(low[i - 15: i + 1])
+    # 最近13日最低价
+    lowest_low = min(low[i - 13: i + 1])
 
-    # 下跌趋势中 前一根K线为中阴线或大阴线 当日K线为跳空低开的中阳线或大阳线
-    # 当日K线跳空低开
-    # 当日K线收盘价与前日K线收盘价相近
     if pct_chg[i - 1] < -3 and pct_chg[i] > 3 and lowest_low == _low and \
             low[i - 1] > _open and (bar_len / 5 + close[i - 1]) > _close > close[i - 1]:
         return 1
@@ -418,9 +416,10 @@ def first_light(i, candles):
     """
     description: 曙光初现 (看涨)
     有效标准：
-    1.市场处于清晰的下跌趋势
-    2.当前K线收出曙光初现形态
-    3.当前K线最低价为近期最低价
+    1.市场处于清晰的短期下跌趋势
+    2.前一根K线为中阴线或大阴线
+    3.当日K线为跳空低开的中阳线或大阳线
+    4.当日K线收盘价插入前日K线实体的1/2 但没有超过前日K线的开盘价
 
     param {*} i 当前时间tick
     param {*} candles
@@ -442,12 +441,9 @@ def first_light(i, candles):
     k_len = _high - _low
     bar_len = math.fabs(_open - _close)
 
-    # 最近15日最低价
-    lowest_low = min(low[i - 15: i + 1])
+    # 最近13日最低价
+    lowest_low = min(low[i - 13: i + 1])
 
-    # 下跌趋势中 前一根K线为中阴线或大阴线 当日K线为跳空低开的中阳线或大阳线
-    # 当日K线跳空低开
-    # 当日K线收盘价插入前日K线实体的1/2 但没有超过前日K线的开盘价
     if pct_chg[i - 1] < -3 and pct_chg[i] > 3 and lowest_low == _low and \
             low[i - 1] > _open and (bar_len / 2 + close[i - 1]) < _close < open[i - 1]:
         return 1
@@ -462,7 +458,6 @@ def sunrise(i, candles):
     1.市场处于清晰的下降趋势
     2.当前K线开盘价高于前日收盘价
     3.当前K线收盘价高于前日开盘价
-    4.K线波动幅度大于3%
 
     param {*} i 当前时间tick
     param {*} candles
@@ -487,7 +482,7 @@ def sunrise(i, candles):
     # 最近15日最低价
     lowest_low = min(low[i - 15: i + 1])
 
-    if pct_chg[i - 1] < -3 and pct_chg[i] > 3 and lowest_low == low[i - 1] and \
+    if pct_chg[i - 1] < -1 and pct_chg[i] > 1 and lowest_low == low[i - 1] and \
             _close > open[i - 1] > _open > close[i - 1]:
         return 1
 
@@ -498,7 +493,7 @@ def flat_base(i, candles):
     """
     description: 平底 (看涨)
     有效标准：
-    1.市场处于清晰的下降趋势
+    1.市场处于清晰的短期下降趋势
     2.当前K线收出平底形态
     3.当前K线最低价为近期最低价
 
@@ -517,16 +512,19 @@ def flat_base(i, candles):
 
     pre_low = candles[:, 2][i - 1]
     before_pre_low = candles[:, 2][i - 2]
+    avg_low = round((_low + pre_low + before_pre_low) / 3, 2)
+
     # 比较最低价的偏差
-    deviation = _low * 5 / 1000
+    deviation = avg_low * 3 / 1000
 
     # 最近21日最低价
-    lowest_low = min(low[i - 20: i + 1])
+    lowest_low = min(low[i - 13: i + 1])
 
-    # 下跌趋势中 最近两根K线最低价位于同一水平 / 最近三根K线最低价位于同一水平
+    # 下跌趋势中  最近三根K线最低价位于同一水平
     if (lowest_low == low[i] or lowest_low == pre_low or lowest_low == before_pre_low) \
-            and math.fabs(low[i] - pre_low) < deviation \
-            and math.fabs(low[i] - before_pre_low) < deviation:
+            and math.fabs(avg_low - _low) <= deviation \
+            and math.fabs(avg_low - pre_low) <= deviation \
+            and math.fabs(avg_low - before_pre_low) <= deviation:
         return 1
 
     return 0
@@ -560,7 +558,7 @@ def down_rise(i, candles):
     pre_close = candles[:, 3][i - 1]
 
     if _open < pre_close < _close and _open < pre_open < _close and \
-            bar_len > k_len / 2 and candles[:, 4][i] >= 3:
+            bar_len > k_len / 2 and candles[:, 4][i] > 1:
         return 1
 
     return 0

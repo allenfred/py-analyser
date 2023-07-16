@@ -151,14 +151,14 @@ def down_pullback(df, i):
     #         (has_support_patterns(df, i) or has_bottom_patterns(df, i)
     #          or has_support_patterns(df, i - 1) or has_bottom_patterns(df, i - 1)
     #          or has_support_patterns(df, i - 2) or has_bottom_patterns(df, i - 2)):
-    if df.iloc[i]['up_trend'] == 1 and \
+    if df.iloc[i]['down_trend'] == 1 and \
             (-5 <= df.iloc[i]['bias60'] <= 0 or -5 < df.iloc[i]['bias120'] <= 0):
         return 1
 
     return 0
 
 
-def up_break(df, i):
+def up_break(df, i, isStock=True):
     """
     向上突破/水平突破
 
@@ -191,8 +191,13 @@ def up_break(df, i):
 
         return hline > 0 and valid_level
 
-    if stand_on_hline() and is_strong_bull(df, i) and \
-            (df.iloc[i]['ma20_up'] == 1 or df.iloc[i]['ma30_up'] == 1):
+    # 收盘价站上所有均线
+    def stand_on_ma():
+        return df.iloc[i]['ma5'] < _close and df.iloc[i]['ma10'] < _close and \
+               df.iloc[i]['ma20'] < _close and df.iloc[i]['ma60'] < _close and \
+               df.iloc[i]['ma120'] < _close
+
+    if stand_on_hline() and is_strong_bull(df, i) and stand_on_ma():
         # print(df.iloc[i]['trade_date'], 'up_break')
         return 1
 
