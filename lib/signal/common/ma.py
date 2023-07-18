@@ -126,7 +126,7 @@ def steady_below_ma120(index, df):
             ma60_below_ma120 = False
 
         # 如果收盘价低于 MA120
-        if close[index - i] < ma120[index - i]:
+        if close[index - i] > ma120[index - i]:
             close_below_ma120 = False
 
     return ma60_below_ma120 and close_below_ma120
