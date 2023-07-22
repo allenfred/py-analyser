@@ -83,7 +83,6 @@ def run(inst, gran):
             else:
                 _data[v] = signal.get(v)
 
-        print(_data['down_trend'])
         UsdtSwapSignal.update_one({"timestamp": _data["timestamp"], "instrument_id": inst_id,
                                    "granularity": gran, "exchange": _data["exchange"]}, {"$set": _data}, upsert=True)
         print(exchange, inst_id, gran, ', Analyze用时 ', used_time_fmt(_analyze_start, time.time()))
