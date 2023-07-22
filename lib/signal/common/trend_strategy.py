@@ -104,7 +104,7 @@ def is_strong_rise(index, df):
 
     # if \
     #         ma60_steady_13days and close_on_ma60_13days and ma60_on_ma120_13days and \
-    #                 steady_on_ma120(index, df):
+    #                 df.iloc[index]['steady_on_ma120'] == 1:
     #     print(df.iloc[index]['trade_date'], 'is_strong_rise')
 
     return \

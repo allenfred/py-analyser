@@ -36,7 +36,7 @@ def trend_analyze(org_df):
 
             # 强势上涨
             if trend.is_strong_decline(index, org_df):
-                strong_rise[index] = 1
+                strong_decline[index] = 1
 
             # 上涨趋势
             if trend.is_up_trend(index, org_df):
