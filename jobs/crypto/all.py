@@ -26,12 +26,12 @@ if __name__ == "__main__":
         time.sleep(0.2)
 
         _start = time.time()
-        if not item['exchange'] == 'bybit' and item['quote_currency'] == 'USDT' and item['volume_24h'] > 1000000:
+        if not item['exchange'] == 'bybit' and item['quote_currency'] == 'USDT' and item['volume_24h'] > 2000000:
             scan_cnt += 1
             analyzer.run(item, 900)
             if cur_min == 0:
                 analyzer.run(item, 3600)
-            if cur_hour % 4 == 0 and cur_min == 0 and item['volume_24h'] > 1000000:
+            if cur_hour % 4 == 0 and cur_min == 0 and item['volume_24h'] > 2000000:
                 analyzer.run(item, 14400)
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
