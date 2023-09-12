@@ -31,7 +31,7 @@ stockDao = StockDao()
 def daily_limit_list():
     _start = time.time()
     _today = datetime.now().strftime("%Y%m%d")
-    df = pro.limit_list(trade_date=_today)
+    df = pro.limit_list_d(trade_date=_today)
 
     print(today, '当日涨跌停统计数据', len(df))
 
