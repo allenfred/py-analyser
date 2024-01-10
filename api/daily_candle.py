@@ -54,7 +54,6 @@ def get_hk_candles(options):
     ])
 
     df['chg'] = df['change']
-
     return df
 
 

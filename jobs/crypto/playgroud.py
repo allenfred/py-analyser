@@ -10,7 +10,7 @@ sys.path.append(path)
 from lib.crypto.analyze import analyze
 import time
 from datetime import date, datetime, timedelta, timezone
-from lib.util import set_quota, used_time_fmt
+from lib.util import set_quota, used_time_fmt, is_smile_curve
 from df import get_klines_df
 from database import UsdtSwapSignal
 
@@ -45,22 +45,13 @@ if __name__ == "__main__":
     # inst_id = 'DENTUSDT'
     inst_id = 'BELUSDT'
     inst_id = 'BLZUSDT'
-    # inst_id = 'GRTUSDT'
-    inst_id = 'ADAUSDT'
     inst_id = 'BTCUSDT'
     inst_id = 'ETHUSDT'
-    inst_id = 'OCEANUSDT'
-    inst_id = 'MASKUSDT'
-    inst_id = 'CHZUSDT'
-    inst_id = 'LTCUSDT'
-    inst_id = 'CTSIUSDT'
-    inst_id = '1000LUNCUSDT'
-    inst_id = 'OCEANUSDT'
-    inst_id = '1000XECUSDT'
 
-    gran = 900
+    # gran = 900
     # gran = 3600
-    # gran = 14400
+    gran = 14400
+    gran = 86400
     exchange = 'binance'
     # exchange = 'okex'
     df = get_klines_df(exchange, inst_id, gran, 300)
@@ -100,21 +91,24 @@ if __name__ == "__main__":
     df = analyze(df)
     signal = df.iloc[len(df) - 1].to_dict()
 
-    _data = {}
-    for i, v in enumerate(signal.keys()):
-
-        if isinstance(signal.get(v), np.int64) or isinstance(signal.get(v), np.int32):
-            _data[v] = int(signal.get(v))
-        elif isinstance(signal.get(v), np.float64):
-            _data[v] = float(signal.get(v))
-        elif v == 'timestamp':
-            _data[v] = datetime.strptime(signal.get("timestamp"), '%Y-%m-%d %H:%M:%S'). \
-                replace(tzinfo=timezone.utc). \
-                astimezone(timezone.utc)
-        else:
-            _data[v] = signal.get(v)
-
-    UsdtSwapSignal.update_one({"timestamp": _data["timestamp"], "instrument_id": inst_id,
-                               "granularity": gran, "exchange": _data["exchange"]}, {"$set": _data}, upsert=True)
-
-    print('总用时 ', used_time_fmt(start, time.time()))
+    # print(df.iloc[len(df) - 59:len(df)]['ma60'].to_list())
+    print(df.iloc[len(df) - 59:len(df)]['ma120'].to_list())
+    is_smile_curve(df.iloc[len(df) - 59:len(df)]['ma120'].to_list())
+    # _data = {}
+    # for i, v in enumerate(signal.keys()):
+    #
+    #     if isinstance(signal.get(v), np.int64) or isinstance(signal.get(v), np.int32):
+    #         _data[v] = int(signal.get(v))
+    #     elif isinstance(signal.get(v), np.float64):
+    #         _data[v] = float(signal.get(v))
+    #     elif v == 'timestamp':
+    #         _data[v] = datetime.strptime(signal.get("timestamp"), '%Y-%m-%d %H:%M:%S'). \
+    #             replace(tzinfo=timezone.utc). \
+    #             astimezone(timezone.utc)
+    #     else:
+    #         _data[v] = signal.get(v)
+    #
+    # UsdtSwapSignal.update_one({"timestamp": _data["timestamp"], "instrument_id": inst_id,
+    #                            "granularity": gran, "exchange": _data["exchange"]}, {"$set": _data}, upsert=True)
+    #
+    # print('总用时 ', used_time_fmt(start, time.time()))
