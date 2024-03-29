@@ -8,15 +8,23 @@ https://mirrors.aliyun.com/pypi/simple/
 https://pypi.python.org/pypi/
 
 
-#### ta-lib
+#### Dependencies ta-lib
 
-```shell 
+For Linux
+
+```shell script
 tar -xzf ta-lib-0.4.0-src.tar.gz
 cd ta-lib/
 ./configure --prefix=/usr
 make
 sudo make install
-c```
+```
+
+For MacOS
+
+```shell script
+brew install ta-lib
+```
 
 #### pymongoarrow
 
