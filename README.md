@@ -4,15 +4,19 @@ quant-analyser is a comprehensive financial data analysis tool designed to provi
 
 ### Mirrors
 
-#### https://mirrors.aliyun.com/pypi/simple/
-#### https://pypi.python.org/pypi/
+https://mirrors.aliyun.com/pypi/simple/
+https://pypi.python.org/pypi/
 
-
-#### 定时获取 A 股、港股、美股相关数据
-
-#### 计算 MA、EMA、RSI、BIAS、MACD 等指标数据
 
 #### ta-lib
+
+```shell 
+tar -xzf ta-lib-0.4.0-src.tar.gz
+cd ta-lib/
+./configure --prefix=/usr
+make
+sudo make install
+c```
 
 #### pymongoarrow
 
@@ -36,8 +40,11 @@ cd quant-analyser
 # createing virtual environments
 python3 -m venv .venv
 
+# activate venv
+source .venv/bin/activate
+
 # install poetry inside virtual environments
-.venv/bin/pip install poetry
+pip install poetry
 
 # install all dependencies
 poetry install --no-root

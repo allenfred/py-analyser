@@ -1,5 +1,4 @@
 from talib import SMA, EMA, MACD, ATR, LINEARREG_SLOPE
-import talib as lib
 import platform
 import datetime
 import numpy as np
