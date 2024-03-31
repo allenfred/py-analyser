@@ -25,7 +25,7 @@ def ma_analyze(org_df):
             if ma.steady_below_ma120(index, org_df):
                 steady_below_ma120[index] = 1
 
-            if ma.steady_on_ma120(index, org_df):
+            if ma.steady_on_ma120_for_crypto(index, org_df):
                 steady_on_ma120[index] = 1
 
     org_df['steady_below_ma60'] = steady_below_ma60

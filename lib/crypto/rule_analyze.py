@@ -32,14 +32,14 @@ def rule_analyze(org_df):
 
     for index in range(len(candle)):
         if index > _start_at:
-            ma60_first[index] = ma60.first(index, candle, bias, ma, org_df)
-            ma60_second[index] = ma60.second(index, candle, bias, ma, org_df)
-            ma60_third[index] = ma60.third(index, candle, bias, ma, org_df)
-            ma60_fourth[index] = ma60.fourth(index, candle, bias, ma, org_df)
-            ma60_fifth[index] = ma60.fifth(index, candle, bias, ma, org_df)
-            ma60_sixth[index] = ma60.sixth(index, candle, bias, ma, org_df)
-            ma60_seventh[index] = ma60.seventh(index, candle, bias, ma, org_df)
-            ma60_eighth[index] = ma60.eighth(index, candle, bias, ma, org_df)
+            # ma60_first[index] = ma60.first(index, candle, bias, ma, org_df)
+            # ma60_second[index] = ma60.second(index, candle, bias, ma, org_df)
+            # ma60_third[index] = ma60.third(index, candle, bias, ma, org_df)
+            # ma60_fourth[index] = ma60.fourth(index, candle, bias, ma, org_df)
+            # ma60_fifth[index] = ma60.fifth(index, candle, bias, ma, org_df)
+            # ma60_sixth[index] = ma60.sixth(index, candle, bias, ma, org_df)
+            # ma60_seventh[index] = ma60.seventh(index, candle, bias, ma, org_df)
+            # ma60_eighth[index] = ma60.eighth(index, candle, bias, ma, org_df)
 
             ma120_first[index] = ma120.first(index, candle, bias, ma, org_df)
             ma120_second[index] = ma120.second(index, candle, bias, ma, org_df)

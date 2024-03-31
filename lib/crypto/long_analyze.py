@@ -35,14 +35,14 @@ def long_analyze(org_df):
 
     for index in range(len(candle)):
         if index > _start_at:
-            ma20_up[index] = 1 if is_ma20_rise(index, ma) else 0
-            ema20_up[index] = 1 if is_ma20_rise(index, ema) else 0
-            ma30_up[index] = 1 if is_ma30_rise(index, ma) else 0
-            ema30_up[index] = 1 if is_ma30_rise(index, ema) else 0
-            ma60_up[index] = 1 if is_ma60_rise(index, ma) else 0
-            ema60_up[index] = 1 if is_ma60_rise(index, ema) else 0
-            ma120_up[index] = 1 if is_ma120_rise(index, ma) else 0
-            ema120_up[index] = 1 if is_ma120_rise(index, ema) else 0
+            # ma20_up[index] = 1 if is_ma20_rise(index, ma) else 0
+            # ema20_up[index] = 1 if is_ma20_rise(index, ema) else 0
+            # ma30_up[index] = 1 if is_ma30_rise(index, ma) else 0
+            # ema30_up[index] = 1 if is_ma30_rise(index, ema) else 0
+            # ma60_up[index] = 1 if is_ma60_rise(index, ma) else 0
+            # ema60_up[index] = 1 if is_ma60_rise(index, ema) else 0
+            # ma120_up[index] = 1 if is_ma120_rise(index, ma) else 0
+            # ema120_up[index] = 1 if is_ma120_rise(index, ema) else 0
 
             ma_gold_cross1[index] = 1 if is_gold_cross(index, ma5, ma10) else 0
             ma_gold_cross2[index] = 1 if is_gold_cross(index, ma5, ma20) else 0

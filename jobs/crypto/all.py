@@ -1,17 +1,18 @@
 # -- coding: utf-8 -
 
+import redis
+import analyzer
+from df import get_instruments
+from lib.util import used_time_fmt
+from datetime import date, datetime, timedelta
+import time
 import os
 import sys
 
-path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+path = os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(path)
 
-import time
-from datetime import date, datetime, timedelta
-from lib.util import used_time_fmt
-from df import get_instruments
-import analyzer
-import redis
 
 r = redis.Redis(host='8.210.170.98', port=6371, password='Uwy0Pf8mi', db=0)
 
@@ -25,15 +26,30 @@ if __name__ == "__main__":
     for index, item in enumerate(insts):
         time.sleep(0.2)
 
-        _start = time.time()
         if not item['exchange'] == 'bybit' and item['quote_currency'] == 'USDT' and item['volume_24h'] > 2000000:
             scan_cnt += 1
+            # job for every 15mins
             analyzer.run(item, 900)
-            if cur_min == 0:
+
+            if cur_min == 15:
+                # job for every hour
                 analyzer.run(item, 3600)
-            if cur_hour % 4 == 0 and cur_min == 0 and item['volume_24h'] > 2000000:
+
+            if cur_hour % 4 == 0 and item['volume_24h'] > 2000000:
+                # job for every 4 hour
                 analyzer.run(item, 14400)
 
+            if cur_hour % 12 == 0 and item['volume_24h'] > 2000000:
+                # job for every 12 hour
+                analyzer.run(item, 43200)
+
+            if cur_hour == 0 and item['volume_24h'] > 2000000:
+                # job for every day
+                analyzer.run(item, 86400)
+
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     r.publish('analyzer', 'done')
-    print(now, 'Analyzer 合约数', scan_cnt, ' 总用时 ', used_time_fmt(start, time.time()))
+
+    print(now, 'Analyzer 合约数', scan_cnt, ' 总用时 ',
+          used_time_fmt(start, time.time()))

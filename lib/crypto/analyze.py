@@ -20,7 +20,7 @@ def analyze(org_df):
     org_df = long_analyze(org_df)
     org_df = short_analyze(org_df)
     org_df = ma_analyze(org_df)
-    org_df = hline_analyze(org_df)
+    # org_df = hline_analyze(org_df)
     org_df = trend_analyze(org_df)
     org_df = rule_analyze(org_df)
 

@@ -13,7 +13,7 @@ def is_up_trend(index, df):
     :return:
     """
 
-    return df.iloc[index]['steady_on_ma120'] == 1
+    return df.iloc[index]['steady_on_ma120'] == 1 or df.iloc[index]['steady_on_ma60'] == 1
 
 
 def is_down_trend(index, df):

@@ -68,7 +68,8 @@ def run(inst, gran):
                 'ma120_fifth', 'ma120_sixth', 'ma120_seventh', 'ma120_eighth',
                 'ma20_up', 'ema20_up', 'ma30_up', 'ema30_up', 'ma60_up', 'ema60_up', 'ma120_up', 'ema120_up',
                 'ma_gold_cross1', 'ma_gold_cross2', 'ma_gold_cross3', 'ma_gold_cross4',
-                'up_trend', 'down_trend', 'strong_rise', 'strong_decline']
+                'up_trend', 'down_trend', 'strong_rise', 'strong_decline',
+                'up_pullback', 'down_pullback', 'up_break', 'down_break', 'hline_support', 'hline_resistance',]
 
         _data = {}
         for i, v in enumerate(signal.keys()):

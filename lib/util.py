@@ -3,7 +3,6 @@ import platform
 import datetime
 import numpy as np
 
-import matplotlib.pyplot as plt
 from lib.quota.bias import bias
 from lib.quota.ma_slope import slope
 from lib.quota.magic_nine_turn import td
@@ -144,41 +143,27 @@ def set_quota(df):
     return df
 
 
-def is_smile_curve(ma60):
+def is_smile_curve(ma):
     # check if the input is a list of numbers
-    if not isinstance(ma60, list) or not all(isinstance(x, (int, float)) for x in ma60):
+    if not isinstance(ma, list) or not all(isinstance(x, (int, float)) for x in ma):
         print("Invalid input. Please provide a list of numbers.")
         return None
 
     # convert the list to a numpy array
-    ma60 = np.array(ma60)
+    ma = np.array(ma)
 
     # calculate the mean and standard deviation of the array
-    mean = np.mean(ma60)
-    std = np.std(ma60)
+    mean = np.mean(ma)
+    std = np.std(ma)
 
     # define a threshold for the smile curve
     # this can be adjusted according to your preference
     threshold = 0.1 * std
 
     # check if the first and last values are above the mean by the threshold
-    if ma60[0] > mean + threshold and ma60[-1] > mean + threshold:
+    if ma[0] > mean + threshold and ma[-1] > mean + threshold:
         # check if the middle value is below the mean by the threshold
-        if ma60[len(ma60) // 2] < mean - threshold:
-            # plot the array and show the smile curve
-            plt.plot(ma60)
-            plt.title("Smile Curve")
-            plt.xlabel("Days")
-            plt.ylabel("Moving Average")
-            plt.show()
-            print("Yes, the moving average is looking like a smile curve.")
+        if ma[len(ma) // 2] < mean - threshold:
             return True
 
-    # plot the array and show the non-smile curve
-    plt.plot(ma60)
-    plt.title("Non-Smile Curve")
-    plt.xlabel("Days")
-    plt.ylabel("Moving Average")
-    plt.show()
-    print("No, the moving average is not looking like a smile curve.")
     return False

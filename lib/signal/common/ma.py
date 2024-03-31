@@ -175,6 +175,49 @@ def steady_on_ma120(index, df):
     return ma60_upon_ma120 and close_upon_ma120
 
 
+def steady_on_ma120_for_crypto(index, df):
+    """
+    MA120趋势上行
+
+    1.MA120连续上行
+    2.MA60穿越MA120之后, 需保持在MA120之上
+    3.收盘价保持在MA120之上
+    :param index:
+    :param df:
+    :return:
+    """
+    ma = df[['ma5', 'ma10', 'ma20', 'ma30', 'ma55', 'ma60', 'ma120']].to_numpy()
+    close = df['close'].to_numpy()
+    ma60 = ma[:, 5]
+    ma120 = ma[:, 6]
+
+    ma60_upon_ma120 = True
+    close_upon_ma120 = True
+
+    # 先计算MA120何时开始反转
+    ma120_i = 0
+    while ma120_i < 90:
+        # 如果当前 MA120 < 前值
+        if ma120[index - ma120_i] < ma120[index - ma120_i - 1]:
+            break
+        ma120_i += 1
+
+    # MA120连续上行至少50个交易日
+    if ma120_i < 33:
+        return False
+
+    for i in range(ma120_i - 7):
+        # 如果当前 MA60 < MA120
+        if ma60[index - i] < ma120[index - i]:
+            ma60_upon_ma120 = False
+
+        # 如果收盘价低于 MA120
+        if close[index - i] < ma120[index - i]:
+            close_upon_ma120 = False
+
+    return ma60_upon_ma120 and close_upon_ma120
+
+
 def is_ma20_rise(index, ma):
     ma20 = ma[:, 2]
 
