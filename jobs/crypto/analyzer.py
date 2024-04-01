@@ -1,18 +1,18 @@
 # -- coding: utf-8 -
 
+from jobs.crypto.database import UsdtSwapSignal
+from jobs.crypto.df import get_klines_df
+from lib.util import set_quota, used_time_fmt, get_timestamp
+from datetime import date, datetime, timedelta, timezone
+import time
+from lib.crypto.analyze import analyze
 import os
 import sys
 import numpy as np
 
-path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+path = os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(path)
-
-from lib.crypto.analyze import analyze
-import time
-from datetime import date, datetime, timedelta, timezone
-from lib.util import set_quota, used_time_fmt
-from df import get_klines_df
-from database import UsdtSwapSignal
 
 
 def run(inst, gran):
@@ -25,11 +25,11 @@ def run(inst, gran):
     kline_used = used_time_fmt(_start, time.time())
 
     if len(df) == 0:
-        print('没有K线数据')
+        print(get_timestamp(), '没有K线数据')
         return
 
     if min(df['close']) < 0.00001:
-        print('价格过低', exchange, inst_id)
+        print(get_timestamp(), '价格过低', exchange, inst_id)
         return
 
     try:
@@ -86,6 +86,7 @@ def run(inst, gran):
 
         UsdtSwapSignal.update_one({"timestamp": _data["timestamp"], "instrument_id": inst_id,
                                    "granularity": gran, "exchange": _data["exchange"]}, {"$set": _data}, upsert=True)
-        print(exchange, inst_id, gran, ', Analyze用时 ', used_time_fmt(_analyze_start, time.time()))
+        print(get_timestamp(), exchange, inst_id, gran, ', Analyze用时 ',
+              used_time_fmt(_analyze_start, time.time()))
     except Exception as e:
-        print('更新 ', inst_id, gran, 'Catch Error:', e)
+        print(get_timestamp(), '更新 ', inst_id, gran, 'Catch Error:', e)

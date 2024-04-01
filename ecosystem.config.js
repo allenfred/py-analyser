@@ -2,13 +2,13 @@ module.exports = {
   apps: [
     {
       name: 'crypto_analyzer',
-      script: 'jobs/crypto/all.py',
+      script: 'src/server.py',
       interpreter: 'python3',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '*/15 * * * *', // 每15min
-      watch: false,
-      autorestart: false,
+      cron_restart: '0 0 * * *', // everyday
+      watch: true,
+      autorestart: true,
     },
     {
       name: 'cn_limit',

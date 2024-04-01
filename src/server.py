@@ -1,33 +1,35 @@
 import time
 import os
 import sys
+import redis
+import json
 
-path = os.path.dirname(os.path.abspath(__file__))
+path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(path)
 
-from binance.websocket.um_futures.websocket_client import UMFuturesWebsocketClient
-from mongo.df import get_instrument_ticker
+from lib.util import get_timestamp
+from jobs.crypto.all import analysis
+
+r = redis.Redis(host='8.210.170.98', port=6371, password='Uwy0Pf8mi', db=0)
 
 
 def message_handler(message):
-    print(message)
+    print(json.dumps(message))
 
 
-insts = list(get_instrument_ticker('biance'))
-insts = sorted(insts, key=lambda d: d['volume_24h'], reverse=True)
-streams = ['!miniTicker@arr']
+def jsonDefault(o):
+    return o.decode('utf-8')
 
-for index, item in enumerate(insts):
-    inst_id = item['instrument_id']
-    if index < 70:
-        streams.append(inst_id.lower() + '@kline_15m')
-        streams.append(inst_id.lower() + '@kline_1h')
 
-ws_client = UMFuturesWebsocketClient()
-ws_client.start()
+p = r.pubsub()
+p.subscribe('klines')
 
-ws_client.instant_subscribe(
-    # stream=['!miniTicker@arr'],
-    stream=streams,
-    callback=message_handler,
-)
+while True:
+    msg = p.get_message()
+    if msg is not None:
+        print(get_timestamp(), msg)
+        
+        if type(msg['data']) == bytes:
+            data = json.loads(msg['data'])
+            print(get_timestamp(), data)
+            analysis()

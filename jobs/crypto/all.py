@@ -1,9 +1,5 @@
 # -- coding: utf-8 -
 
-import redis
-import analyzer
-from df import get_instruments
-from lib.util import used_time_fmt
 from datetime import date, datetime, timedelta
 import time
 import os
@@ -13,10 +9,14 @@ path = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(path)
 
+import redis
+import jobs.crypto.analyzer as analyzer
+from jobs.crypto.df import get_instruments
+from lib.util import used_time_fmt
 
 r = redis.Redis(host='8.210.170.98', port=6371, password='Uwy0Pf8mi', db=0)
 
-if __name__ == "__main__":
+def analysis():
     start = time.time()
     cur_min = time.localtime().tm_min
     cur_hour = time.localtime().tm_hour
@@ -53,3 +53,7 @@ if __name__ == "__main__":
 
     print(now, 'Analyzer 合约数', scan_cnt, ' 总用时 ',
           used_time_fmt(start, time.time()))
+
+
+if __name__ == "__main__":
+    analysis()

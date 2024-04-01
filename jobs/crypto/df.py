@@ -3,7 +3,7 @@ proxy for okex api.
 """
 import pandas as pd
 import datetime
-from database import (
+from jobs.crypto.database import (
     InstrumentInfo,
     UsdtSwapKlines,
 )
